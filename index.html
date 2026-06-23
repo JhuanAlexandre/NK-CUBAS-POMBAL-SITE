@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NK Cubas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-login-custom">
+    <div class="container-login">
+        <img src="foto-cuba/logo.jpeg" alt="Logo NK Cubas" style="width: 200px; margin-bottom: 10px; border-radius: 10px;">
+        <h1 class="titulo-bemvindo">Bem Vindo</h1>
+
+        <div class="caixa-login" id="caixa-login">
+            <div class="area-abas">
+                <button class="btn-aba ativo" id="aba-cliente" onclick="mudarModo('cliente')">Cliente</button>
+                <button class="btn-aba" id="aba-vendedor" onclick="mudarModo('vendedor')">Vendedor</button>
+            </div>
+
+            <div class="grupo-input">
+                <label id="label-usuario">CNPJ do Cliente</label>
+                <input type="text" id="usuario" placeholder="Digite seu CNPJ (apenas números)" autocomplete="username">
+            </div>
+
+            <div class="grupo-input">
+                <label>Senha</label>
+                <input type="password" id="senha" placeholder="Digite sua senha" autocomplete="current-password">
+            </div>
+
+            <button class="btn-entrar-login" onclick="fazerLogin()">Entrar</button>
+        </div>
+    </div>
+
+    <script>
+        let modoAtual = 'cliente';
+
+        function mudarModo(modo) {
+            modoAtual = modo;
+            const caixa = document.getElementById('caixa-login');
+            const abaCliente = document.getElementById('aba-cliente');
+            const abaVendedor = document.getElementById('aba-vendedor');
+            const inputUsuario = document.getElementById('usuario');
+
+            if (modo === 'vendedor') {
+                caixa.classList.add('modo-vendedor');
+                abaVendedor.classList.add('ativo');
+                abaCliente.classList.remove('ativo');
+                document.getElementById('label-usuario').innerText = "CPF do Vendedor";
+                inputUsuario.placeholder = "Digite seu CPF (apenas números)";
+            } else {
+                caixa.classList.remove('modo-vendedor');
+                abaCliente.classList.add('ativo');
+                abaVendedor.classList.remove('ativo');
+                document.getElementById('label-usuario').innerText = "CNPJ do Cliente";
+                inputUsuario.placeholder = "Digite seu CNPJ (apenas números)";
+            }
+            inputUsuario.value = "";
+            document.getElementById('senha').value = "";
+        }
+
+        function fazerLogin() {
+            const usuarioRaw = document.getElementById('usuario').value;
+            const usuario = usuarioRaw.replace(/\D/g, ''); 
+            const senha = document.getElementById('senha').value;
+
+            if (usuario === "" || senha === "") {
+                alert("Por favor, preencha o usuário e a senha!");
+                return;
+            }
+
+            if (modoAtual === 'vendedor') {
+                if (usuario === "61941386000120" && senha === "123456") {
+                    localStorage.setItem('perfilLogado', 'master');
+                    localStorage.setItem('nomeVendedorLogado', 'Diretoria NK Cubas');
+                    localStorage.setItem('documentoLogado', usuario);
+                    window.location.href = 'catalogo.html';
+                } 
+                else if (usuario === "11377761533" && senha === "140302") {
+                    localStorage.setItem('perfilLogado', 'vendedor');
+                    localStorage.setItem('nomeVendedorLogado', 'Jhuan Alexandre'); 
+                    localStorage.setItem('documentoLogado', usuario);
+                    window.location.href = 'catalogo.html';
+                } 
+                else if (localStorage.getItem('vendedor_' + usuario)) {
+                    const dadosVendedor = JSON.parse(localStorage.getItem('vendedor_' + usuario));
+                    if (senha === dadosVendedor.senha) {
+                        localStorage.setItem('perfilLogado', 'vendedor');
+                        localStorage.setItem('nomeVendedorLogado', dadosVendedor.nome);
+                        localStorage.setItem('documentoLogado', usuario);
+                        window.location.href = 'catalogo.html';
+                    } else {
+                        alert("Senha do vendedor incorreta!");
+                    }
+                } 
+                else {
+                    alert("Usuário ou Senha de Vendedor incorretos!");
+                }
+            } else {
+                const registroCliente = localStorage.getItem('cliente_' + usuario);
+                if (registroCliente) {
+                    const dadosCliente = JSON.parse(registroCliente);
+                    if (senha === dadosCliente.senha) {
+                        localStorage.setItem('perfilLogado', 'cliente');
+                        localStorage.setItem('cnpjClienteAtivo', usuario); 
+                        window.location.href = 'catalogo.html';
+                    } else { 
+                        alert("Senha de cliente incorreta!"); 
+                    }
+                } else {
+                    alert("Este CNPJ não possui cadastro ativo. Solicite o cadastro ao seu vendedor!");
+                }
+            }
+        }
+    </script>
+</body>
+</html>

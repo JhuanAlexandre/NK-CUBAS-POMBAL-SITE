@@ -1,0 +1,194 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Vendas Master - NK Cubas</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #0d0d0d; color: white; padding: 20px; }
+        .topo-painel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #ffd700; padding-bottom: 15px; flex-wrap: wrap; gap: 15px; }
+        .btn-acao { padding: 12px 22px; font-weight: bold; border-radius: 8px; cursor: pointer; border: none; transition: 0.2s; }
+        .secao-data { background: #161616; border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        .secao-data h3 { margin-top: 0; color: #ffd700; border-bottom: 1px dashed #ffd700; padding-bottom: 8px; margin-bottom: 15px; }
+        .card-venda { background: #222; border-left: 5px solid #ffd700; margin-bottom: 12px; padding: 15px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .info-venda span { color: #b3b3b3; font-size: 13px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <div class="topo-painel">
+        <div>
+            <h1 id="titulo-painel" style="margin: 0; font-size: 26px; color: #ffd700;">Painel de Vendas - Mês Atual</h1>
+            <p style="margin: 5px 0 0 0; color: #888; font-weight: bold;">NK Cubas Distribuidora S/A</p>
+        </div>
+        <div style="display:flex; gap:12px; flex-wrap: wrap;">
+            <button id="btn-alternar-modo" class="btn-acao" style="background: #ffd700; color: black;" onclick="alternarModoPainel()">👁️ Ver Histórico Antigo</button>
+            <button class="btn-acao" style="background: #444; color: white;" onclick="window.location.href='catalogo.html'">⬅️ Voltar ao Catálogo</button>
+        </div>
+    </div>
+
+    <div id="container-vendas"></div>
+
+<script>
+let exibindoHistoricoGeral = false;
+
+window.onload = function() {
+    let perfil = localStorage.getItem('perfilLogado');
+    let docLogado = localStorage.getItem('documentoLogado');
+    if (perfil !== 'master' && docLogado !== '61941386000120') {
+        alert("Acesso restrito ao Painel Master Administrativo!");
+        window.location.href = 'catalogo.html';
+        return;
+    }
+    renderizarPainelVendas();
+};
+
+function alternarModoPainel() {
+    exibindoHistoricoGeral = !exibindoHistoricoGeral;
+    let btn = document.getElementById('btn-alternar-modo');
+    let titulo = document.getElementById('titulo-painel');
+    
+    if(exibindoHistoricoGeral) {
+        btn.innerText = "👁️ Ver Vendas do Mês";
+        btn.style.backgroundColor = "#2b5797";
+        btn.style.color = "white";
+        titulo.innerText = "Histórico Geral Arquivado (Vendas Antigas)";
+    } else {
+        btn.innerText = "👁️ Ver Histórico Antigo";
+        btn.style.backgroundColor = "#ffd700";
+        btn.style.color = "black";
+        titulo.innerText = "Painel de Vendas - Mês Atual";
+    }
+    renderizarPainelVendas();
+}
+
+function renderizarPainelVendas() {
+    let container = document.getElementById('container-vendas');
+    container.innerHTML = '';
+    
+    let historico = JSON.parse(localStorage.getItem('bancoVendas')) || [];
+    let hoje = new Date();
+    let mesAtual = hoje.getMonth() + 1;
+    let anoAtual = hoje.getFullYear();
+    
+    let filtradas = historico.filter(venda => {
+        if(!venda.data) return false;
+        let partes = venda.data.split('/');
+        let mesVenda = parseInt(partes[1]);
+        let anoVenda = parseInt(partes[2]);
+        
+        let pertenceAoMesAtual = (mesVenda === mesAtual && anoVenda === anoAtual);
+        return exibindoHistoricoGeral ? !pertenceAoMesAtual : pertenceAoMesAtual;
+    });
+
+    if(filtradas.length === 0) {
+        container.innerHTML = `<p style="text-align:center; padding:40px; color:#888; font-weight:bold;">Nenhum registro de venda encontrado para esta listagem.</p>`;
+        return;
+    }
+
+    let agrupadoPorData = {};
+    filtradas.forEach(venda => {
+        if(!agrupadoPorData[venda.data]) { agrupadoPorData[venda.data] = []; }
+        agrupadoPorData[venda.data].push(venda);
+    });
+
+    for(let data in agrupadoPorData) {
+        let divData = document.createElement('div');
+        divData.className = 'secao-data';
+        divData.innerHTML = `<h3>📅 Vendas Realizadas em: ${data}</h3>`;
+        
+        agrupadoPorData[data].forEach(venda => {
+            let realIdx = historico.findIndex(h => h.id === venda.id && h.data === venda.data && h.hora === venda.hora);
+            let descItens = venda.itens ? venda.itens.map(i => `${i.nome} (${i.qtd}x)`).join(', ') : 'Nenhum item';
+            
+            let card = document.createElement('div');
+            card.className = 'card-venda';
+            card.innerHTML = `
+                <div class="info-venda">
+                    <strong style="font-size:17px; color:#fff;">Pedido #${venda.id} - ${venda.cliente}</strong> 
+                    <span style="background:#ffd700; color:black; font-weight:bold; font-size:11px; padding:2px 6px; border-radius:3px; margin-left:6px;">${venda.metodoPagamento}</span><br>
+                    <span style="display:block; margin-top:5px;"><b>Responsável:</b> ${venda.vendedor} | <b>Cidade:</b> ${venda.cidade} | <b>Itens:</b> ${descItens}</span>
+                    <span style="font-size:12px; color:#aaa; display:block; margin-top:3px;">Expositor: <b>${venda.temExpositor || 'NÃO'}</b> | Logística: <b>${venda.entreguePor || 'Empresa'}</b></span>
+                    ${venda.dataModificacao ? `<span style="color:#ff6b6b; font-weight:bold; font-size:11px; display:block; margin-top:3px;">⚠️ Última Modificação: ${venda.dataModificacao}</span>` : ''}
+                </div>
+                <div style="text-align:right; display:flex; flex-direction:column; gap:8px; min-width:150px;">
+                    <span style="color:#20bf6b; font-weight:bold; font-size:20px;">R$ ${venda.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                    <div>
+                        <button onclick="regerarPDFVenda(${realIdx})" style="background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px; margin-right:5px;">📄 Ver PDF</button>
+                        <button onclick="excluirVendaMaster(${realIdx})" style="background:#111; color:#ff4d4d; border:1px solid #ff4d4d; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;">❌ Excluir</button>
+                    </div>
+                </div>
+            `;
+            divData.appendChild(card);
+        });
+        container.appendChild(divData);
+    }
+}
+
+function excluirVendaMaster(idx) {
+    if(confirm("Deseja apagar permanentemente este registro de venda do sistema? Esta ação é irreversível.")) {
+        let historico = JSON.parse(localStorage.getItem('bancoVendas')) || [];
+        historico.splice(idx, 1);
+        localStorage.setItem('bancoVendas', JSON.stringify(historico));
+        renderizarPainelVendas();
+    }
+}
+
+function regerarPDFVenda(idx) {
+    let historico = JSON.parse(localStorage.getItem('bancoVendas')) || [];
+    let venda = historico[idx];
+    if(!venda) return;
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFontSize(9);
+    doc.text("NK CUBAS POMBAL LTDA - (11) 99994-8702", 14, 27);
+    doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 14, 32);
+    doc.text("CNPJ: 61.941.386/0001-20", 14, 37);
+
+    doc.rect(14, 43, 180, 32); 
+    doc.setFont("helvetica", "bold");
+    doc.text(`Número do pedido: ${venda.id}`, 16, 49);
+    doc.text(`Data: ${venda.data}`, 140, 49);
+    
+    doc.text("CLIENTE:", 16, 57);
+    doc.setFont("helvetica", "normal");
+    doc.text(venda.cliente, 35, 57);
+    doc.text(`CNPJ: ${venda.cnpj || 'Não cadastrado'}`, 140, 57);
+    doc.text(`Localidade: ${venda.cidade || 'Não informada'} / ${venda.estado || 'BA'}`, 16, 63);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text(`VENDEDOR: ${venda.vendedor}`, 16, 70);
+    doc.text(`Forma: ${venda.metodoPagamento} | Expositor: ${venda.temExpositor || 'NÃO'}`, 95, 70);
+
+    let tabelaCorpo = [];
+    let somaQtd = 0;
+    venda.itens.forEach(item => {
+        let totalLinha = item.preco * item.qtd;
+        somaQtd += item.qtd;
+        tabelaCorpo.push([item.nome, item.codigo || "000000", "UN", item.qtd.toString(), "R$ " + item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2}), "R$ " + totalLinha.toLocaleString('pt-BR', {minimumFractionDigits:2})]);
+    });
+
+    doc.autoTable({
+        startY: 82,
+        head: [['Descrição do produto/serviço', 'Código', 'Un.', 'Qtd.', 'Valor unitário', 'Valor total']],
+        body: tableCorpo,
+        theme: 'grid',
+        headStyles: { fillColor: [30, 30, 30], textColor: [255, 215, 0] }
+    });
+
+    let yF = doc.lastAutoTable.finalY + 10;
+    doc.setFont("helvetica", "normal");
+    doc.text(`Soma das Qtdes: ${somaQtd}`, 14, yF);
+    doc.setFont("helvetica", "bold");
+    doc.text(`TOTAL FINAL: R$ ${venda.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 130, yF + 6);
+
+    doc.save(`Pedido_${venda.id}_Reemissao.pdf`);
+}
+</script>
+</body>
+</html>

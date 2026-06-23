@@ -1,0 +1,531 @@
+﻿/* =========================================
+   CONFIGURAÇÕES GERAIS E RESET
+   ========================================= */
+* {
+    box-sizing: border-box; 
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body:not(.bg-login-custom) {
+    background-color: #0d0d0d; 
+    color: #ffffff; 
+}
+
+body.bg-login-custom {
+    background-image: url('foto-cuba/fundo-loading.jfif'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: #ffffff;
+    height: 100vh;
+}
+
+/* =========================================
+   ÁREA SUPERIOR E BUSCA
+   ========================================= */
+.area-topo {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background-color: #141414;
+    border-bottom: 1px solid #2a2a2a;
+    flex-wrap: wrap;
+}
+
+#pesquisa {
+    padding: 10px 18px;
+    border-radius: 20px;
+    border: 1px solid #444;
+    width: 280px;
+    background-color: #222;
+    color: #fff;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+#pesquisa:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.titulo-site {
+    text-align: center;
+    color: #ffd700;
+    margin: 30px 0;
+    font-size: 38px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* =========================================
+   LAYOUT DOS CARDS DO CATÁLOGO
+   ========================================= */
+.catalogo {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;    
+    gap: 30px;              
+    padding: 0 20px 60px 20px;
+}
+
+.card {
+    background-color: #1a1a1a; 
+    border: 2px solid #ffd700;
+    border-radius: 15px;       
+    padding: 25px;
+    width: 100%;
+    max-width: 1200px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.nome-cuba {
+    color: #ffd700;
+    text-align: center;
+    font-size: 32px;           
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.conteudo-card {
+    display: flex;             
+    align-items: center;       
+    gap: 35px;
+    flex-wrap: wrap;
+}
+
+.foto-cuba {
+    width: 350px;             
+    height: 350px; 
+    border-radius: 12px;
+    object-fit: contain;       
+    background-color: #000000;   
+    flex-shrink: 0;
+    border: 1px solid #333;
+}
+
+.info-direita {
+    display: flex;
+    flex-direction: column;    
+    text-align: left;
+    flex: 1;
+    min-width: 280px;
+}
+
+.preco-grande {
+    color: #ffd700;
+    font-size: 85px;           
+    font-weight: bold;
+    line-height: 1;            
+    margin-bottom: 10px;
+}
+
+.subtitulo {
+    font-size: 18px;
+    color: #b3b3b3;
+    margin-bottom: 25px;
+}
+
+.area-botoes {
+    display: flex;
+    gap: 15px;                 
+}
+
+.btn-inf {
+    background-color: #3a3a3a; 
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-comprar {
+    background-color: #b8860b; 
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1;
+    transition: 0.2s;
+}
+
+.btn-inf:hover { background-color: #555555; }
+.btn-comprar:hover { background-color: #daaa34; }
+
+/* =========================================
+   MODAIS E CARRINHO
+   ========================================= */
+#btn-abrir-carrinho {
+    background-color: #ffd700;
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#btn-abrir-carrinho:hover { background-color: #fff; }
+
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); 
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-conteudo {
+    background-color: #f8f9fa;
+    color: #111;
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 550px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.fechar-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #dc3545;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.titulo-carrinho {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 24px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.item-carrinho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.nome-item {
+    font-weight: bold;
+    color: #222;
+    font-size: 16px;
+}
+
+.controle-qtd {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.controle-qtd button {
+    background-color: #222;
+    color: #fff;
+    border: none;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.resumo-carrinho {
+    margin-top: 25px;
+    border-top: 2px solid #dee2e6;
+    padding-top: 20px;
+}
+
+.opcoes-compra {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.checkbox-container {
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+#label-expositor { color: #dc3545; }
+
+.pagamento select {
+    padding: 10px;
+    font-size: 15px;
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+/* =========================================
+   ESTILOS TELA DE LOGIN INTERNA
+   ========================================= */
+.container-login { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    height: 100vh; 
+}
+
+.titulo-bemvindo { 
+    color: #ffd700; 
+    font-size: 36px; 
+    text-transform: uppercase; 
+    margin-bottom: 25px; 
+    letter-spacing: 1px;
+}
+
+.caixa-login { 
+    background-color: #ffd700; 
+    color: #000000; 
+    padding: 35px; 
+    border-radius: 12px; 
+    width: 100%; 
+    max-width: 420px; 
+    text-align: center; 
+    transition: all 0.3s ease; 
+    border: 2px solid #ffd700; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+}
+
+.caixa-login.modo-vendedor { 
+    background-color: #1a1a1a; 
+    color: #ffffff; 
+}
+
+.area-abas { 
+    display: flex; 
+    justify-content: center; 
+    gap: 12px; 
+    margin-bottom: 30px; 
+}
+
+.btn-aba { 
+    padding: 10px 22px; 
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    background-color: #555555; 
+    color: #fff; 
+    font-size: 15px; 
+}
+
+.btn-aba.ativo { 
+    background-color: #000000; 
+    color: #ffd700; 
+    border: 1px solid #ffd700; 
+}
+
+.grupo-input { 
+    margin-bottom: 20px; 
+    text-align: left; 
+}
+
+.grupo-input label { 
+    display: block; 
+    font-weight: bold; 
+    margin-bottom: 6px; 
+    font-size: 14px;
+}
+
+.grupo-input input { 
+    width: 100%; 
+    padding: 12px; 
+    border-radius: 6px; 
+    border: 1px solid #ccc; 
+    outline: none; 
+    font-size: 16px; 
+    background-color: #fff;
+    color: #000;
+}
+
+.caixa-login.modo-vendedor .grupo-input input {
+    border: 1px solid #444;
+    background-color: #252525;
+    color: #fff;
+}
+
+.btn-entrar-login { 
+    width: 100%; 
+    background-color: #000000; 
+    color: #ffd700; 
+    border: 1px solid #ffd700; 
+    padding: 14px; 
+    font-size: 18px; 
+    font-weight: bold; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    transition: 0.2s; 
+}
+
+.btn-entrar-login:hover { 
+    background-color: #b8860b; 
+    color: #fff; 
+    border-color: #b8860b; 
+}
+
+.logo-pequena {
+    display: block;
+    margin: 10px auto;
+    width: 220px; 
+    height: auto;
+}
+
+/* Tabelas e elementos administrativos */
+table {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.btn-finalizar {
+    width: 100%;
+    background-color: #28a745;
+    color: #fff;
+    padding: 16px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+}
+.btn-finalizar:hover { background-color: #218838; }
+
+/* =========================================
+   RESPONSIVIDADE (CELULARES E TABLETS)
+   ========================================= */
+@media (max-width: 768px) {
+    /* Ajusta a área de botões e busca no topo */
+    .area-topo {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 15px;
+    }
+
+    .area-topo div {
+        width: 100% !important;
+        margin-right: 0 !important;
+    }
+
+    .area-topo button, #pesquisa, #btn-abrir-carrinho {
+        width: 100% !important;
+    }
+
+    /* Título principal do site */
+    .titulo-site {
+        font-size: 26px;
+        margin: 20px 0;
+        padding: 0 10px;
+    }
+
+    /* Cards e Alinhamento do conteúdo */
+    .card {
+        padding: 15px;
+    }
+
+    .nome-cuba {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    .conteudo-card {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    /* Imagem agora se molda ao tamanho da tela do celular */
+    .foto-cuba {
+        width: 100%;
+        max-width: 280px;
+        height: 280px;
+    }
+
+    /* Painel de textos do card */
+    .info-direita {
+        text-align: center;
+        align-items: center;
+        width: 100%;
+        min-width: unset;
+    }
+
+    /* Correção do Preço Gigante que quebrava o layout */
+    .preco-grande {
+        font-size: 42px; 
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .subtitulo {
+        font-size: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    /* Botões Inf e Adicionar ocupam bem o espaço mobile */
+    .area-botoes {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-comprar {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+
+    /* Modais */
+    .modal-conteudo {
+        width: 100%;
+        max-width: 95%;
+        padding: 20px;
+    }
+}
