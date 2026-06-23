@@ -29,6 +29,12 @@
         VENDEDOR: <span id="nome-vendedor-tela" style="color: #ffd700;"></span>
     </div>
 
+    <!-- BANNER INFORMATIVO DE EDIÇÃO DE PEDIDO -->
+    <div id="banner-edicao" style="display:none; background:#d9534f; color:white; text-align:center; padding:12px; font-weight:bold; font-size:16px; margin: 10px 20px; border-radius:8px; box-shadow: 0px 4px 10px rgba(0,0,0,0.5);">
+        ⚠️ MODO DE EDIÇÃO ATIVO: ALTERANDO O PEDIDO #<span id="num-pedido-edicao"></span> 
+        <button onclick="cancelarEdicaoPedido()" style="margin-left:15px; background:white; color:#d9534f; border:none; padding:5px 12px; font-weight:bold; border-radius:5px; cursor:pointer; transition:0.2s;">Cancelar Edição</button>
+    </div>
+
     <div class="area-topo">
         <div style="display: flex; flex-direction: column; gap: 10px; margin-right: auto;">
             <button id="btn-cadastrar-cliente" style="display: none; background-color: #ffd700; color: black; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalCadastro()">
@@ -37,14 +43,14 @@
             <button id="btn-minhas-vendas" style="display: none; background-color: #2b5797; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalMinhasVendas()">
                 📝 Minhas Vendas (Editar)
             </button>
+            <button id="btn-acordos-vendedores" style="display: none; background-color: #20bf6b; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalAcordos()">
+                🤝 Acordos com Vendedores
+            </button>
             <button id="btn-cadastrar-vendedor" style="display: none; background-color: #222; color: white; border: 1px solid #444; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalVendedor()">
                 ⚙️ Cadastrar Vendedor (Master)
             </button>
             <button id="btn-editar-vendedor" style="display: none; background-color: #4b6584; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalEditarVendedor()">
                 ✏️ Editar / Demitir Vendedor
-            </button>
-            <button id="btn-acordos-vendedores" style="display: none; background-color: #20bf6b; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalAcordos()">
-                🤝 Acordos com Vendedores
             </button>
             <button id="btn-menu-vendas" style="display: none; background-color: #8b0000; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px;" onclick="window.location.href='vendas.html'">
                 📊 Menu de Vendas (Painel Master)
@@ -332,6 +338,7 @@
         </div>
     </div>
 
+    <!-- PAINEL DE ACORDOS - ACESSÍVEL AGORA PARA VENDEDOR E MASTER -->
     <div id="modal-acordos" class="modal">
         <div class="modal-conteudo" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 95%; max-width: 850px; max-height: 85vh; overflow-y: auto;">
             <span class="fechar-modal" onclick="fecharModalAcordos()">&times;</span>
@@ -340,12 +347,14 @@
                 <label style="font-weight: bold;">Selecione o Vendedor:</label>
                 <select id="select-vendedor-acordo" onchange="carregarAcordosVendedor()" style="width: 100%; padding: 10px; border-radius: 5px; font-size: 16px; margin-top: 5px; background: white; color: black; border: 1px solid #ccc;"></select>
             </div>
-            <div id="resumo-acordos" style="display: flex; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; justify-content: space-around; font-weight: bold; text-align: center;">
-                <div>Comissão Devida:<br><span id="resumo-comissao-pendente" style="color: red; font-size: 18px;">R$ 0,00</span></div>
+            
+            <div id="resumo-acordos" style="display: flex; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; justify-content: space-around; font-weight: bold; text-align: center; flex-wrap: wrap;">
+                <div>Comissão Pendente:<br><span id="resumo-comissao-pendente" style="color: red; font-size: 18px;">R$ 0,00</span></div>
                 <div>Líquido Empresa:<br><span id="resumo-empresa-faturado" style="color: green; font-size: 18px;">R$ 0,00</span></div>
                 <div>Total Peças:<br><span id="resumo-pecas-vendidas" style="color: blue; font-size: 18px;">0 Un.</span></div>
             </div>
-            <div id="lista-acordos-por-estado"></div>
+
+            <div id="lista-vendas-acordo-container"></div>
         </div>
     </div>
 
@@ -354,6 +363,7 @@ let itensCarrinho = [];
 let listaClientesRealtime = [];
 let listaVendedoresRealtime = [];
 let listaVendasRealtime = [];
+let idPedidoEmEdicaoOriginal = null;
 
 window.onload = function() {
     let perfil = localStorage.getItem('perfilLogado');
@@ -361,21 +371,18 @@ window.onload = function() {
 
     if (!perfil) { window.location.href = 'index.html'; return; }
     
-    // 1. Ouvinte Realtime para Clientes
     db.collection('clientes').onSnapshot(snapshot => {
         listaClientesRealtime = [];
         snapshot.forEach(doc => listaClientesRealtime.push(doc.data()));
         filtrarClientes();
     });
 
-    // 2. Ouvinte Realtime para Vendedores
     db.collection('vendedores').onSnapshot(snapshot => {
         listaVendedoresRealtime = [];
         snapshot.forEach(doc => listaVendedoresRealtime.push(doc.data()));
         atualizarSelectVendedoresAcordo();
     });
 
-    // 3. Ouvinte Realtime para Vendas
     db.collection('vendas').onSnapshot(snapshot => {
         listaVendasRealtime = [];
         snapshot.forEach(doc => listaVendasRealtime.push({ firestoreId: doc.id, ...doc.data() }));
@@ -387,6 +394,7 @@ window.onload = function() {
         let nomeVend = localStorage.getItem('nomeVendedorLogado') || 'Vendedor Padrão';
         document.getElementById('btn-cadastrar-cliente').style.display = 'block';
         document.getElementById('btn-minhas-vendas').style.display = 'block';
+        document.getElementById('btn-acordos-vendedores').style.display = 'block'; // Liberado para vendedores
         document.getElementById('info-vendedor-rodape').style.display = 'block';
         document.getElementById('nome-vendedor-tela').innerText = nomeVend;
         document.getElementById('area-selecao-cliente').style.display = 'block';
@@ -394,7 +402,6 @@ window.onload = function() {
         if (perfil === 'master' || documentoLogado === '61941386000120') {
             document.getElementById('btn-cadastrar-vendedor').style.display = 'block';
             document.getElementById('btn-editar-vendedor').style.display = 'block';
-            document.getElementById('btn-acordos-vendedores').style.display = 'block';
             document.getElementById('btn-menu-vendas').style.display = 'block';
             document.getElementById('nome-vendedor-tela').innerText = "MASTER: " + nomeVend;
         }
@@ -409,12 +416,22 @@ window.onload = function() {
         });
     }
 
-    // Configuração de carregamento de pedido sob edição externa
     let pedidoEdicaoId = localStorage.getItem('pedidoEmEdicaoId');
     if (pedidoEdicaoId) {
         db.collection('vendas').doc(pedidoEdicaoId).get().then(doc => {
             if(doc.exists){
-                itensCarrinho = doc.data().itens || [];
+                let dados = doc.data();
+                itensCarrinho = dados.itens || [];
+                idPedidoEmEdicaoOriginal = dados.id; 
+                
+                document.getElementById('banner-edicao').style.display = 'block';
+                document.getElementById('num-pedido-edicao').innerText = dados.id;
+                
+                if(dados.cnpj) {
+                    document.getElementById('cnpj-cliente-selecionado').value = dados.cnpj;
+                    document.getElementById('busca-cliente').value = dados.cliente;
+                }
+                
                 reconstruirBotoesCatalogo();
                 abrirCarrinho();
                 atualizarCarrinho();
@@ -422,6 +439,11 @@ window.onload = function() {
         });
     }
 };
+
+function cancelarEdicaoPedido() {
+    localStorage.removeItem('pedidoEmEdicaoId');
+    window.location.reload();
+}
 
 function abrirCarrinho() { document.getElementById('modal-carrinho').style.display = 'flex'; }
 function fecharCarrinho() { document.getElementById('modal-carrinho').style.display = 'none'; }
@@ -531,7 +553,6 @@ function atualizarPrazos() {
     const selectPrazo = document.getElementById('prazo-pagamento');
     const cnpjAtivo = document.getElementById('cnpj-cliente-selecionado').value || localStorage.getItem('cnpjClienteAtivo');
 
-    // Valida restrição financeira direto das informações realtime da nuvem
     let clienteDoc = listaClientesRealtime.find(c => c.cnpj === cnpjAtivo);
     if (clienteDoc && clienteDoc.restrito && metodo === 'Boleto') {
         alert("⚠️ ATENÇÃO: Este CNPJ possui restrições financeiras estruturais na Nuvem. BOLETO TRAVADO.");
@@ -660,7 +681,8 @@ function gerarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const dataHoje = new Date().toLocaleDateString('pt-BR');
-    const numPedido = Math.floor(Math.random() * 9000) + 1000;
+    
+    const numPedido = idPedidoEmEdicaoOriginal || (Math.floor(Math.random() * 9000) + 1000);
 
     let novaVenda = {
         id: numPedido,
@@ -676,13 +698,12 @@ function gerarPDF() {
         metodoPagamento: pgto,
         temExpositor: temExpositor,
         entreguePor: entregaDefinida,
-        acordoFinalizado: false,
+        statusComissao: 'pendente', // Estados: pendente, solicitado, pago
         dataModificacao: ""
     };
 
     let edicaoId = localStorage.getItem('pedidoEmEdicaoId');
     if (edicaoId) {
-        // Se estiver editando, preserva dados cruciais de identificação e atualiza na nuvem
         novaVenda.dataModificacao = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR');
         db.collection('vendas').doc(edicaoId).update(novaVenda).then(() => {
             localStorage.removeItem('pedidoEmEdicaoId');
@@ -698,7 +719,6 @@ function gerarPDF() {
 }
 
 function finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor) {
-    // Código para renderização e salvamento do arquivo PDF físico local
     doc.setFontSize(9);
     doc.text("NK CUBAS POMBAL LTDA - (11) 99994-8702", 14, 27);
     doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 14, 32);
@@ -740,7 +760,9 @@ function finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVe
     doc.save(`Pedido_${numPedido}.pdf`);
 
     itensCarrinho = [];
+    idPedidoEmEdicaoOriginal = null;
     document.getElementById('input-desconto').value = 0;
+    document.getElementById('banner-edicao').style.display = 'none';
     reconstruirBotoesCatalogo();
     atualizarCarrinho();
     fecharCarrinho();
@@ -758,7 +780,6 @@ function carregarMinhasVendas() {
     let meuNome = localStorage.getItem('nomeVendedorLogado');
     let perfil = localStorage.getItem('perfilLogado');
 
-    // Filtra vendas sincronizadas em tempo real pela nuvem
     let filtradas = listaVendasRealtime.filter(v => perfil === 'master' || v.vendedor === meuNome);
 
     if(filtradas.length === 0) {
@@ -768,7 +789,7 @@ function carregarMinhasVendas() {
 
     filtradas.forEach(v => {
         listaDiv.innerHTML += `
-            <div style="background:#f8f9fa; border:1px solid #ddd; padding:12px; margin-bottom:8px; border-radius:6px; display:flex; justify-content:between; align-items:center;">
+            <div style="background:#f8f9fa; border:1px solid #ddd; padding:12px; margin-bottom:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <b>Pedido #${v.id} - ${v.cliente}</b><br>
                     <small>Data: ${v.data} | Valor: <b>R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</b></small>
@@ -865,29 +886,62 @@ function fecharModalAcordos() { document.getElementById('modal-acordos').style.d
 function atualizarSelectVendedoresAcordo() {
     let select = document.getElementById('select-vendedor-acordo');
     if(!select) return;
+    
+    let perfil = localStorage.getItem('perfilLogado');
+    let meuNome = localStorage.getItem('nomeVendedorLogado') || 'Vendedor Padrão';
     let guardado = select.value;
-    select.innerHTML = '<option value="">-- Selecione o Colaborador --</option>';
+    
+    select.innerHTML = '';
 
-    listaVendedoresRealtime.forEach(v => {
-        select.innerHTML += `<option value="${v.nome}">${v.nome}</option>`;
-    });
-    select.value = guardado;
+    if (perfil === 'master') {
+        select.innerHTML = '<option value="">-- Selecione o Colaborador --</option>';
+        listaVendedoresRealtime.forEach(v => {
+            select.innerHTML += `<option value="${v.nome}">${v.nome}</option>`;
+        });
+        select.value = guardado;
+        select.disabled = false;
+    } else {
+        // Se for vendedor, ele só pode ver o próprio nome trancado no campo
+        select.innerHTML = `<option value="${meuNome}">${meuNome}</option>`;
+        select.disabled = true;
+    }
+    carregarAcordosVendedor();
 }
 
 function carregarAcordosVendedor() {
     let nomeVend = document.getElementById('select-vendedor-acordo').value;
-    let listaDiv = document.getElementById('lista-acordos-por-estado');
-    if(!listaDiv) return;
-    listaDiv.innerHTML = '';
+    let containerDiv = document.getElementById('lista-vendas-acordo-container');
+    if(!containerDiv) return;
+    containerDiv.innerHTML = '';
 
     if(!nomeVend) return;
 
+    let perfil = localStorage.getItem('perfilLogado');
     let vendasFiltradas = listaVendasRealtime.filter(v => v.vendedor === nomeVend);
 
     let comissaoPendente = 0;
     let liquidoEmpresa = 0;
     let totalPecas = 0;
-    let dadosEstados = {};
+
+    // Estrutura básica da tabela de auditoria individualizada
+    containerDiv.innerHTML = `
+        <div style="overflow-x:auto; margin-top: 15px;">
+            <table style="width:100%; border-collapse: collapse; text-align: left; font-size: 14px; color: black;">
+                <thead>
+                    <tr style="background: #20bf6b; color: white;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">Pedido</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Cliente</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">UF</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Total Pedido</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Comissão</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Mecânica de Recebimento</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-tabela-acordos"></tbody>
+            </table>
+        </div>`;
+
+    let tbody = document.getElementById('corpo-tabela-acordos');
 
     vendasFiltradas.forEach(v => {
         let taxaComissao = v.entreguePor === 'Vendedor' ? 0.15 : 0.10;
@@ -895,30 +949,65 @@ function carregarAcordosVendedor() {
         let lVal = v.valorTotal - cVal;
         let pecas = v.itens ? v.itens.reduce((a, b) => a + b.qtd, 0) : 0;
 
-        if(!v.acordoFinalizado) comissaoPendente += cVal;
+        let status = v.statusComissao || 'pendente';
+
+        // Atualização dos cards informativos superiores
+        if (status !== 'pago') {
+            comissaoPendente += cVal;
+        }
         liquidoEmpresa += lVal;
         totalPecas += pecas;
 
-        let est = v.estado || 'BA';
-        if(!dadosEstados[est]) dadosEstados[est] = { faturamento: 0, pecas: 0, comissao: 0 };
-        dadosEstados[est].faturamento += v.valorTotal;
-        dadosEstados[est].pecas += pecas;
-        dadosEstados[est].comissao += cVal;
+        // Configuração visual dos botões por regras de estado (Cinza, Laranja e Verde)
+        let btnHtml = '';
+        let btnBaseStyle = "padding: 8px 14px; border: none; border-radius: 6px; font-weight: bold; color: white; transition: 0.2s; font-size: 13px; min-width: 160px;";
+
+        if (perfil === 'master') {
+            if (status === 'pendente') {
+                btnHtml = `<button style="${btnBaseStyle} background-color: #888888; cursor: pointer;" onclick="alterarStatusComissao('${v.firestoreId}', 'pago')">Marcar como Pago</button>`;
+            } else if (status === 'solicitado') {
+                btnHtml = `<button style="${btnBaseStyle} background-color: #ff9800; cursor: pointer; box-shadow: 0 0 5px #ff9800;" onclick="alterarStatusComissao('${v.firestoreId}', 'pago')">Confirmar Pagamento</button>`;
+            } else if (status === 'pago') {
+                btnHtml = `<button style="${btnBaseStyle} background-color: #4caf50; cursor: default;" disabled>Pago ✓</button>`;
+            }
+        } else { // Regras para o Perfil Vendedor
+            if (status === 'pendente') {
+                btnHtml = `<button style="${btnBaseStyle} background-color: #888888; cursor: pointer;" onclick="alterarStatusComissao('${v.firestoreId}', 'solicitado')">Solicitar Recebimento</button>`;
+            } else if (status === 'solicitado') {
+                btnHtml = `<button style="${btnBaseStyle} background-color: #ff9800; cursor: default;" disabled>Aguardando Master...</button>`;
+            } else if (status === 'pago') {
+                btnHtml = `<button style="${btnBaseStyle} background-color: #4caf50; cursor: default;" disabled>Recebido ✓</button>`;
+            }
+        }
+
+        tbody.innerHTML += `
+            <tr style="border-bottom: 1px solid #ddd; background: ${status === 'pago' ? '#f1fbf4' : 'white'};">
+                <td style="padding: 10px; font-weight: bold;">#${v.id}</td>
+                <td style="padding: 10px;">${v.cliente}</td>
+                <td style="padding: 10px; font-weight: bold; color: #555;">${v.estado || 'BA'}</td>
+                <td style="padding: 10px;">R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+                <td style="padding: 10px; font-weight: bold; color: #2b5797;">R$ ${cVal.toLocaleString('pt-BR', {minimumFractionDigits:2})} <small style="font-weight:normal; color:#777;">(${taxaComissao*100}%)</small></td>
+                <td style="padding: 10px; text-align: center;">${btnHtml}</td>
+            </tr>`;
     });
+
+    if (vendasFiltradas.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: gray;">Nenhum pedido atrelado a este colaborador.</td></tr>`;
+    }
 
     document.getElementById('resumo-comissao-pendente').innerText = `R$ ${comissaoPendente.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
     document.getElementById('resumo-empresa-faturado').innerText = `R$ ${liquidoEmpresa.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
     document.getElementById('resumo-pecas-vendidas').innerText = `${totalPecas} Un.`;
+}
 
-    for(let est in dadosEstados) {
-        listaDiv.innerHTML += `
-            <div style="border:1px solid #ccc; padding:12px; margin-bottom:10px; border-radius:6px; background:#fdfdfd;">
-                <h4 style="margin:0 0 5px 0; color:#20bf6b;">ESTADO: ${est}</h4>
-                Faturamento: R$ ${dadosEstados[est].faturamento.toLocaleString('pt-BR', {minimumFractionDigits:2})} | 
-                Peças: ${dadosEstados[est].pecas} un | 
-                Comissão: R$ ${dadosEstados[est].comissao.toLocaleString('pt-BR', {minimumFractionDigits:2})}
-            </div>`;
-    }
+function alterarStatusComissao(firestoreId, novoStatus) {
+    db.collection('vendas').doc(firestoreId).update({
+        statusComissao: novoStatus
+    }).then(() => {
+        // Atualização automática via snapshot realtime
+    }).catch(err => {
+        alert("Erro estrutural ao sincronizar status da comissão: " + err);
+    });
 }
 
 function abrirInfo(btn) {
