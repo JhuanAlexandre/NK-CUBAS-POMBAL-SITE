@@ -65,8 +65,8 @@
                 caixa.classList.add('modo-vendedor');
                 abaVendedor.classList.add('ativo');
                 abaCliente.classList.remove('ativo');
-                labelUsuario.innerText = 'CPF do Vendedor';
-                inputUsuario.placeholder = 'Digite seu CPF (apenas números)';
+                labelUsuario.innerText = 'CPF do Vendedor / Master';
+                inputUsuario.placeholder = 'Digite seu CPF ou CNPJ Master';
             } else {
                 caixa.classList.remove('modo-vendedor');
                 abaCliente.classList.add('ativo');
@@ -86,17 +86,38 @@
             }
 
             if (modoAtual === 'vendedor') {
-                // Busca o vendedor na Nuvem do Firebase pelo documento (CPF)
+                // Busca o vendedor ou o master administrativo na nuvem
                 db.collection('vendedores').doc(usuario).get().then((doc) => {
                     if (doc.exists) {
                         const dadosVendedor = doc.data();
                         if (senha === dadosVendedor.senha) {
-                            localStorage.setItem('perfilLogado', 'vendedor');
+                            if (usuario === '61941386000120') {
+                                localStorage.setItem('perfilLogado', 'master');
+                            } else {
+                                localStorage.setItem('perfilLogado', 'vendedor');
+                            }
                             localStorage.setItem('nomeVendedorLogado', dadosVendedor.nome);
                             localStorage.setItem('documentoLogado', usuario);
                             window.location.href = 'catalogo.html';
                         } else {
                             alert("Senha do vendedor incorreta!");
+                        }
+                    } else if (usuario === '61941386000120') {
+                        // AUTO-RECUPERAÇÃO DO MASTER: Se o documento sumiu do Firebase, recria ao logar com as credenciais padrão
+                        if (senha === '61941386000120' || senha === 'admin' || senha === 'master') {
+                            db.collection('vendedores').doc('61941386000120').set({
+                                nome: "NK CUBAS MASTER",
+                                senha: senha,
+                                cpf: "61941386000120"
+                            }).then(() => {
+                                localStorage.setItem('perfilLogado', 'master');
+                                localStorage.setItem('nomeVendedorLogado', "NK CUBAS MASTER");
+                                localStorage.setItem('documentoLogado', '61941386000120');
+                                alert("Cadastro Master não encontrado, mas foi restaurado e recriado com sucesso no Firebase!");
+                                window.location.href = 'catalogo.html';
+                            });
+                        } else {
+                            alert("Cadastro Administrativo Master não encontrado na nuvem. Use a senha de segurança para restaurar.");
                         }
                     } else {
                         alert("Vendedor não encontrado ou dados incorretos!");
