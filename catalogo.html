@@ -1,6 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // Cole aqui o bloco de notas com as SUAS credenciais que você copiou lá no Passo 7
+  const firebaseConfig = {
+  apiKey: "AIzaSyDZAotfkbiPDmMi0nFKS0wvV9x_3QDZE3E",
+  authDomain: "nk-cubas.firebaseapp.com",
+  projectId: "nk-cubas",
+  storageBucket: "nk-cubas.firebasestorage.app",
+  messagingSenderId: "1097535658296",
+  appId: "1:1097535658296:web:3ae4e02b4b73e3343c89cd"
+};
+
+  // Liga o interruptor do Firebase no site
+  firebase.initializeApp(firebaseConfig);
+  
+  // Cria o controle remoto do banco de dados com o nome 'db'
+  const db = firebase.firestore();
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NK Cubas - Catálogo</title>
@@ -1029,19 +1049,88 @@ function formatarVerificarCPF(valor) {
     }
 }
 
+// ========================================================
+// FUNÇÕES DE CADASTRO CONECTADAS AO FIREBASE (NUVEM)
+// ========================================================
+
 function salvarVendedor() {
     let nome = document.getElementById('novo-vend-nome').value;
     let cpf = document.getElementById('novo-vend-cpf').value.replace(/\D/g, '');
     let senha = document.getElementById('novo-vend-senha').value;
-    if (!nome || !senha) { alert("Preencha todos os campos!"); return; }
-    localStorage.setItem('vendedor_' + cpf, JSON.stringify({ nome: nome, senha: senha }));
-    alert("Vendedor cadastrado com sucesso.");
-    fecharModalVendedor();
-    document.getElementById('novo-vend-nome').value = '';
-    document.getElementById('novo-vend-cpf').value = '';
-    document.getElementById('novo-vend-senha').value = '';
-    document.getElementById('msg-cpf').innerText = '';
-    document.getElementById('btn-salvar-vendedor').disabled = true;
+    
+    if (!nome || !senha || !cpf) { 
+        alert("Preencha todos os campos obrigatórios!"); 
+        return; 
+    }
+
+    // Salva na coleção 'vendedores' usando o CPF como identificador único
+    db.collection('vendedores').doc(cpf).set({
+        nome: nome,
+        senha: senha,
+        cpf: cpf
+    })
+    .then(() => {
+        alert("Vendedor(a) " + nome + " cadastrado(a) com sucesso na Nuvem!");
+        fecharModalVendedor();
+        document.getElementById('novo-vend-nome').value = '';
+        document.getElementById('novo-vend-cpf').value = '';
+        document.getElementById('novo-vend-senha').value = '';
+        if(typeof carregarVendedores === "function") carregarVendedores(); // Atualiza a lista se houver
+    })
+    .catch((error) => {
+        alert("Erro ao salvar vendedor na nuvem: " + error);
+    });
+}
+
+function salvarCliente() {
+    let nome = document.getElementById('novo-cli-nome').value;
+    let cnpj = document.getElementById('novo-cli-cnpj').value.replace(/\D/g, '');
+    let senha = document.getElementById('novo-cli-senha').value;
+    
+    // Se o seu formulário tiver mais campos (cidade, estado, etc), pegue-os aqui:
+    let cidade = document.getElementById('novo-cli-cidade') ? document.getElementById('novo-cli-cidade').value : '';
+    let estado = document.getElementById('novo-cli-estado') ? document.getElementById('novo-cli-estado').value : '';
+
+    if (!nome || !cnpj || !senha) {
+        alert("Preencha os campos obrigatórios (Nome, CNPJ e Senha)!");
+        return;
+    }
+
+    // Salva na coleção 'clientes' usando o CNPJ como identificador único
+    db.collection('clientes').doc(cnpj).set({
+        nome: nome,
+        senha: senha,
+        cnpj: cnpj,
+        cidade: cidade,
+        estado: estado,
+        dataCadastro: new Date().toLocaleDateString('pt-BR')
+    })
+    .then(() => {
+        alert("Cliente " + nome + " cadastrado com sucesso na Nuvem!");
+        // Limpa os campos e fecha o modal (ajuste os IDs se forem diferentes no seu HTML)
+        if(typeof fecharModalCliente === "function") fecharModalCliente();
+        document.getElementById('novo-cli-nome').value = '';
+        document.getElementById('novo-cli-cnpj').value = '';
+        document.getElementById('novo-cli-senha').value = '';
+    })
+    .catch((error) => {
+        alert("Erro ao salvar cliente na nuvem: " + error);
+    });
+}
+
+// Chame esta função dentro da sua função atual que finaliza o carrinho de compras!
+function enviarPedidoParaNuvem(dadosDoPedido) {
+    db.collection('vendas').add({
+        ...dadosDoPedido,
+        dataHora: new Date().toLocaleString('pt-BR')
+    })
+    .then(() => {
+        alert("Pedido enviado com sucesso para a Nuvem!");
+    })
+    .catch((error) => {
+        alert("Erro ao enviar o pedido para o servidor: " + error);
+    });
+}
 }
 </script>
 </body>
