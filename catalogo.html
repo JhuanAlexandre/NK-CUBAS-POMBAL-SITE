@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -39,7 +39,7 @@
         <button id="btn-abrir-carrinho" onclick="abrirCarrinho()">🛒 Carrinho (<span id="contador-carrinho">0</span>)</button>
     </div>
 
-    <img src="foto-cuba/logott.png" class="logo-pequena" alt="Logo Corporativa">
+    <img src="foto-cuba/logo.jpeg" class="logo-pequena" alt="Logo Corporativa">
     <h1 class="titulo-site">Catálogo NK Cubas</h1>
 
     <div class="catalogo" id="grade-produtos">
@@ -662,9 +662,9 @@ function gerarPDF() {
     const numPedido = Math.floor(Math.random() * 9000) + 1000;
 
     const logoImg = new Image();
-    logoImg.src = 'foto-cuba/logott.png';
+    logoImg.src = 'foto-cuba/logo.jpeg';
     logoImg.onload = function() {
-        try { doc.addImage(logoImg, 'PNG', 14, 5, 40, 20); } catch(e) {}
+        try { doc.addImage(logoImg, 'JPEG', 14, 5, 40, 20); } catch(e) {}
         continuarGeracaoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor);
     };
     logoImg.onerror = function() {
@@ -1046,3 +1046,4 @@ function salvarVendedor() {
 </script>
 </body>
 </html>
+
