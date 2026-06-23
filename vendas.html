@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Vendas Master - NK Cubas</title>
@@ -31,6 +32,7 @@
         .secao-data h3 { margin-top: 0; color: #ffd700; border-bottom: 1px dashed #ffd700; padding-bottom: 8px; margin-bottom: 15px; }
         .card-venda { background: #222; border-left: 5px solid #ffd700; margin-bottom: 12px; padding: 15px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .info-venda span { color: #b3b3b3; font-size: 13px; line-height: 1.6; }
+        .menu-secao h3 { color: #ffd700; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -46,11 +48,40 @@
         </div>
     </div>
 
+    <!-- SEÇÃO DE DESEMPENHO (Gráfico e Cards) -->
+    <div id="secao-desempenho" class="menu-secao" style="margin-bottom: 30px; padding: 20px; background: #141414; border-radius: 12px;">
+        <h3>📊 Desempenho da Empresa (Mensal)</h3>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+            <div style="flex: 1; min-width: 250px; background: #1e1e1e; padding: 15px; border-radius: 8px; text-align: center;">
+                <p>Faturamento Total</p>
+                <h2 id="dash-faturamento" style="color: #20bf6b;">R$ 0,00</h2>
+            </div>
+            <div style="flex: 1; min-width: 250px; background: #1e1e1e; padding: 15px; border-radius: 8px; text-align: center;">
+                <p>Total de Itens Vendidos</p>
+                <h2 id="dash-itens" style="color: #3867d6;">0 un</h2>
+            </div>
+        </div>
+        <div style="max-width: 600px; margin: 20px auto;">
+            <canvas id="graficoVendas"></canvas>
+        </div>
+    </div>
+
+    <!-- LISTAGEM REALTIME DAS VENDAS -->
     <div id="container-vendas"></div>
+
+    <!-- SEÇÃO DE GESTÃO DE CLIENTES -->
+    <div id="secao-clientes-master" class="menu-secao" style="margin-bottom: 30px; padding: 20px; background: #141414; border-radius: 12px;">
+        <h3>👥 Gestão de Clientes e Vendedores Vinculados</h3>
+        <div id="lista-clientes-gestao" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+            <!-- Injetado via JS -->
+        </div>
+    </div>
 
 <script>
 let exibindoHistoricoGeral = false;
 let historicoVendasRealtime = [];
+let listaClientesRealtime = [];
+let meuGrafico = null;
 
 window.onload = function() {
     let perfil = localStorage.getItem('perfilLogado');
@@ -61,7 +92,7 @@ window.onload = function() {
         return;
     }
     
-    // Escuta a coleção de vendas do Firebase em tempo real (Sincronização entre dispositivos)
+    // 1. Escuta a coleção de vendas do Firebase em tempo real
     db.collection('vendas').onSnapshot((snapshot) => {
         historicoVendasRealtime = [];
         snapshot.forEach((doc) => {
@@ -71,7 +102,6 @@ window.onload = function() {
             });
         });
         
-        // Ordena por dataHora de forma decrescente
         historicoVendasRealtime.sort((a, b) => {
             let dtA = a.dataHora || "";
             let dtB = b.dataHora || "";
@@ -81,6 +111,18 @@ window.onload = function() {
         renderizarPainelVendas();
     }, (error) => {
         console.error("Erro de sincronização em tempo real: ", error);
+    });
+
+    // 2. Escuta a coleção de clientes para a listagem Master
+    db.collection('clientes').onSnapshot((snapshot) => {
+        listaClientesRealtime = [];
+        snapshot.forEach((doc) => {
+            listaClientesRealtime.push({
+                firestoreId: doc.id,
+                ...doc.data()
+            });
+        });
+        renderizarGestaoClientes();
     });
 };
 
@@ -120,6 +162,27 @@ function renderizarPainelVendas() {
         let pertenceAoMesAtual = (mesVenda === mesAtual && anoVenda === anoAtual);
         return exibindoHistoricoGeral ? !pertenceAoMesAtual : pertenceAoMesAtual;
     });
+
+    // Cálculos do Dashboard e Gráfico
+    let totalFaturamento = 0;
+    let totalItens = 0;
+    let faturamentoPorDia = {};
+
+    filtradas.forEach(venda => {
+        totalFaturamento += venda.valorTotal;
+        if(venda.itens) {
+            venda.itens.forEach(i => totalItens += i.qtd);
+        }
+        // Agrupa para o gráfico
+        faturamentoPorDia[venda.data] = (faturamentoPorDia[venda.data] || 0) + venda.valorTotal;
+    });
+
+    // Atualiza os cards de texto do topo
+    document.getElementById('dash-faturamento').innerText = `R$ ${totalFaturamento.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+    document.getElementById('dash-itens').innerText = `${totalItens} un`;
+
+    // Renderiza/Atualiza o gráfico do Chart.js
+    atualizarGraficoVendas(faturamentoPorDia);
 
     if(filtradas.length === 0) {
         container.innerHTML = `<p style="text-align:center; padding:40px; color:#888; font-weight:bold;">Nenhum registro de venda encontrado para esta listagem.</p>`;
@@ -161,6 +224,87 @@ function renderizarPainelVendas() {
             divData.appendChild(card);
         });
         container.appendChild(divData);
+    }
+}
+
+function atualizarGraficoVendas(dadosFaturamento) {
+    let ctx = document.getElementById('graficoVendas').getContext('2d');
+    
+    // Ordena as datas cronologicamente para exibição linear no gráfico
+    let datasOrdenadas = Object.keys(dadosFaturamento).sort((a, b) => {
+        let pA = a.split('/'), pB = b.split('/');
+        return new Date(pA[2], pA[1]-1, pA[0]) - new Date(pB[2], pB[1]-1, pB[0]);
+    });
+    
+    let valores = datasOrdenadas.map(data => dadosFaturamento[data]);
+
+    if(meuGrafico) { meuGrafico.destroy(); }
+
+    meuGrafico = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: datasOrdenadas,
+            datasets: [{
+                label: 'Faturamento Diário (R$)',
+                data: valores,
+                backgroundColor: '#ffd700',
+                borderColor: '#b8860b',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#222' }, ticks: { color: '#fff' } },
+                x: { ticks: { color: '#fff' } }
+            },
+            plugins: {
+                legend: { labels: { color: '#fff' } }
+            }
+        }
+    });
+}
+
+function renderizarGestaoClientes() {
+    let container = document.getElementById('lista-clientes-gestao');
+    if(!container) return;
+    container.innerHTML = '';
+
+    if(listaClientesRealtime.length === 0) {
+        container.innerHTML = '<p style="color:gray; padding:10px;">Nenhum cliente sincronizado na nuvem.</p>';
+        return;
+    }
+
+    listaClientesRealtime.forEach(cliente => {
+        container.innerHTML += `
+            <div style="background:#222; padding:15px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; border: 1px solid #333; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <strong style="color:#fff; font-size:16px;">${cliente.nome}</strong><br>
+                    <span style="font-size:13px; color:#aaa;">CNPJ: ${cliente.cnpj} | Cidade: ${cliente.cidade}-${cliente.estado}</span><br>
+                    <span style="font-size:12px; color:#888;">Vendedor Vinculado: <b>${cliente.vendedor || 'Nenhum'}</b></span>
+                </div>
+                <div>
+                    <button onclick="alternarRestricaoCredito('${cliente.cnpj}', ${cliente.restrito})" style="background:${cliente.restrito ? '#d9534f' : '#5cb85c'}; color:white; border:none; padding:8px 14px; border-radius:5px; font-weight:bold; cursor:pointer; font-size:13px;">
+                        ${cliente.restrito ? '❌ RESTRITO (Boleto Bloqueado)' : '✅ LIBERADO (Boleto OK)'}
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function alternarRestricaoCredito(cnpj, statusAtual) {
+    let proximoStatus = !statusAtual;
+    let msg = proximoStatus ? "Deseja BLOQUEAR as vendas via Boleto para este CNPJ?" : "Deseja LIBERAR as vendas via Boleto para este CNPJ?";
+    
+    if(confirm(msg)) {
+        db.collection('clientes').doc(cnpj).update({
+            restrito: proximoStatus
+        }).then(() => {
+            alert("Status de restrição financeira do cliente modificado com sucesso!");
+        }).catch((err) => {
+            alert("Erro ao alterar privilégios do cliente: " + err);
+        });
     }
 }
 
