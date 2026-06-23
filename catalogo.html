@@ -5,20 +5,15 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // Cole aqui o bloco de notas com as SUAS credenciais que você copiou lá no Passo 7
   const firebaseConfig = {
-  apiKey: "AIzaSyDZAotfkbiPDmMi0nFKS0wvV9x_3QDZE3E",
-  authDomain: "nk-cubas.firebaseapp.com",
-  projectId: "nk-cubas",
-  storageBucket: "nk-cubas.firebasestorage.app",
-  messagingSenderId: "1097535658296",
-  appId: "1:1097535658296:web:3ae4e02b4b73e3343c89cd"
-};
-
-  // Liga o interruptor do Firebase no site
+      apiKey: "AIzaSyDZAotfkbiPDmMi0nFKS0wvV9x_3QDZE3E",
+      authDomain: "nk-cubas.firebaseapp.com",
+      projectId: "nk-cubas",
+      storageBucket: "nk-cubas.firebasestorage.app",
+      messagingSenderId: "1097535658296",
+      appId: "1:1097535658296:web:3ae4e02b4b73e3343c89cd"
+  };
   firebase.initializeApp(firebaseConfig);
-  
-  // Cria o controle remoto do banco de dados com o nome 'db'
   const db = firebase.firestore();
 </script>
     <meta charset="UTF-8">
@@ -63,7 +58,6 @@
     <h1 class="titulo-site">Catálogo NK Cubas</h1>
 
     <div class="catalogo" id="grade-produtos">
-        <!-- CARD 1 -->
         <div class="card" data-tags="italia exclusiva economica barata" data-largura="36,5 cm" data-comprimento="27 cm" data-altura="9 cm">
             <h2 class="nome-cuba">CUBA ITÁLIA</h2>
             <div class="conteudo-card">
@@ -79,7 +73,6 @@
             </div>
         </div>
 
-        <!-- CARD 2 -->
         <div class="card" data-tags="pop exclusiva barata economica" data-largura="31 cm" data-comprimento="29 cm" data-altura="9 cm">
             <h2 class="nome-cuba">CUBA POP</h2>
             <div class="conteudo-card">
@@ -95,7 +88,6 @@
             </div>
         </div>
 
-        <!-- CARD 3 -->
         <div class="card" data-tags="roma classica tradicional grande" data-largura="35 cm" data-comprimento="39 cm" data-altura="12 cm">
             <h2 class="nome-cuba">CUBA ROMA</h2>
             <div class="conteudo-card">
@@ -111,7 +103,6 @@
             </div>
         </div>
 
-        <!-- CARD 4 -->
         <div class="card" data-tags="onix classica barata economica" data-largura="30 cm" data-comprimento="26 cm" data-altura="Não informada">
             <h2 class="nome-cuba">CUBA ÔNIX</h2>
             <div class="conteudo-card">
@@ -127,7 +118,6 @@
             </div>
         </div>
 
-        <!-- CARD 5 -->
         <div class="card" data-tags="folha design sofisticado moderna" data-largura="42 cm" data-comprimento="32,5 cm" data-altura="12 cm">
             <h2 class="nome-cuba">CUBA FOLHA</h2>
             <div class="conteudo-card">
@@ -143,7 +133,6 @@
             </div>
         </div>
 
-        <!-- CARD 6 -->
         <div class="card" data-tags="paris design sofisticado elegante" data-largura="34 cm" data-comprimento="33,5 cm" data-altura="11,5 cm">
             <h2 class="nome-cuba">CUBA PARIS</h2>
             <div class="conteudo-card">
@@ -159,7 +148,6 @@
             </div>
         </div>
 
-        <!-- CARD 7 -->
         <div class="card" data-tags="aurora casal exclusiva luxo destaque" data-largura="48 cm" data-comprimento="33 cm" data-altura="9 cm">
             <h2 class="nome-cuba">CUBA AURORA</h2>
             <div class="conteudo-card">
@@ -175,7 +163,6 @@
             </div>
         </div>
 
-        <!-- CARD 8 -->
         <div class="card" data-tags="lisboa casal exclusiva luxo destaque" data-largura="48 cm" data-comprimento="36 cm" data-altura="13,5 cm">
             <h2 class="nome-cuba">CUBA LISBOA</h2>
             <div class="conteudo-card">
@@ -191,7 +178,6 @@
             </div>
         </div>
 
-        <!-- CARD 9 -->
         <div class="card" data-tags="bancada suporte nk banheiro" data-largura="55 cm" data-comprimento="35 cm" data-altura="Não informada">
             <h2 class="nome-cuba">BANCADA DE SUPORTE</h2>
             <div class="conteudo-card">
@@ -208,7 +194,6 @@
         </div>
     </div>
 
-    <!-- MODAL CADASTRO CLIENTE -->
     <div id="modal-cadastro" class="modal">
         <div class="modal-conteudo" style="background-color: #ffd700; color: black; border: 3px solid black;">
             <span class="fechar-modal" onclick="fecharModalCadastro()" style="color: black;">&times;</span>
@@ -227,7 +212,6 @@
         </div>
     </div>
 
-    <!-- MODAL CARRINHO -->
     <div id="modal-carrinho" class="modal">
         <div class="modal-conteudo">
             <span class="fechar-modal" onclick="fecharCarrinho()">&times;</span>
@@ -280,7 +264,6 @@
         </div>
     </div>
 
-    <!-- DEMAIS MODAIS DE SUPORTE -->
     <div id="modal-minhas-vendas" class="modal">
         <div class="modal-conteudo" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 95%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
             <span class="fechar-modal" onclick="fecharModalMinhasVendas()">&times;</span>
@@ -368,6 +351,9 @@
 
 <script>
 let itensCarrinho = [];
+let listaClientesRealtime = [];
+let listaVendedoresRealtime = [];
+let listaVendasRealtime = [];
 
 window.onload = function() {
     let perfil = localStorage.getItem('perfilLogado');
@@ -375,6 +361,28 @@ window.onload = function() {
 
     if (!perfil) { window.location.href = 'index.html'; return; }
     
+    // 1. Ouvinte Realtime para Clientes
+    db.collection('clientes').onSnapshot(snapshot => {
+        listaClientesRealtime = [];
+        snapshot.forEach(doc => listaClientesRealtime.push(doc.data()));
+        filtrarClientes();
+    });
+
+    // 2. Ouvinte Realtime para Vendedores
+    db.collection('vendedores').onSnapshot(snapshot => {
+        listaVendedoresRealtime = [];
+        snapshot.forEach(doc => listaVendedoresRealtime.push(doc.data()));
+        atualizarSelectVendedoresAcordo();
+    });
+
+    // 3. Ouvinte Realtime para Vendas
+    db.collection('vendas').onSnapshot(snapshot => {
+        listaVendasRealtime = [];
+        snapshot.forEach(doc => listaVendasRealtime.push({ firestoreId: doc.id, ...doc.data() }));
+        if (document.getElementById('modal-minhas-vendas').style.display === 'flex') carregarMinhasVendas();
+        carregarAcordosVendedor();
+    });
+
     if (perfil === 'vendedor' || perfil === 'master') {
         let nomeVend = localStorage.getItem('nomeVendedorLogado') || 'Vendedor Padrão';
         document.getElementById('btn-cadastrar-cliente').style.display = 'block';
@@ -382,7 +390,6 @@ window.onload = function() {
         document.getElementById('info-vendedor-rodape').style.display = 'block';
         document.getElementById('nome-vendedor-tela').innerText = nomeVend;
         document.getElementById('area-selecao-cliente').style.display = 'block';
-        filtrarClientes(); 
 
         if (perfil === 'master' || documentoLogado === '61941386000120') {
             document.getElementById('btn-cadastrar-vendedor').style.display = 'block';
@@ -391,25 +398,28 @@ window.onload = function() {
             document.getElementById('btn-menu-vendas').style.display = 'block';
             document.getElementById('nome-vendedor-tela').innerText = "MASTER: " + nomeVend;
         }
-
     } else if (perfil === 'cliente') {
         let meuCNPJ = localStorage.getItem('cnpjClienteAtivo');
-        let dadosCli = JSON.parse(localStorage.getItem('cliente_' + meuCNPJ)) || {};
-        let nomeVend = dadosCli.vendedor || 'Padrão';
-        
-        document.getElementById('info-vendedor-rodape').style.display = 'block';
-        document.getElementById('nome-vendedor-tela').innerText = nomeVend;
-        document.getElementById('texto-vendedor-carrinho').style.display = 'block';
-        document.getElementById('span-vendedor-carrinho').innerText = nomeVend;
+        db.collection('clientes').doc(meuCNPJ).get().then(doc => {
+            let nomeVend = doc.exists ? (doc.data().vendedor || 'Padrão') : 'Padrão';
+            document.getElementById('info-vendedor-rodape').style.display = 'block';
+            document.getElementById('nome-vendedor-tela').innerText = nomeVend;
+            document.getElementById('texto-vendedor-carrinho').style.display = 'block';
+            document.getElementById('span-vendedor-carrinho').innerText = nomeVend;
+        });
     }
 
-    let itensEdicao = localStorage.getItem('itensCarrinhoEdicao');
-    if (itensEdicao) {
-        itensCarrinho = JSON.parse(itensEdicao);
-        localStorage.removeItem('itensCarrinhoEdicao'); 
-        reconstruirBotoesCatalogo();
-        abrirCarrinho(); 
-        atualizarCarrinho(); 
+    // Configuração de carregamento de pedido sob edição externa
+    let pedidoEdicaoId = localStorage.getItem('pedidoEmEdicaoId');
+    if (pedidoEdicaoId) {
+        db.collection('vendas').doc(pedidoEdicaoId).get().then(doc => {
+            if(doc.exists){
+                itensCarrinho = doc.data().itens || [];
+                reconstruirBotoesCatalogo();
+                abrirCarrinho();
+                atualizarCarrinho();
+            }
+        });
     }
 };
 
@@ -419,133 +429,125 @@ function fecharCarrinho() { document.getElementById('modal-carrinho').style.disp
 function mudarBotao(botao) {
     let card = botao.closest('.card');
     let nome = card.querySelector('.nome-cuba').innerText;
-    let precoTexto = card.querySelector('.preco-grande').innerText;
-    let preco = parseFloat(precoTexto.replace('R$', '').trim().replace(',', '.'));
-    let codigo = botao.getAttribute('data-codigo') || "000000";
+    let precoTexto = card.querySelector('.preco-grande').innerText.replace('R$ ', '').replace(',', '.');
+    let preco = parseFloat(precoTexto);
+    let codigo = botao.getAttribute('data-codigo');
 
-    if (botao.innerText === "Adicionar ao carrinho") {
-        botao.innerText = "Adicionado ✓";
-        botao.style.backgroundColor = "green";
-        let existente = itensCarrinho.find(i => i.nome === nome);
-        if(existente) { existente.qtd += 1; } 
-        else { itensCarrinho.push({ nome: nome, preco: preco, qtd: 1, codigo: codigo }); }
-    } else {
+    let encontrado = itensCarrinho.find(i => i.codigo === codigo);
+    if (encontrado) {
+        itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo);
         botao.innerText = "Adicionar ao carrinho";
-        botao.style.backgroundColor = "#b8860b";
-        itensCarrinho = itensCarrinho.filter(item => item.nome !== nome);
+        botao.style.backgroundColor = "";
+        botao.style.color = "";
+    } else {
+        itensCarrinho.push({ nome: nome, preco: preco, codigo: codigo, qtd: 1 });
+        botao.innerText = "✓ No Carrinho (1)";
+        botao.style.backgroundColor = "#20bf6b";
+        botao.style.color = "white";
     }
     atualizarCarrinho();
-}
-
-function alterarQtd(nome, delta) {
-    let item = itensCarrinho.find(i => i.nome === nome);
-    if (item) {
-        item.qtd += delta;
-        if (item.qtd < 1) {
-            itensCarrinho = itensCarrinho.filter(i => i.nome !== nome);
-        }
-        reconstruirBotoesCatalogo();
-        atualizarCarrinho();
-    }
 }
 
 function reconstruirBotoesCatalogo() {
     let botoes = document.querySelectorAll('.btn-comprar');
     botoes.forEach(btn => {
-        let card = btn.closest('.card');
-        let nomeCuba = card.querySelector('.nome-cuba').innerText;
-        let estaNoCarrinho = itensCarrinho.find(i => i.nome === nomeCuba);
-        
-        if(estaNoCarrinho) {
-            btn.innerText = "Adicionado ✓";
-            btn.style.backgroundColor = "green";
+        let cod = btn.getAttribute('data-codigo');
+        let item = itensCarrinho.find(i => i.codigo === cod);
+        if (item) {
+            btn.innerText = `✓ No Carrinho (${item.qtd})`;
+            btn.style.backgroundColor = "#20bf6b";
+            btn.style.color = "white";
         } else {
             btn.innerText = "Adicionar ao carrinho";
-            btn.style.backgroundColor = "#b8860b";
+            btn.style.backgroundColor = "";
+            btn.style.color = "";
         }
     });
 }
 
-function atualizarCarrinho() {
-    document.getElementById('contador-carrinho').innerText = itensCarrinho.length;
-    let listaHTML = document.getElementById('lista-itens-carrinho');
-    listaHTML.innerHTML = '';
-    let totalDaCompra = 0;
+function alterarQtdItem(codigo, delta) {
+    let item = itensCarrinho.find(i => i.codigo === codigo);
+    if (item) {
+        item.qtd += delta;
+        if (item.qtd <= 0) {
+            itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo);
+        }
+    }
+    reconstruirBotoesCatalogo();
+    atualizarCarrinho();
+}
 
+function atualizarCarrinho() {
+    document.getElementById('contador-carrinho').innerText = itensCarrinho.reduce((a, b) => a + b.qtd, 0);
+    let lista = document.getElementById('lista-itens-carrinho');
+    lista.innerHTML = '';
+    
+    let total = 0;
     itensCarrinho.forEach(item => {
-        totalDaCompra += (item.preco * item.qtd);
-        listaHTML.innerHTML += `
-            <div class="item-carrinho">
-                <span class="nome-item">${item.nome} (${item.qtd}x)</span>
-                <div class="controle-qtd">
-                    <button onclick="alterarQtd('${item.nome}', -1)">-</button>
-                    <span style="padding: 0 10px; font-weight: bold; color: black;">${item.qtd}</span>
-                    <button onclick="alterarQtd('${item.nome}', 1)">+</button>
+        let sub = item.preco * item.qtd;
+        total += sub;
+        lista.innerHTML += `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px; color: black;">
+                <div><b>${item.nome}</b><br>R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="alterarQtdItem('${item.codigo}', -1)" style="padding:2px 8px;">-</button>
+                    <span><b>${item.qtd}</b></span>
+                    <button onclick="alterarQtdItem('${item.codigo}', 1)" style="padding:2px 8px;">+</button>
+                    <span style="margin-left:10px; font-weight:bold;">R$ ${sub.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
                 </div>
-            </div>
-        `;
+            </div>`;
     });
 
-    document.getElementById('valor-total').innerText = totalDaCompra.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
+    document.getElementById('valor-total').innerText = total.toLocaleString('pt-BR', {minimumFractionDigits:2});
+    
     let checkExpositor = document.getElementById('com-expositor');
     let labelExpositor = document.getElementById('label-expositor');
     let textoExpositor = document.getElementById('texto-expositor');
 
-    if (totalDaCompra >= 3000) {
+    if (total >= 3000) {
         checkExpositor.disabled = false;
-        labelExpositor.style.color = "black";
-        textoExpositor.innerText = "COM EXPOSITOR (Desbloqueado!)";
+        labelExpositor.style.color = "green";
+        textoExpositor.innerText = "GANHOU EXPOSITOR GRÁTIS!";
     } else {
         checkExpositor.disabled = true;
         checkExpositor.checked = false;
         labelExpositor.style.color = "gray";
         textoExpositor.innerText = "COM EXPOSITOR (Requer R$ 3.000+)";
     }
-    atualizarPrazos();
 
-    let percentualDesconto = parseInt(document.getElementById('input-desconto').value) || 0;
-    if (percentualDesconto > 10) { percentualDesconto = 10; document.getElementById('input-desconto').value = 10; }
-    if (percentualDesconto < 0) { percentualDesconto = 0; document.getElementById('input-desconto').value = 0; }
+    atualizarPrazos();
     
-    let valorComDesconto = totalDaCompra - (totalDaCompra * (percentualDesconto / 100));
-    document.getElementById('valor-final-desconto').innerText = valorComDesconto.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    let desc = parseInt(document.getElementById('input-desconto').value) || 0;
+    if (desc > 10) { desc = 10; document.getElementById('input-desconto').value = 10; }
+    if (desc < 0) { desc = 0; document.getElementById('input-desconto').value = 0; }
+    
+    let finalComDesconto = total - (total * (desc / 100));
+    document.getElementById('valor-final-desconto').innerText = finalComDesconto.toLocaleString('pt-BR', {minimumFractionDigits:2});
 }
 
 function atualizarPrazos() {
     const metodo = document.getElementById('metodo-pagamento').value;
     const areaPrazo = document.getElementById('area-prazo');
     const selectPrazo = document.getElementById('prazo-pagamento');
-    const areaDesconto = document.getElementById('area-desconto');
-    
     const cnpjAtivo = document.getElementById('cnpj-cliente-selecionado').value || localStorage.getItem('cnpjClienteAtivo');
-    let devedores = JSON.parse(localStorage.getItem('clientesRestritos')) || [];
-    
-    if (devedores.includes(cnpjAtivo) && metodo === 'Boleto') {
-        alert("⚠️ ATENÇÃO: Este CNPJ possui restrições financeiras. O pagamento via BOLETO está travado.");
+
+    // Valida restrição financeira direto das informações realtime da nuvem
+    let clienteDoc = listaClientesRealtime.find(c => c.cnpj === cnpjAtivo);
+    if (clienteDoc && clienteDoc.restrito && metodo === 'Boleto') {
+        alert("⚠️ ATENÇÃO: Este CNPJ possui restrições financeiras estruturais na Nuvem. BOLETO TRAVADO.");
         document.getElementById('metodo-pagamento').value = 'À vista';
         atualizarPrazos();
         return;
     }
 
-    let totalTexto = document.getElementById('valor-total').innerText;
-    let total = parseFloat(totalTexto.replace(/\./g, '').replace(',', '.'));
-
-    if (metodo === 'À vista') {
-        areaDesconto.style.display = 'block';
-        areaPrazo.style.display = 'none';
-    } else {
-        areaDesconto.style.display = 'none';
-        document.getElementById('input-desconto').value = 0;
-        atualizarCarrinho();
-    }
-
-    if (metodo === 'Boleto' || metodo === 'Cheque') {
+    if (metodo === 'Boleto') {
         areaPrazo.style.display = 'block';
-        selectPrazo.innerHTML = '<option value="30 dias">30 dias</option>';
-        if (total >= 400) selectPrazo.innerHTML += '<option value="30/60 dias">30 e 60 dias</option>';
-        if (total >= 1000) selectPrazo.innerHTML += '<option value="30/60/90 dias">30, 60 e 90 dias</option>';
-        if (total >= 4000) selectPrazo.innerHTML += '<option value="30/60/90/120 dias">30, 60, 90 e 120 dias</option>';
+        selectPrazo.innerHTML = '<option value="30 dias">30 dias</option><option value="30/60 dias">30/60 dias</option><option value="30/60/90 dias">30/60/90 dias</option>';
+    } else if (metodo === 'Cheque') {
+        areaPrazo.style.display = 'block';
+        selectPrazo.innerHTML = '<option value="30/60/90/120 dias">30/60/90/120 dias</option><option value="Até 5 parcelas">Até 5 parcelas mensais</option>';
+    } else {
+        areaPrazo.style.display = 'none';
     }
 }
 
@@ -553,39 +555,34 @@ function abrirModalCadastro() { document.getElementById('modal-cadastro').style.
 function fecharModalCadastro() { document.getElementById('modal-cadastro').style.display = 'none'; }
 
 async function consultarCNPJ(cnpj) {
-    cnpj = cnpj.replace(/\D/g, '');
-    const nomeCampo = document.getElementById('nome-empresa');
-    const endCampo = document.getElementById('endereco-empresa');
-    const btnConfirmar = document.getElementById('btn-confirmar-cadastro');
-
-    if (cnpj.length !== 14) {
-        nomeCampo.innerText = ""; endCampo.innerText = "";
-        btnConfirmar.disabled = true; btnConfirmar.style.backgroundColor = "#555555"; btnConfirmar.style.cursor = "not-allowed"; return;
-    }
-
+    let limpo = cnpj.replace(/\D/g, '');
+    if (limpo.length !== 14) return;
+    
+    let nomeCampo = document.getElementById('nome-empresa');
+    let endCampo = document.getElementById('endereco-empresa');
     nomeCampo.innerText = "Buscando dados na Receita...";
-    try {
-        const resposta = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
-        if (!resposta.ok) throw new Error("CNPJ Inexistente");
-        const dados = await resposta.json();
+    endCampo.innerText = "";
 
-        if (dados.razao_social) {
-            nomeCampo.innerText = "Razão Social: " + dados.razao_social;
-            endCampo.innerText = "Endereço: " + (dados.logradouro || "") + ", " + (dados.numero || "") + " - " + (dados.municipio || "") + "/" + (dados.uf || "");
-            
-            btnConfirmar.disabled = false;
-            btnConfirmar.style.backgroundColor = "black";
-            btnConfirmar.style.color = "#ffd700";
-            btnConfirmar.style.cursor = "pointer";
-            
-            window.dadosClienteTemp = { 
-                nome: dados.razao_social, cnpj: cnpj, 
-                cidade: dados.municipio, estado: dados.uf || 'BA',
-                endereco: `${dados.logradouro || ''}, ${dados.numero || ''} - ${dados.municipio || ''}/${dados.uf || ''}`
+    try {
+        let res = await fetch(`https://publica.cnpj.ws/cnpj/${limpo}`);
+        if(res.ok) {
+            let dados = await res.json();
+            window.dadosClienteTemp = {
+                cnpj: limpo,
+                nome: dados.razao_social,
+                cidade: dados.estabelecimento.cidade.nome,
+                estado: dados.estabelecimento.estado.sigla,
+                endereco: `${dados.estabelecimento.logradouro}, ${dados.estabelecimento.numero} - ${dados.estabelecimento.bairro}`
             };
+            nomeCampo.innerText = window.dadosClienteTemp.nome;
+            endCampo.innerText = `${window.dadosClienteTemp.endereco} | ${window.dadosClienteTemp.cidade}-${window.dadosClienteTemp.estado}`;
+            document.getElementById('btn-confirmar-cadastro').disabled = false;
+            document.getElementById('btn-confirmar-cadastro').style.backgroundColor = "black";
+        } else {
+            nomeCampo.innerText = "CNPJ não localizado na API Comercial.";
         }
-    } catch (erro) {
-        nomeCampo.innerText = "Erro na API de consulta ou CNPJ não encontrado.";
+    } catch(e) {
+        nomeCampo.innerText = "Erro ao conectar à API de busca.";
     }
 }
 
@@ -593,19 +590,21 @@ function finalizarCadastro() {
     const senhaCliente = "11377761533"; 
     const nomeVendedorAtual = localStorage.getItem('nomeVendedorLogado') || 'Jhuan Alexandre';
 
-    localStorage.setItem('cliente_' + window.dadosClienteTemp.cnpj, JSON.stringify({
+    db.collection('clientes').doc(window.dadosClienteTemp.cnpj).set({
         nome: window.dadosClienteTemp.nome,
         senha: senhaCliente,
+        cnpj: window.dadosClienteTemp.cnpj,
         cidade: window.dadosClienteTemp.cidade,
         estado: window.dadosClienteTemp.estado,
         endereco: window.dadosClienteTemp.endereco,
-        vendedor: nomeVendedorAtual 
-    }));
-
-    alert(`Cliente Cadastrado com Sucesso!\nCNPJ: ${window.dadosClienteTemp.cnpj}\nSenha Padrão: ${senhaCliente}`);
-    document.getElementById('input-cnpj').value = "";
-    fecharModalCadastro();
-    filtrarClientes(); 
+        vendedor: nomeVendedorAtual,
+        restrito: false,
+        dataCadastro: new Date().toLocaleDateString('pt-BR')
+    }).then(() => {
+        alert("Cliente Cadastrado e Sincronizado na Nuvem com sucesso!");
+        document.getElementById('input-cnpj').value = "";
+        fecharModalCadastro();
+    });
 }
 
 function filtrarClientes() {
@@ -613,158 +612,65 @@ function filtrarClientes() {
     const divLista = document.getElementById('lista-clientes-vendedor');
     if(!divLista) return;
     divLista.innerHTML = '';
+
+    let filtrados = listaClientesRealtime.filter(c => c.nome.toLowerCase().includes(termo) || c.cnpj.includes(termo) || c.cidade.toLowerCase().includes(termo));
     
-    for (let i = 0; i < localStorage.length; i++) {
-        let chave = localStorage.key(i);
-        if (chave.startsWith('cliente_')) {
-            let cli = JSON.parse(localStorage.getItem(chave));
-            let cnpjCli = chave.replace('cliente_', '');
-            
-            if (cli.nome.toLowerCase().includes(termo) || cli.cidade.toLowerCase().includes(termo) || cnpjCli.includes(termo)) {
-                divLista.innerHTML += `
-                    <div onclick="selecionarClienteParaVenda('${cnpjCli}', this)" style="padding: 10px; border-bottom: 1px solid #ccc; cursor: pointer; background: white; color: black;">
-                        <strong>${cli.nome}</strong><br>
-                        <span style="font-size: 12px; color: gray;">${cli.cidade}/${cli.estado} | CNPJ: ${cnpjCli}</span>
-                    </div>
-                `;
-            }
-        }
-    }
-}
-
-function selecionarClienteParaVenda(cnpj, elementoDiv) {
-    let todos = document.getElementById('lista-clientes-vendedor').children;
-    for(let d of todos) d.style.backgroundColor = "white";
-    elementoDiv.style.backgroundColor = "#fff3cd"; 
-    document.getElementById('cnpj-cliente-selecionado').value = cnpj;
-}
-
-function filtrarProdutos(termo) {
-    let t = termo.toLowerCase();
-    let cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        let nome = card.querySelector('.nome-cuba').innerText.toLowerCase();
-        let tags = card.getAttribute('data-tags').toLowerCase();
-        if(nome.includes(t) || tags.includes(t)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
+    filtrados.forEach(c => {
+        divLista.innerHTML += `
+            <label style="display:block; background:white; padding:8px; margin-bottom:5px; border-radius:4px; cursor:pointer; border:1px solid #ccc;">
+                <input type="radio" name="rad-cli" onclick="selecionarClientePedido('${c.cnpj}', '${c.nome.replace(/'/g, "\\'")}')"> 
+                <b>${c.nome}</b> (${c.cidade}-${c.estado}) ${c.restrito ? '<span style="color:red;font-weight:bold;">[RESTRITO]</span>' : ''}
+            </label>`;
     });
 }
 
-function gerarPDF() {
-    if (itensCarrinho.length === 0) { alert("O seu carrinho está vazio!"); return; }
-    const perfil = localStorage.getItem('perfilLogado');
-    let dadosDoCliente;
-    let nomeVendedor = "";
+function selecionarClientePedido(cnpj, nome) {
+    document.getElementById('cnpj-cliente-selecionado').value = cnpj;
+    document.getElementById('busca-cliente').value = nome;
+    atualizarPrazos();
+}
 
-    if (perfil === 'vendedor' || perfil === 'master') {
-        const cnpjSelecionado = document.getElementById('cnpj-cliente-selecionado').value;
-        if (!cnpjSelecionado) { alert("Selecione um cliente válido na listagem abaixo!"); return; }
-        dadosDoCliente = JSON.parse(localStorage.getItem('cliente_' + cnpjSelecionado));
-        dadosDoCliente.cnpj = cnpjSelecionado;
-        nomeVendedor = localStorage.getItem('nomeVendedorLogado') || 'Jhuan Alexandre';
+function gerarPDF() {
+    if(itensCarrinho.length === 0) { alert("Carrinho Vazio!"); return; }
+    
+    let perfil = localStorage.getItem('perfilLogado');
+    let nomeVendedor = localStorage.getItem('nomeVendedorLogado') || 'Consumidor';
+    let dadosDoCliente = { nome: "Consumidor Final", cnpj: "", cidade: "Local", estado: "BA" };
+
+    if(perfil !== 'cliente') {
+        let cnpjSel = document.getElementById('cnpj-cliente-selecionado').value;
+        if(!cnpjSel) { alert("Selecione um cliente para vincular a esta venda."); return; }
+        let cDoc = listaClientesRealtime.find(c => c.cnpj === cnpjSel);
+        if(cDoc) dadosDoCliente = cDoc;
     } else {
-        const meuCNPJ = localStorage.getItem('cnpjClienteAtivo');
-        dadosDoCliente = JSON.parse(localStorage.getItem('cliente_' + meuCNPJ));
-        dadosDoCliente.cnpj = meuCNPJ;
-        nomeVendedor = dadosDoCliente.vendedor || 'Jhuan Alexandre';
+        let meuCnpj = localStorage.getItem('cnpjClienteAtivo');
+        let cDoc = listaClientesRealtime.find(c => c.cnpj === meuCnpj);
+        if(cDoc) dadosDoCliente = cDoc;
     }
 
     const pgto = document.getElementById('metodo-pagamento').value;
     const prazoFinal = (pgto === 'Boleto' || pgto === 'Cheque') ? document.getElementById('prazo-pagamento').value : 'À vista';
     const temExpositor = document.getElementById('com-expositor').checked ? "SIM" : "NÃO";
-    
+    const entregaDefinida = document.getElementById('entregue-por').value;
+
+    let desc = parseInt(document.getElementById('input-desconto').value) || 0;
+    let totalBruto = itensCarrinho.reduce((a,b) => a + (b.preco * b.qtd), 0);
+    let totalLiquido = totalBruto - (totalBruto * (desc / 100));
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const dataHoje = new Date().toLocaleDateString('pt-BR');
     const numPedido = Math.floor(Math.random() * 9000) + 1000;
 
-    const logoImg = new Image();
-    logoImg.src = 'foto-cuba/logo.jpeg';
-    logoImg.onload = function() {
-        try { doc.addImage(logoImg, 'JPEG', 14, 5, 40, 20); } catch(e) {}
-        continuarGeracaoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor);
-    };
-    logoImg.onerror = function() {
-        continuarGeracaoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor);
-    };
-}
-
-function continuarGeracaoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor) {
-    doc.setFontSize(9);
-    doc.text("NK CUBAS POMBAL LTDA - (11) 99994-8702", 14, 27);
-    doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 14, 32);
-    doc.text("CNPJ: 61.941.386/0001-20", 14, 37);
-
-    doc.rect(14, 43, 180, 32); 
-    doc.setFont("helvetica", "bold");
-    doc.text(`Número do pedido: ${numPedido}`, 16, 49);
-    doc.text(`Data: ${dataHoje}`, 140, 49);
-    
-    doc.text("CLIENTE:", 16, 57);
-    doc.setFont("helvetica", "normal");
-    doc.text(dadosDoCliente.nome, 35, 57);
-    doc.text(`CNPJ: ${dadosDoCliente.cnpj}`, 140, 57);
-    doc.text(`Endereço: ${dadosDoCliente.endereco || 'Não informado'}`, 16, 63);
-    
-    doc.setFont("helvetica", "bold");
-    doc.text(`VENDEDOR: ${nomeVendedor}`, 16, 70);
-    doc.text(`Forma: ${pgto} (${prazoFinal}) | Expositor: ${temExpositor}`, 95, 70);
-
-    let linhasTabela = [];
-    let totalPedidoBruto = 0;
-    let totalItensQtd = 0;
-
-    itensCarrinho.forEach(item => {
-        let totalItem = item.preco * item.qtd;
-        totalPedidoBruto += totalItem;
-        totalItensQtd += item.qtd;
-        linhasTabela.push([item.nome, item.codigo || "000000", "UN", item.qtd.toString(), "R$ " + item.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2}), "R$ " + totalItem.toLocaleString('pt-BR', {minimumFractionDigits: 2})]);
-    });
-
-    doc.autoTable({
-        startY: 82,
-        head: [['Descrição do produto/serviço', 'Código', 'Un.', 'Qtd.', 'Valor unitário', 'Valor total']],
-        body: linhasTabela,
-        theme: 'grid',
-        headStyles: { fillColor: [30, 30, 30], textColor: [255, 215, 0] }
-    });
-
-    let percentualDesconto = parseInt(document.getElementById('input-desconto').value) || 0;
-    let valorDescontoReais = totalPedidoBruto * (percentualDesconto / 100);
-    let totalLiquido = totalPedidoBruto - valorDescontoReais;
-
-    let yFinal = doc.lastAutoTable.finalY + 10;
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Soma das Qtdes: ${totalItensQtd}`, 14, yFinal);
-    doc.text(`Subtotal: R$ ${totalPedidoBruto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 130, yFinal);
-    
-    if (percentualDesconto > 0) {
-        doc.setTextColor(200, 0, 0);
-        doc.text(`Desconto (${percentualDesconto}%): - R$ ${valorDescontoReais.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 130, yFinal + 6);
-        doc.setTextColor(0, 0, 0);
-    }
-    
-    doc.setFont("helvetica", "bold");
-    let yTotalFinal = percentualDesconto > 0 ? yFinal + 14 : yFinal + 8;
-    doc.text(`TOTAL FINAL: R$ ${totalLiquido.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, 130, yTotalFinal);
-
-    let historico = JSON.parse(localStorage.getItem('bancoVendas')) || [];
-    let indexEdicao = localStorage.getItem('pedidoEmEdicaoIndex');
-    let entregaDefinida = document.getElementById('entregue-por').value || 'Empresa';
-
     let novaVenda = {
         id: numPedido,
         data: dataHoje,
-        hora: new Date().toLocaleTimeString('pt-BR'),
+        dataHora: new Date().toISOString(),
         cliente: dadosDoCliente.nome,
         cnpj: dadosDoCliente.cnpj,
         vendedor: nomeVendedor,
-        cidade: dadosDoCliente.cidade || 'Não informada',
-        estado: dadosDoCliente.estado || 'BA',
+        cidade: dadosDoCliente.cidade,
+        estado: dadosDoCliente.estado,
         valorTotal: totalLiquido,
         itens: itensCarrinho,
         metodoPagamento: pgto,
@@ -774,26 +680,65 @@ function continuarGeracaoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVende
         dataModificacao: ""
     };
 
-    if (indexEdicao !== null) {
-        let idx = parseInt(indexEdicao);
-        novaVenda.id = historico[idx].id; 
-        novaVenda.data = historico[idx].data;
-        novaVenda.hora = historico[idx].hora;
-        novaVenda.estado = historico[idx].estado || 'BA';
-        novaVenda.acordoFinalizado = historico[idx].acordoFinalizado || false;
+    let edicaoId = localStorage.getItem('pedidoEmEdicaoId');
+    if (edicaoId) {
+        // Se estiver editando, preserva dados cruciais de identificação e atualiza na nuvem
         novaVenda.dataModificacao = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR');
-        
-        historico[idx] = novaVenda;
-        localStorage.removeItem('pedidoEmEdicaoIndex');
-        alert("Pedido atualizado com sucesso!");
+        db.collection('vendas').doc(edicaoId).update(novaVenda).then(() => {
+            localStorage.removeItem('pedidoEmEdicaoId');
+            alert("Venda Editada e Sincronizada com Sucesso na Nuvem!");
+            finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor);
+        });
     } else {
-        historico.unshift(novaVenda);
+        db.collection('vendas').add(novaVenda).then(() => {
+            alert("Venda Registrada com Sucesso na Nuvem!");
+            finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor);
+        });
     }
-    
-    localStorage.setItem('bancoVendas', JSON.stringify(historico));
+}
+
+function finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor) {
+    // Código para renderização e salvamento do arquivo PDF físico local
+    doc.setFontSize(9);
+    doc.text("NK CUBAS POMBAL LTDA - (11) 99994-8702", 14, 27);
+    doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 14, 32);
+    doc.text("CNPJ: 61.941.386/0001-20", 14, 37);
+    doc.rect(14, 43, 180, 32);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Número do pedido: ${numPedido}`, 16, 49);
+    doc.text(`Data: ${dataHoje}`, 140, 49);
+    doc.text("CLIENTE:", 16, 57);
+    doc.setFont("helvetica", "normal");
+    doc.text(dadosDoCliente.nome, 35, 57);
+    doc.text(`CNPJ: ${dadosDoCliente.cnpj || 'Não Informado'}`, 140, 57);
+    doc.text(`Localidade: ${dadosDoCliente.cidade} / ${dadosDoCliente.estado}`, 16, 63);
+    doc.setFont("helvetica", "bold");
+    doc.text(`VENDEDOR: ${nomeVendedor}`, 16, 70);
+    doc.text(`Forma: ${pgto} (${prazoFinal}) | Expositor: ${temExpositor}`, 95, 70);
+
+    let tabelaCorpo = [];
+    let somaQtd = 0;
+    itensCarrinho.forEach(item => {
+        let sub = item.preco * item.qtd;
+        somaQtd += item.qtd;
+        tabelaCorpo.push([item.nome, item.codigo, "UN", item.qtd.toString(), "R$ "+item.preco.toFixed(2), "R$ "+sub.toFixed(2)]);
+    });
+
+    doc.autoTable({
+        startY: 82,
+        head: [['Descrição do produto/serviço', 'Código', 'Un.', 'Qtd.', 'Valor unitário', 'Valor total']],
+        body: tabelaCorpo,
+        theme: 'grid',
+        headStyles: { fillColor: [30,30,30], textColor: [255,215,0] }
+    });
+
+    let yF = doc.lastAutoTable.finalY + 10;
+    doc.text(`Soma das Qtdes: ${somaQtd}`, 14, yF);
+    let totalTexto = document.getElementById('valor-final-desconto').innerText;
+    doc.text(`TOTAL LIQUIDO: R$ ${totalTexto}`, 130, yF + 6);
+
     doc.save(`Pedido_${numPedido}.pdf`);
-    alert("Venda homologada e salva!");
-    
+
     itensCarrinho = [];
     document.getElementById('input-desconto').value = 0;
     reconstruirBotoesCatalogo();
@@ -807,332 +752,193 @@ function abrirModalMinhasVendas() {
 }
 function fecharModalMinhasVendas() { document.getElementById('modal-minhas-vendas').style.display = 'none'; }
 
-function calcularDiferencaDias(dataStr) {
-    if(!dataStr) return 0;
-    let partes = dataStr.split('/');
-    let dataVenda = new Date(partes[2], partes[1] - 1, partes[0]);
-    let hoje = new Date();
-    dataVenda.setHours(0,0,0,0); hoje.setHours(0,0,0,0);
-    return Math.floor((hoje - dataVenda) / (1000 * 60 * 60 * 24));
-}
-
 function carregarMinhasVendas() {
-    let container = document.getElementById('lista-minhas-vendas');
-    container.innerHTML = '';
+    let listaDiv = document.getElementById('lista-minhas-vendas');
+    listaDiv.innerHTML = '';
+    let meuNome = localStorage.getItem('nomeVendedorLogado');
     let perfil = localStorage.getItem('perfilLogado');
-    let nomeVendLogado = localStorage.getItem('nomeVendedorLogado') || '';
-    let historico = JSON.parse(localStorage.getItem('bancoVendas')) || [];
-    
-    let minhas = historico.filter(v => perfil === 'master' || v.vendedor === nomeVendLogado);
-    if(minhas.length === 0) {
-        container.innerHTML = '<p style="text-align:center;color:gray;font-weight:bold;">Nenhuma venda encontrada.</p>';
+
+    // Filtra vendas sincronizadas em tempo real pela nuvem
+    let filtradas = listaVendasRealtime.filter(v => perfil === 'master' || v.vendedor === meuNome);
+
+    if(filtradas.length === 0) {
+        listaDiv.innerHTML = '<p style="color:gray;text-align:center;">Nenhuma venda registrada na nuvem.</p>';
         return;
     }
 
-    minhas.forEach(venda => {
-        let dias = calcularDiferencaDias(venda.data);
-        let podeEditar = (dias <= 7 || perfil === 'master');
-        let realIdx = historico.findIndex(h => h.id === venda.id && h.data === venda.data && h.hora === venda.hora);
-        
-        let btnHtml = podeEditar 
-            ? `<button onclick="iniciarEdicaoVenda(${realIdx})" style="background:#2b5797;color:white;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;font-weight:bold;">Editar</button>`
-            : `<button disabled style="background:gray;color:white;border:none;padding:8px 14px;border-radius:5px;cursor:not-allowed;">Bloqueado (+7 dias)</button>`;
-
-        container.innerHTML += `
-            <div style="border-bottom:1px solid #ddd; padding:12px 0; display:flex; justify-content:space-between; align-items:center;">
+    filtradas.forEach(v => {
+        listaDiv.innerHTML += `
+            <div style="background:#f8f9fa; border:1px solid #ddd; padding:12px; margin-bottom:8px; border-radius:6px; display:flex; justify-content:between; align-items:center;">
                 <div>
-                    <strong>Pedido #${venda.id} - ${venda.cliente}</strong><br>
-                    <span style="font-size:12px;color:#555;">Data: ${venda.data} | Valor: R$ ${venda.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                    <b>Pedido #${v.id} - ${v.cliente}</b><br>
+                    <small>Data: ${v.data} | Valor: <b>R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</b></small>
                 </div>
-                <div>${btnHtml}</div>
-            </div>
-        `;
+                <button onclick="carregarPedidoParaEdicao('${v.firestoreId}')" style="background:#2b5797; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">Editar</button>
+            </div>`;
     });
 }
 
-function iniciarEdicaoVenda(idx) {
-    let historico = JSON.parse(localStorage.getItem('bancoVendas')) || [];
-    let venda = historico[idx];
-    localStorage.setItem('pedidoEmEdicaoIndex', idx);
-    localStorage.setItem('itensCarrinhoEdicao', JSON.stringify(venda.itens));
-    itensCarrinho = venda.itens;
-    reconstruirBotoesCatalogo();
-    fecharModalMinhasVendas();
-    abrirCarrinho();
-    atualizarCarrinho();
+function carregarPedidoParaEdicao(firestoreId) {
+    localStorage.setItem('pedidoEmEdicaoId', firestoreId);
+    window.location.reload(); 
 }
 
-function abrirModalEditarVendedor() { document.getElementById('modal-editar-vendedor').style.display = 'flex'; document.getElementById('campos-edicao-vendedor').style.display = 'none'; }
-function fecharModalEditarVendedor() { document.getElementById('modal-editar-vendedor').style.display = 'none'; }
+function abrirModalVendedor() { document.getElementById('modal-vendedor').style.display = 'flex'; }
+function fecharModalVendedor() { document.getElementById('modal-vendedor').style.display = 'none'; }
+
+function formatarVerificarCPF(val) {
+    let limpo = val.replace(/\D/g, '');
+    let btn = document.getElementById('btn-salvar-vendedor');
+    let msg = document.getElementById('msg-cpf');
+
+    if(limpo.length === 11) {
+        msg.innerText = "CPF Pronto."; msg.style.color = "green";
+        btn.disabled = false; btn.style.backgroundColor = "black";
+    } else {
+        msg.innerText = "Requer 11 dígitos."; msg.style.color = "red";
+        btn.disabled = true; btn.style.backgroundColor = "";
+    }
+}
+
+function salvarVendedor() {
+    let nome = document.getElementById('novo-vend-nome').value;
+    let cpf = document.getElementById('novo-vend-cpf').value.replace(/\D/g, '');
+    let senha = document.getElementById('novo-vend-senha').value;
+
+    if(!nome || !cpf || !senha) return;
+
+    db.collection('vendedores').doc(cpf).set({ nome: nome, cpf: cpf, senha: senha }).then(() => {
+        alert("Vendedor Sincronizado e Contratado na Nuvem!");
+        fecharModalVendedor();
+        document.getElementById('novo-vend-nome').value = '';
+        document.getElementById('novo-vend-cpf').value = '';
+        document.getElementById('novo-vend-senha').value = '';
+    });
+}
+
+function abrirModalEditarVendedor() { document.getElementById('modal-editar-vendedor').style.display = 'flex'; }
+function fecharModalEditarVendedor() {
+    document.getElementById('modal-editar-vendedor').style.display = 'none';
+    document.getElementById('campos-edicao-vendedor').style.display = 'none';
+}
 
 function buscarVendedorParaEdicao() {
     let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, '');
-    let dados = localStorage.getItem('vendedor_' + cpf);
-    if (!dados) { alert("Vendedor não localizado!"); return; }
-    let v = JSON.parse(dados);
-    document.getElementById('edit-vend-nome').value = v.nome;
-    document.getElementById('edit-vend-senha').value = v.senha;
-    document.getElementById('campos-edicao-vendedor').style.display = 'block';
+    let vend = listaVendedoresRealtime.find(v => v.cpf === cpf);
+
+    if(vend) {
+        document.getElementById('edit-vend-nome').value = vend.nome;
+        document.getElementById('edit-vend-senha').value = vend.senha;
+        document.getElementById('campos-edicao-vendedor').style.display = 'block';
+    } else {
+        alert("Vendedor não localizado na nuvem.");
+    }
 }
 
 function salvarAlteracoesVendedor() {
     let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, '');
     let nome = document.getElementById('edit-vend-nome').value;
     let senha = document.getElementById('edit-vend-senha').value;
-    if(!nome || !senha) { alert("Campos vazios!"); return; }
-    localStorage.setItem('vendedor_' + cpf, JSON.stringify({nome: nome, senha: senha}));
-    alert("Dados atualizados com sucesso!");
-    fecharModalEditarVendedor();
+
+    db.collection('vendedores').doc(cpf).update({ nome: nome, senha: senha }).then(() => {
+        alert("Dados Atualizados na Nuvem!");
+        fecharModalEditarVendedor();
+    });
 }
 
 function demitirVendedor() {
-    if(confirm("Confirmar exclusão definitiva deste vendedor do sistema?")) {
+    if(confirm("Deseja demitir permanentemente este vendedor da Nuvem?")) {
         let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, '');
-        localStorage.removeItem('vendedor_' + cpf);
-        alert("Colaborador removido.");
-        fecharModalEditarVendedor();
+        db.collection('vendedores').doc(cpf).delete().then(() => {
+            alert("Vendedor Removido.");
+            fecharModalEditarVendedor();
+        });
     }
 }
 
 function abrirModalAcordos() {
     document.getElementById('modal-acordos').style.display = 'flex';
-    let select = document.getElementById('select-vendedor-acordo');
-    select.innerHTML = '<option value="">-- Selecione o Colaborador --</option>';
-    let listaSet = new Set(["Jhuan Alexandre", "Vendedor Padrão"]);
-    for (let i = 0; i < localStorage.length; i++) {
-        let chave = localStorage.key(i);
-        if(chave.startsWith('vendedor_')) {
-            let user = JSON.parse(localStorage.getItem(chave));
-            if(user.nome) listaSet.add(user.nome);
-        }
-    }
-    listaSet.forEach(v => { select.innerHTML += `<option value="${v}">${v}</option>`; });
-    carregarAcordosVendedor();
+    atualizarSelectVendedoresAcordo();
 }
 function fecharModalAcordos() { document.getElementById('modal-acordos').style.display = 'none'; }
 
+function atualizarSelectVendedoresAcordo() {
+    let select = document.getElementById('select-vendedor-acordo');
+    if(!select) return;
+    let guardado = select.value;
+    select.innerHTML = '<option value="">-- Selecione o Colaborador --</option>';
+
+    listaVendedoresRealtime.forEach(v => {
+        select.innerHTML += `<option value="${v.nome}">${v.nome}</option>`;
+    });
+    select.value = guardado;
+}
+
 function carregarAcordosVendedor() {
-    let vend = document.getElementById('select-vendedor-acordo').value;
-    let container = document.getElementById('lista-acordos-por-estado');
-    container.innerHTML = '';
-    
-    if(!vend) {
-        document.getElementById('resumo-comissao-pendente').innerText = "R$ 0,00";
-        document.getElementById('resumo-empresa-faturado').innerText = "R$ 0,00";
-        document.getElementById('resumo-pecas-vendidas').innerText = "0 Un.";
-        return;
-    }
+    let nomeVend = document.getElementById('select-vendedor-acordo').value;
+    let listaDiv = document.getElementById('lista-acordos-por-estado');
+    if(!listaDiv) return;
+    listaDiv.innerHTML = '';
 
-    let historico = JSON.parse(localStorage.getItem('bancoVendas')) || [];
-    let filtradas = historico.filter(v => v.vendedor === vend);
-    
-    let comissaoPendente = 0, faturadoEmpresa = 0, pecasTotais = 0;
-    let estadosAgrupados = {};
+    if(!nomeVend) return;
 
-    filtradas.forEach(venda => {
-        let qtdItens = 0;
-        if(venda.itens) { venda.itens.forEach(i => qtdItens += i.qtd); }
-        pecasTotais += qtdItens;
+    let vendasFiltradas = listaVendasRealtime.filter(v => v.vendedor === nomeVend);
 
-        let taxa = (venda.entreguePor === 'Vendedor') ? 0.15 : 0.10;
-        let valorComis = venda.valorTotal * taxa;
-        let valorFatur = venda.valorTotal - valorComis;
+    let comissaoPendente = 0;
+    let liquidoEmpresa = 0;
+    let totalPecas = 0;
+    let dadosEstados = {};
 
-        faturadoEmpresa += valorFatur;
-        if(!venda.acordoFinalizado) { comissaoPendente += valorComis; }
+    vendasFiltradas.forEach(v => {
+        let taxaComissao = v.entreguePor === 'Vendedor' ? 0.15 : 0.10;
+        let cVal = v.valorTotal * taxaComissao;
+        let lVal = v.valorTotal - cVal;
+        let pecas = v.itens ? v.itens.reduce((a, b) => a + b.qtd, 0) : 0;
 
-        let uf = venda.estado || 'BA';
-        if(!estadosAgrupados[uf]) { estadosAgrupados[uf] = []; }
-        
-        let realIdx = historico.findIndex(h => h.id === venda.id && h.data === venda.data && h.hora === venda.hora);
-        estadosAgrupados[uf].push({venda: venda, realIdx: realIdx, cVal: valorComis, fVal: valorFatur, pct: taxa * 100});
+        if(!v.acordoFinalizado) comissaoPendente += cVal;
+        liquidoEmpresa += lVal;
+        totalPecas += pecas;
+
+        let est = v.estado || 'BA';
+        if(!dadosEstados[est]) dadosEstados[est] = { faturamento: 0, pecas: 0, comissao: 0 };
+        dadosEstados[est].faturamento += v.valorTotal;
+        dadosEstados[est].pecas += pecas;
+        dadosEstados[est].comissao += cVal;
     });
 
-    document.getElementById('resumo-comissao-pendente').innerText = "R$ " + comissaoPendente.toLocaleString('pt-BR', {minimumFractionDigits:2});
-    document.getElementById('resumo-empresa-faturado').innerText = "R$ " + faturadoEmpresa.toLocaleString('pt-BR', {minimumFractionDigits:2});
-    document.getElementById('resumo-pecas-vendidas').innerText = pecasTotais + " Un.";
+    document.getElementById('resumo-comissao-pendente').innerText = `R$ ${comissaoPendente.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+    document.getElementById('resumo-empresa-faturado').innerText = `R$ ${liquidoEmpresa.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+    document.getElementById('resumo-pecas-vendidas').innerText = `${totalPecas} Un.`;
 
-    for(let uf in estadosAgrupados) {
-        let tabelaHtml = `
-            <div style="margin-top:15px; border:1px solid #ccc; border-radius:6px; padding:10px; background:#fafafa;">
-                <h4 style="margin:0 0 10px 0; color:#333; background:#e2e8f0; padding:5px; border-radius:4px;">ESTADO REGIONAL: ${uf}</h4>
-                <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left; color: black; background: white;">
-                    <thead>
-                        <tr style="background:#ddd;">
-                            <th style="padding:5px;">Pedido</th>
-                            <th style="padding:5px;">Cliente</th>
-                            <th style="padding:5px;">Total</th>
-                            <th style="padding:5px;">Comissão</th>
-                            <th style="padding:5px;">Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-        estadosAgrupados[uf].forEach(item => {
-            let v = item.venda;
-            let statusAcao = v.acordoFinalizado 
-                ? `<span style="color:green;font-weight:bold;">PAGO</span>`
-                : `<button onclick="darBaixaAcordo(${item.realIdx})" style="background:#20bf6b;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-weight:bold;">DAR BAIXA</button>`;
-            
-            tabelaHtml += `
-                <tr style="border-bottom:1px solid #ccc;">
-                    <td style="padding:6px;">#${v.id}</td>
-                    <td style="padding:6px;"><b>${v.cliente}</b></td>
-                    <td style="padding:6px;">R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-                    <td style="padding:6px;color:brown;font-weight:bold;">R$ ${item.cVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-                    <td style="padding:6px;">${statusAcao}</td>
-                </tr>
-            `;
-        });
-        tabelaHtml += `</tbody></table></div>`;
-        container.innerHTML += tabelaHtml;
+    for(let est in dadosEstados) {
+        listaDiv.innerHTML += `
+            <div style="border:1px solid #ccc; padding:12px; margin-bottom:10px; border-radius:6px; background:#fdfdfd;">
+                <h4 style="margin:0 0 5px 0; color:#20bf6b;">ESTADO: ${est}</h4>
+                Faturamento: R$ ${dadosEstados[est].faturamento.toLocaleString('pt-BR', {minimumFractionDigits:2})} | 
+                Peças: ${dadosEstados[est].pecas} un | 
+                Comissão: R$ ${dadosEstados[est].comissao.toLocaleString('pt-BR', {minimumFractionDigits:2})}
+            </div>`;
     }
 }
 
-function darBaixaAcordo(idx) {
-    let historico = JSON.parse(localStorage.getItem('bancoVendas')) || [];
-    if(historico[idx]) {
-        historico[idx].acordoFinalizado = true;
-        localStorage.setItem('bancoVendas', JSON.stringify(historico));
-        alert("Comissão liquidada com sucesso!");
-        carregarAcordosVendedor();
-    }
-}
-
-function abrirInfo(botao) {
-    let card = botao.closest('.card');
-    let nome = card.querySelector('.nome-cuba').innerText;
-    let imgSrc = card.querySelector('.foto-cuba').src;
-    let largura = card.getAttribute('data-largura') || 'Não informada';
-    let comprimento = card.getAttribute('data-comprimento') || 'Não informado';
-    let altura = card.getAttribute('data-altura') || 'Não informada';
-    document.getElementById('info-nome-produto').innerText = nome;
-    document.getElementById('info-img-produto').src = imgSrc;
-    document.getElementById('info-largura').innerText = largura;
-    document.getElementById('info-comprimento').innerText = comprimento;
-    document.getElementById('info-altura').innerText = altura;
+function abrirInfo(btn) {
+    let card = btn.closest('.card');
+    document.getElementById('info-nome-produto').innerText = card.querySelector('.nome-cuba').innerText;
+    document.getElementById('info-img-produto').src = card.querySelector('.foto-cuba').src;
+    document.getElementById('info-largura').innerText = card.getAttribute('data-largura');
+    document.getElementById('info-comprimento').innerText = card.getAttribute('data-comprimento');
+    document.getElementById('info-altura').innerText = card.getAttribute('data-altura');
     document.getElementById('modal-info-produto').style.display = 'flex';
 }
 function fecharInfo() { document.getElementById('modal-info-produto').style.display = 'none'; }
-function abrirModalVendedor() { document.getElementById('modal-vendedor').style.display = 'flex'; }
-function fecharModalVendedor() { document.getElementById('modal-vendedor').style.display = 'none'; }
 
-function validarCPF(cpf) {
-    cpf = cpf.replace(/[^\d]+/g,'');
-    if(cpf == '' || cpf.length != 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-    let add = 0;
-    for (let i=0; i < 9; i ++) add += parseInt(cpf.charAt(i)) * (10 - i);
-    let rev = 11 - (add % 11);
-    if (rev == 10 || rev == 11) rev = 0;
-    if (rev != parseInt(cpf.charAt(9))) return false;
-    add = 0;
-    for (let i = 0; i < 10; i ++) add += parseInt(cpf.charAt(i)) * (11 - i);
-    rev = 11 - (add % 11);
-    if (rev == 10 || rev == 11) rev = 0;
-    if (rev != parseInt(cpf.charAt(10))) return false;
-    return true;
-}
-
-function formatarVerificarCPF(valor) {
-    let cpf = valor.replace(/\D/g, '');
-    let msg = document.getElementById('msg-cpf');
-    let btn = document.getElementById('btn-salvar-vendedor');
-    if (cpf.length === 11) {
-        if (validarCPF(cpf)) {
-            msg.innerText = "CPF Válido ✓"; msg.style.color = "green";
-            btn.disabled = false; btn.style.backgroundColor = "black"; btn.style.color = "#ffd700"; btn.style.cursor = "pointer";
-        } else {
-            msg.innerText = "CPF Inválido ❌"; msg.style.color = "red"; btn.disabled = true; btn.style.backgroundColor = "#555";
-        }
-    } else {
-        msg.innerText = "Digite os 11 números..."; msg.style.color = "gray"; btn.disabled = true; btn.style.backgroundColor = "#555";
-    }
-}
-
-// ========================================================
-// FUNÇÕES DE CADASTRO CONECTADAS AO FIREBASE (NUVEM)
-// ========================================================
-
-function salvarVendedor() {
-    let nome = document.getElementById('novo-vend-nome').value;
-    let cpf = document.getElementById('novo-vend-cpf').value.replace(/\D/g, '');
-    let senha = document.getElementById('novo-vend-senha').value;
-    
-    if (!nome || !senha || !cpf) { 
-        alert("Preencha todos os campos obrigatórios!"); 
-        return; 
-    }
-
-    // Salva na coleção 'vendedores' usando o CPF como identificador único
-    db.collection('vendedores').doc(cpf).set({
-        nome: nome,
-        senha: senha,
-        cpf: cpf
-    })
-    .then(() => {
-        alert("Vendedor(a) " + nome + " cadastrado(a) com sucesso na Nuvem!");
-        fecharModalVendedor();
-        document.getElementById('novo-vend-nome').value = '';
-        document.getElementById('novo-vend-cpf').value = '';
-        document.getElementById('novo-vend-senha').value = '';
-        if(typeof carregarVendedores === "function") carregarVendedores(); // Atualiza a lista se houver
-    })
-    .catch((error) => {
-        alert("Erro ao salvar vendedor na nuvem: " + error);
+function filtrarProdutos(val) {
+    let t = val.toLowerCase();
+    document.querySelectorAll('#grade-produtos .card').forEach(card => {
+        let txt = card.querySelector('.nome-cuba').innerText.toLowerCase() + " " + card.getAttribute('data-tags');
+        card.style.display = txt.includes(t) ? 'block' : 'none';
     });
-}
-
-function salvarCliente() {
-    let nome = document.getElementById('novo-cli-nome').value;
-    let cnpj = document.getElementById('novo-cli-cnpj').value.replace(/\D/g, '');
-    let senha = document.getElementById('novo-cli-senha').value;
-    
-    // Se o seu formulário tiver mais campos (cidade, estado, etc), pegue-os aqui:
-    let cidade = document.getElementById('novo-cli-cidade') ? document.getElementById('novo-cli-cidade').value : '';
-    let estado = document.getElementById('novo-cli-estado') ? document.getElementById('novo-cli-estado').value : '';
-
-    if (!nome || !cnpj || !senha) {
-        alert("Preencha os campos obrigatórios (Nome, CNPJ e Senha)!");
-        return;
-    }
-
-    // Salva na coleção 'clientes' usando o CNPJ como identificador único
-    db.collection('clientes').doc(cnpj).set({
-        nome: nome,
-        senha: senha,
-        cnpj: cnpj,
-        cidade: cidade,
-        estado: estado,
-        dataCadastro: new Date().toLocaleDateString('pt-BR')
-    })
-    .then(() => {
-        alert("Cliente " + nome + " cadastrado com sucesso na Nuvem!");
-        // Limpa os campos e fecha o modal (ajuste os IDs se forem diferentes no seu HTML)
-        if(typeof fecharModalCliente === "function") fecharModalCliente();
-        document.getElementById('novo-cli-nome').value = '';
-        document.getElementById('novo-cli-cnpj').value = '';
-        document.getElementById('novo-cli-senha').value = '';
-    })
-    .catch((error) => {
-        alert("Erro ao salvar cliente na nuvem: " + error);
-    });
-}
-
-// Chame esta função dentro da sua função atual que finaliza o carrinho de compras!
-function enviarPedidoParaNuvem(dadosDoPedido) {
-    db.collection('vendas').add({
-        ...dadosDoPedido,
-        dataHora: new Date().toLocaleString('pt-BR')
-    })
-    .then(() => {
-        alert("Pedido enviado com sucesso para a Nuvem!");
-    })
-    .catch((error) => {
-        alert("Erro ao enviar o pedido para o servidor: " + error);
-    });
-}
 }
 </script>
 </body>
 </html>
-
