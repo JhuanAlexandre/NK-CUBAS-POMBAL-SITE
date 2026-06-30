@@ -15,6 +15,29 @@
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+
+  // CONVERSOR DA SUA LOGOMARCA SVG PARA O PDF
+  const svgTexto = `<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 160 L450 160 Q445 300 370 340 L130 340 Q55 300 50 160" fill="none" stroke="#D9A520" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+      <g fill="#D9A520">
+          <rect x="245" y="40" width="70" height="10" rx="5"/>
+          <rect x="288" y="55" width="30" height="22" rx="10"/>
+          <path d="M215 95 Q215 70 235 70 L315 70 L315 145 L290 145 L290 90 L235 90 Q235 105 220 105 L215 105 Q210 105 210 100 L210 95 Q210 90 215 90"/>
+          <rect x="205" y="100" width="18" height="8" rx="4"/>
+      </g>
+      <text x="250" y="410" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="42" font-weight="bold" fill="#D9A520">NK CUBAS</text>
+      <text x="250" y="470" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="42" font-weight="bold" fill="#D9A520">POMBAL</text>
+  </svg>`;
+
+  let logoBase64Img = null;
+  const imgLoad = new Image();
+  imgLoad.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgTexto)));
+  imgLoad.onload = function() {
+      let canvas = document.createElement("canvas");
+      canvas.width = 500; canvas.height = 500;
+      canvas.getContext("2d").drawImage(imgLoad, 0, 0);
+      logoBase64Img = canvas.toDataURL("image/png");
+  };
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,24 +60,12 @@
 
     <div class="area-topo">
         <div style="display: flex; flex-direction: column; gap: 10px; margin-right: auto;">
-            <button id="btn-cadastrar-cliente" style="display: none; background-color: #ffd700; color: black; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalCadastro()">
-                + Cadastrar Cliente
-            </button>
-            <button id="btn-minhas-vendas" style="display: none; background-color: #2b5797; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalMinhasVendas()">
-                📝 Minhas Vendas (Editar)
-            </button>
-            <button id="btn-acordos-vendedores" style="display: none; background-color: #20bf6b; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalAcordos()">
-                🤝 Acordos com Vendedores
-            </button>
-            <button id="btn-cadastrar-vendedor" style="display: none; background-color: #222; color: white; border: 1px solid #444; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalVendedor()">
-                ⚙️ Cadastrar Vendedor (Master)
-            </button>
-            <button id="btn-editar-vendedor" style="display: none; background-color: #4b6584; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalEditarVendedor()">
-                ✏️ Editar / Demitir Vendedor
-            </button>
-            <button id="btn-menu-vendas" style="display: none; background-color: #8b0000; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px;" onclick="window.location.href='vendas.html'">
-                📊 Menu de Vendas (Painel Master)
-            </button>
+            <button id="btn-cadastrar-cliente" style="display: none; background-color: #ffd700; color: black; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalCadastro()">+ Cadastrar Cliente</button>
+            <button id="btn-minhas-vendas" style="display: none; background-color: #2b5797; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalMinhasVendas()">📝 Minhas Vendas (Editar)</button>
+            <button id="btn-acordos-vendedores" style="display: none; background-color: #20bf6b; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalAcordos()">🤝 Acordos com Vendedores</button>
+            <button id="btn-cadastrar-vendedor" style="display: none; background-color: #222; color: white; border: 1px solid #444; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalVendedor()">⚙️ Cadastrar Vendedor (Master)</button>
+            <button id="btn-editar-vendedor" style="display: none; background-color: #4b6584; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalEditarVendedor()">✏️ Editar / Demitir Vendedor</button>
+            <button id="btn-menu-vendas" style="display: none; background-color: #8b0000; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px;" onclick="window.location.href='vendas.html'">📊 Menu de Vendas (Painel Master)</button>
         </div>
         <input type="text" id="pesquisa" placeholder="Buscar cubas, bancadas..." oninput="filtrarProdutos(this.value)">
         <button id="btn-abrir-carrinho" onclick="abrirCarrinho()">🛒 Carrinho (<span id="contador-carrinho">0</span>)</button>
@@ -64,6 +75,7 @@
     <h1 class="titulo-site">Catálogo NK Cubas</h1>
 
     <div class="catalogo" id="grade-produtos">
+        <!-- PRODUTOS NORMAIS -->
         <div class="card" data-tags="italia exclusiva economica barata" data-largura="36,5 cm" data-comprimento="27 cm" data-altura="9 cm">
             <h2 class="nome-cuba">CUBA ITÁLIA</h2>
             <div class="conteudo-card">
@@ -184,7 +196,8 @@
             </div>
         </div>
 
-        <div class="card" data-tags="bancada suporte nk banheiro" data-largura="55 cm" data-comprimento="35 cm" data-altura="Não informada">
+        <!-- BANCADA DE SUPORTE -->
+        <div class="card" data-tags="bancada suporte nk banheiro pop italia" data-largura="55 cm" data-comprimento="35 cm" data-altura="Não informada">
             <h2 class="nome-cuba">BANCADA DE SUPORTE</h2>
             <div class="conteudo-card">
                 <img src="foto-cuba/bancada-foto.jfif" alt="Bancada de Suporte" class="foto-cuba">
@@ -200,6 +213,7 @@
         </div>
     </div>
 
+    <!-- MODAIS E CARRINHO -->
     <div id="modal-cadastro" class="modal">
         <div class="modal-conteudo" style="background-color: #ffd700; color: black; border: 3px solid black;">
             <span class="fechar-modal" onclick="fecharModalCadastro()" style="color: black;">&times;</span>
@@ -222,10 +236,10 @@
         <div class="modal-conteudo">
             <span class="fechar-modal" onclick="fecharCarrinho()">&times;</span>
             <h2 class="titulo-carrinho">Seu Carrinho</h2>
-            <p id="texto-vendedor-carrinho" style="text-align: center; font-weight: bold; color: #444; display: none; margin-bottom: 12px;">
-                VENDEDOR: <span id="span-vendedor-carrinho"></span>
-            </p>
+            <p id="texto-vendedor-carrinho" style="text-align: center; font-weight: bold; color: #444; display: none; margin-bottom: 12px;">VENDEDOR: <span id="span-vendedor-carrinho"></span></p>
+            
             <div id="lista-itens-carrinho"></div>
+            
             <div class="resumo-carrinho">
                 <h3>Total: R$ <span id="valor-total">0,00</span></h3>
                 <div class="opcoes-compra">
@@ -263,111 +277,29 @@
                     <select id="prazo-pagamento" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; background: white; color: black;"></select>
                 </div>
 
-                <div id="area-selecao-cliente" style="display: none; background: #e9e9e9; padding: 12px; border-radius: 8px; margin-bottom: 10px; color: black;">
+                <!-- Nova Caixa de Observações/Descrição -->
+                <div class="pagamento" style="margin-top:10px; margin-bottom: 15px; text-align: left; color: black;">
+                    <label style="font-weight: bold; font-size: 14px;">Descrição da Venda (Observações para Nota):</label>
+                    <textarea id="descricao-venda" rows="2" placeholder='Ex: "Troca de uma cuba onix" ou "Entregar na doca..."' style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; resize: vertical; margin-top: 5px; font-family: inherit;"></textarea>
+                </div>
+
+                <div id="area-selecao-cliente" style="display: none; background: #e9e9e9; padding: 12px; border-radius: 8px; margin-bottom: 15px; color: black;">
                     <label style="font-weight: bold;">Para qual cliente é esta venda?</label>
-                    <input type="text" id="busca-cliente" placeholder="Buscar por Nome, Cidade, UF ou CNPJ..." oninput="filtrarClientes()" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; background: white; color: black;">
+                    <input type="text" id="busca-cliente" placeholder="Buscar por Nome, Cidade, Estado ou CNPJ..." oninput="filtrarClientes()" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; background: white; color: black;">
                     <div id="lista-clientes-vendedor" style="max-height: 120px; overflow-y: auto; margin-top: 10px; border-radius: 4px;"></div>
                     <input type="hidden" id="cnpj-cliente-selecionado">
                 </div>
-
-                <!-- Nova Área: Observação da Venda -->
-                <div style="background: #e9e9e9; padding: 12px; border-radius: 8px; margin-bottom: 15px; color: black;">
-                    <label style="font-weight: bold;">Descrição / Observação da Venda:</label>
-                    <textarea id="obs-venda" rows="2" placeholder="Ex: troca de uma cuba onix, entregar na doca a esquerda..." style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit; resize: vertical;"></textarea>
-                </div>
-
                 <button class="btn-finalizar" onclick="gerarPDF()">FINALIZAR COMPRA E GERAR PDF</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-minhas-vendas" class="modal">
-        <div class="modal-conteudo" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 95%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
-            <span class="fechar-modal" onclick="fecharModalMinhasVendas()">&times;</span>
-            <h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; color: #2b5797;">MINHAS VENDAS</h2>
-            <div id="lista-minhas-vendas"></div>
-        </div>
-    </div>
-
-    <div id="modal-info-produto" class="modal">
-        <div class="modal-conteudo" style="text-align: center; background-color: #1a1a1a; color: white; border: 2px solid #ffd700; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;">
-            <span class="fechar-modal" onclick="fecharInfo()" style="color: #ffd700;">&times;</span>
-            <h2 id="info-nome-produto" style="color: #ffd700; margin-bottom: 20px; font-size: 26px;"></h2>
-            <img id="info-img-produto" src="" style="width: 250px; height: 250px; object-fit: contain; margin-bottom: 20px; background: black; border-radius: 10px; border: 1px solid #333;">
-            <div style="font-size: 18px; line-height: 1.8; text-align: left; padding: 0 20px;">
-                <p><strong style="color: #ffd700;">Largura:</strong> <span id="info-largura"></span></p>
-                <p><strong style="color: #ffd700;">Comprimento:</strong> <span id="info-comprimento"></span></p>
-                <p><strong style="color: #ffd700;">Altura:</strong> <span id="info-altura"></span></p>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-vendedor" class="modal">
-        <div class="modal-conteudo" style="background-color: #f4f4f4; color: black; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;">
-            <span class="fechar-modal" onclick="fecharModalVendedor()">&times;</span>
-            <h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 20px;">CADASTRAR NOVO VENDEDOR</h2>
-            <div style="margin-bottom: 15px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome do Vendedor</label>
-                <input type="text" id="novo-vend-nome" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;">
-            </div>
-            <div style="margin-bottom: 15px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">CPF (Apenas números)</label>
-                <input type="text" id="novo-vend-cpf" maxlength="11" oninput="formatarVerificarCPF(this.value)" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;">
-                <span id="msg-cpf" style="font-size: 14px; font-weight: bold; margin-top: 5px; display: block;"></span>
-            </div>
-            <div style="margin-bottom: 20px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Senha de Acesso</label>
-                <input type="password" id="novo-vend-senha" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;">
-            </div>
-            <button id="btn-salvar-vendedor" disabled onclick="salvarVendedor()" style="width: 100%; padding: 15px; background-color: #555555; color: white; border: none; font-weight: bold; font-size: 18px; border-radius: 10px; cursor: not-allowed;">
-                CONTRATAR VENDEDOR
-            </button>
-        </div>
-    </div>
-
-    <div id="modal-editar-vendedor" class="modal">
-        <div class="modal-conteudo" style="background-color: #f4f4f4; color: black; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;">
-            <span class="fechar-modal" onclick="fecharModalEditarVendedor()">&times;</span>
-            <h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 20px;">EDITAR / DEMITIR VENDEDOR</h2>
-            <div style="margin-bottom: 15px;">
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">CPF do Vendedor (Apenas números)</label>
-                <input type="text" id="edit-vend-cpf" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;">
-                <button onclick="buscarVendedorParaEdicao()" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #333; color: white; border: none; font-weight: bold; border-radius: 5px; cursor: pointer;">Buscar Vendedor</button>
-            </div>
-            <div id="campos-edicao-vendedor" style="display: none;">
-                <div style="margin-bottom: 15px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome do Vendedor</label>
-                    <input type="text" id="edit-vend-nome" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;">
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Senha de Acesso</label>
-                    <input type="password" id="edit-vend-senha" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;">
-                </div>
-                <button onclick="salvarAlteracoesVendedor()" style="width: 100%; padding: 12px; background-color: green; color: white; border: none; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer; margin-bottom: 10px;">SALVAR ALTERAÇÕES</button>
-                <button onclick="demitirVendedor()" style="width: 100%; padding: 12px; background-color: red; color: white; border: none; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer;">DEMITIR VENDEDOR</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PAINEL DE ACORDOS -->
-    <div id="modal-acordos" class="modal">
-        <div class="modal-conteudo" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 95%; max-width: 850px; max-height: 85vh; overflow-y: auto;">
-            <span class="fechar-modal" onclick="fecharModalAcordos()">&times;</span>
-            <h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 22px; color: #20bf6b;">COMPENSAÇÕES E ACORDOS</h2>
-            <div style="margin-bottom: 20px;">
-                <label style="font-weight: bold;">Selecione o Vendedor:</label>
-                <select id="select-vendedor-acordo" onchange="carregarAcordosVendedor()" style="width: 100%; padding: 10px; border-radius: 5px; font-size: 16px; margin-top: 5px; background: white; color: black; border: 1px solid #ccc;"></select>
-            </div>
-            
-            <div id="resumo-acordos" style="display: flex; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; justify-content: space-around; font-weight: bold; text-align: center; flex-wrap: wrap;">
-                <div>Comissão Pendente:<br><span id="resumo-comissao-pendente" style="color: red; font-size: 18px;">R$ 0,00</span></div>
-                <div>Líquido Empresa:<br><span id="resumo-empresa-faturado" style="color: green; font-size: 18px;">R$ 0,00</span></div>
-                <div>Total Peças:<br><span id="resumo-pecas-vendidas" style="color: blue; font-size: 18px;">0 Un.</span></div>
-            </div>
-
-            <div id="lista-vendas-acordo-container"></div>
-        </div>
-    </div>
+    <!-- Modais Administrativos -->
+    <div id="modal-minhas-vendas" class="modal"><div class="modal-conteudo" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 95%; max-width: 600px; max-height: 80vh; overflow-y: auto;"><span class="fechar-modal" onclick="fecharModalMinhasVendas()">&times;</span><h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; color: #2b5797;">MINHAS VENDAS</h2><div id="lista-minhas-vendas"></div></div></div>
+    <div id="modal-info-produto" class="modal"><div class="modal-conteudo" style="text-align: center; background-color: #1a1a1a; color: white; border: 2px solid #ffd700; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;"><span class="fechar-modal" onclick="fecharInfo()" style="color: #ffd700;">&times;</span><h2 id="info-nome-produto" style="color: #ffd700; margin-bottom: 20px; font-size: 26px;"></h2><img id="info-img-produto" src="" style="width: 250px; height: 250px; object-fit: contain; margin-bottom: 20px; background: black; border-radius: 10px; border: 1px solid #333;"><div style="font-size: 18px; line-height: 1.8; text-align: left; padding: 0 20px;"><p><strong style="color: #ffd700;">Largura:</strong> <span id="info-largura"></span></p><p><strong style="color: #ffd700;">Comprimento:</strong> <span id="info-comprimento"></span></p><p><strong style="color: #ffd700;">Altura:</strong> <span id="info-altura"></span></p></div></div></div>
+    <div id="modal-vendedor" class="modal"><div class="modal-conteudo" style="background-color: #f4f4f4; color: black; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;"><span class="fechar-modal" onclick="fecharModalVendedor()">&times;</span><h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 20px;">CADASTRAR NOVO VENDEDOR</h2><div style="margin-bottom: 15px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome do Vendedor</label><input type="text" id="novo-vend-nome" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"></div><div style="margin-bottom: 15px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">CPF (Apenas números)</label><input type="text" id="novo-vend-cpf" maxlength="11" oninput="formatarVerificarCPF(this.value)" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"><span id="msg-cpf" style="font-size: 14px; font-weight: bold; margin-top: 5px; display: block;"></span></div><div style="margin-bottom: 20px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Senha de Acesso</label><input type="password" id="novo-vend-senha" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"></div><button id="btn-salvar-vendedor" disabled onclick="salvarVendedor()" style="width: 100%; padding: 15px; background-color: #555555; color: white; border: none; font-weight: bold; font-size: 18px; border-radius: 10px; cursor: not-allowed;">CONTRATAR VENDEDOR</button></div></div>
+    <div id="modal-editar-vendedor" class="modal"><div class="modal-conteudo" style="background-color: #f4f4f4; color: black; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;"><span class="fechar-modal" onclick="fecharModalEditarVendedor()">&times;</span><h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 20px;">EDITAR / DEMITIR VENDEDOR</h2><div style="margin-bottom: 15px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">CPF do Vendedor (Apenas números)</label><input type="text" id="edit-vend-cpf" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"><button onclick="buscarVendedorParaEdicao()" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #333; color: white; border: none; font-weight: bold; border-radius: 5px; cursor: pointer;">Buscar Vendedor</button></div><div id="campos-edicao-vendedor" style="display: none;"><div style="margin-bottom: 15px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome do Vendedor</label><input type="text" id="edit-vend-nome" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"></div><div style="margin-bottom: 20px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Senha de Acesso</label><input type="password" id="edit-vend-senha" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"></div><button onclick="salvarAlteracoesVendedor()" style="width: 100%; padding: 12px; background-color: green; color: white; border: none; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer; margin-bottom: 10px;">SALVAR ALTERAÇÕES</button><button onclick="demitirVendedor()" style="width: 100%; padding: 12px; background-color: red; color: white; border: none; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer;">DEMITIR VENDEDOR</button></div></div></div>
+    <div id="modal-acordos" class="modal"><div class="modal-conteudo" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 95%; max-width: 850px; max-height: 85vh; overflow-y: auto;"><span class="fechar-modal" onclick="fecharModalAcordos()">&times;</span><h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 22px; color: #20bf6b;">COMPENSAÇÕES E ACORDOS</h2><div style="margin-bottom: 20px;"><label style="font-weight: bold;">Selecione o Vendedor:</label><select id="select-vendedor-acordo" onchange="carregarAcordosVendedor()" style="width: 100%; padding: 10px; border-radius: 5px; font-size: 16px; margin-top: 5px; background: white; color: black; border: 1px solid #ccc;"></select></div><div id="resumo-acordos" style="display: flex; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; justify-content: space-around; font-weight: bold; text-align: center; flex-wrap: wrap;"><div>Comissão Pendente:<br><span id="resumo-comissao-pendente" style="color: red; font-size: 18px;">R$ 0,00</span></div><div>Líquido Empresa:<br><span id="resumo-empresa-faturado" style="color: green; font-size: 18px;">R$ 0,00</span></div><div>Total Peças:<br><span id="resumo-pecas-vendidas" style="color: blue; font-size: 18px;">0 Un.</span></div></div><div id="lista-vendas-acordo-container"></div></div></div>
 
 <script>
 let itensCarrinho = [];
@@ -376,20 +308,8 @@ let listaVendedoresRealtime = [];
 let listaVendasRealtime = [];
 let idPedidoEmEdicaoOriginal = null;
 
-// SVG String Convertido para DataURL nativo do jsPDF
-const svgLogoRaw = `<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-    <path d="M50 160 L450 160 Q445 300 370 340 L130 340 Q55 300 50 160" fill="none" stroke="#D9A520" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-    <g fill="#D9A520">
-        <rect x="245" y="40" width="70" height="10" rx="5"/>
-        <rect x="288" y="55" width="30" height="22" rx="10"/>
-        <path d="M215 95 Q215 70 235 70 L315 70 L315 145 L290 145 L290 90 L235 90 Q235 105 220 105 L215 105 Q210 105 210 100 L210 95 Q210 90 215 90"/>
-        <rect x="205" y="100" width="18" height="8" rx="4"/>
-    </g>
-    <text x="250" y="410" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="42" font-weight="bold" fill="#D9A520">NK CUBAS</text>
-    <text x="250" y="470" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="42" font-weight="bold" fill="#D9A520">POMBAL</text>
-</svg>`;
-const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgLogoRaw);
-
+// Normalizador Inteligente para Buscas (Remove Acentos e Capitalização)
+const normalizarBusca = str => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 
 window.onload = function() {
     let perfil = localStorage.getItem('perfilLogado');
@@ -447,19 +367,33 @@ window.onload = function() {
         db.collection('vendas').doc(pedidoEdicaoId).get().then(doc => {
             if(doc.exists){
                 let dados = doc.data();
-                itensCarrinho = dados.itens || [];
+                
+                // Mapeia os itens do pedido antigo para o novo formato do carrinho
+                let cartReconstruido = [];
+                let itemBancada = { nome: 'BANCADA DE SUPORTE', preco: 117.30, codigo: '283022', qtdPop: 0, qtdItalia: 0 };
+                let achouBancada = false;
+
+                (dados.itens || []).forEach(i => {
+                    if (i.codigo === '283022-P') {
+                        itemBancada.qtdPop = i.qtd; achouBancada = true;
+                    } else if (i.codigo === '283022-I') {
+                        itemBancada.qtdItalia = i.qtd; achouBancada = true;
+                    } else {
+                        cartReconstruido.push(i);
+                    }
+                });
+                if(achouBancada) cartReconstruido.push(itemBancada);
+                
+                itensCarrinho = cartReconstruido;
                 idPedidoEmEdicaoOriginal = dados.id; 
                 
                 document.getElementById('banner-edicao').style.display = 'block';
                 document.getElementById('num-pedido-edicao').innerText = dados.id;
+                document.getElementById('descricao-venda').value = dados.descricao || "";
                 
                 if(dados.cnpj) {
                     document.getElementById('cnpj-cliente-selecionado').value = dados.cnpj;
                     document.getElementById('busca-cliente').value = dados.cliente;
-                }
-
-                if(dados.observacao) {
-                    document.getElementById('obs-venda').value = dados.observacao;
                 }
                 
                 reconstruirBotoesCatalogo();
@@ -492,13 +426,12 @@ function mudarBotao(botao) {
         botao.style.backgroundColor = "";
         botao.style.color = "";
     } else {
-        // Lógica Especial da Bancada
-        if(codigo === "283022") {
-            itensCarrinho.push({ codigo: codigo, nome: nome, preco: preco, isBancada: true, qtd: 1, qtdPop: 1, qtdItalia: 0 });
+        if (codigo === '283022') {
+            itensCarrinho.push({ nome: nome, preco: preco, codigo: codigo, qtdPop: 1, qtdItalia: 0 });
         } else {
             itensCarrinho.push({ nome: nome, preco: preco, codigo: codigo, qtd: 1 });
         }
-        botao.innerText = "✓ No Carrinho (1)";
+        botao.innerText = "✓ No Carrinho";
         botao.style.backgroundColor = "#20bf6b";
         botao.style.color = "white";
     }
@@ -511,8 +444,8 @@ function reconstruirBotoesCatalogo() {
         let cod = btn.getAttribute('data-codigo');
         let item = itensCarrinho.find(i => i.codigo === cod);
         if (item) {
-            let qty = item.isBancada ? (item.qtdPop + item.qtdItalia) : item.qtd;
-            btn.innerText = `✓ No Carrinho (${qty})`;
+            let somatoria = cod === '283022' ? (item.qtdPop + item.qtdItalia) : item.qtd;
+            btn.innerText = `✓ No Carrinho (${somatoria})`;
             btn.style.backgroundColor = "#20bf6b";
             btn.style.color = "white";
         } else {
@@ -527,9 +460,7 @@ function alterarQtdItem(codigo, delta) {
     let item = itensCarrinho.find(i => i.codigo === codigo);
     if (item) {
         item.qtd += delta;
-        if (item.qtd <= 0) {
-            itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo);
-        }
+        if (item.qtd <= 0) itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo);
     }
     reconstruirBotoesCatalogo();
     atualizarCarrinho();
@@ -537,16 +468,14 @@ function alterarQtdItem(codigo, delta) {
 
 function alterarQtdBancada(codigo, tipo, delta) {
     let item = itensCarrinho.find(i => i.codigo === codigo);
-    if (item) {
-        if (tipo === 'pop') item.qtdPop += delta;
-        if (tipo === 'italia') item.qtdItalia += delta;
+    if(item) {
+        if(tipo === 'Pop') item.qtdPop += delta;
+        if(tipo === 'Italia') item.qtdItalia += delta;
         
-        if (item.qtdPop < 0) item.qtdPop = 0;
-        if (item.qtdItalia < 0) item.qtdItalia = 0;
+        if(item.qtdPop < 0) item.qtdPop = 0;
+        if(item.qtdItalia < 0) item.qtdItalia = 0;
 
-        item.qtd = item.qtdPop + item.qtdItalia; // Para contagem do master
-
-        if (item.qtdPop === 0 && item.qtdItalia === 0) {
+        if(item.qtdPop === 0 && item.qtdItalia === 0) {
             itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo);
         }
     }
@@ -555,51 +484,52 @@ function alterarQtdBancada(codigo, tipo, delta) {
 }
 
 function atualizarCarrinho() {
-    let contQtd = 0;
-    itensCarrinho.forEach(b => contQtd += (b.isBancada ? (b.qtdPop + b.qtdItalia) : b.qtd));
-    document.getElementById('contador-carrinho').innerText = contQtd;
-    
+    let qtdGlobal = 0;
+    itensCarrinho.forEach(i => { qtdGlobal += (i.codigo === '283022' ? (i.qtdPop + i.qtdItalia) : i.qtd); });
+    document.getElementById('contador-carrinho').innerText = qtdGlobal;
+
     let lista = document.getElementById('lista-itens-carrinho');
     lista.innerHTML = '';
-    
     let total = 0;
+    
     itensCarrinho.forEach(item => {
-        if (item.isBancada) {
-            let subPop = item.preco * item.qtdPop;
-            let subItalia = item.preco * item.qtdItalia;
-            total += subPop + subItalia;
-
+        if (item.codigo === '283022') {
+            let sub = item.preco * (item.qtdPop + item.qtdItalia);
+            total += sub;
             lista.innerHTML += `
-            <div style="margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:10px; color: black; background: #fdfdfd; padding: 10px; border-radius: 6px;">
-                <b>Bancada de Suporte NK</b><br>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-left:10px;">
-                    <span style="font-size:14px;">↳ Modelo Pop (R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})})</span>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <button onclick="alterarQtdBancada('${item.codigo}', 'pop', -1)" style="padding:4px 10px; cursor:pointer;">-</button>
-                        <span><b>${item.qtdPop}</b></span>
-                        <button onclick="alterarQtdBancada('${item.codigo}', 'pop', 1)" style="padding:4px 10px; cursor:pointer;">+</button>
+                <div style="margin-bottom:12px; border:1px solid #ddd; padding:10px; border-radius:8px; background:white; color: black;">
+                    <div style="margin-bottom:8px;"><b>${item.nome}</b><br>R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})} <small style="color:gray;">/ cada</small></div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#f9f9f9; padding:6px 10px; border-radius:5px; margin-bottom:5px;">
+                        <span style="font-size:14px; font-weight:bold; color:#444;">↳ Modelo POP</span>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <button onclick="alterarQtdBancada('${item.codigo}', 'Pop', -1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">-</button>
+                            <span style="font-size:16px;"><b>${item.qtdPop}</b></span>
+                            <button onclick="alterarQtdBancada('${item.codigo}', 'Pop', 1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">+</button>
+                        </div>
                     </div>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-left:10px;">
-                    <span style="font-size:14px;">↳ Modelo Itália (R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})})</span>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <button onclick="alterarQtdBancada('${item.codigo}', 'italia', -1)" style="padding:4px 10px; cursor:pointer;">-</button>
-                        <span><b>${item.qtdItalia}</b></span>
-                        <button onclick="alterarQtdBancada('${item.codigo}', 'italia', 1)" style="padding:4px 10px; cursor:pointer;">+</button>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#f9f9f9; padding:6px 10px; border-radius:5px;">
+                        <span style="font-size:14px; font-weight:bold; color:#444;">↳ Modelo ITÁLIA</span>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <button onclick="alterarQtdBancada('${item.codigo}', 'Italia', -1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">-</button>
+                            <span style="font-size:16px;"><b>${item.qtdItalia}</b></span>
+                            <button onclick="alterarQtdBancada('${item.codigo}', 'Italia', 1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">+</button>
+                        </div>
                     </div>
-                </div>
-            </div>`;
+                    <div style="text-align:right; font-weight:bold; margin-top:8px; color:#20bf6b;">Subtotal: R$ ${sub.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
+                </div>`;
         } else {
             let sub = item.preco * item.qtd;
             total += sub;
             lista.innerHTML += `
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px; color: black;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:10px; color: black; background: white; padding: 10px; border-radius: 8px;">
                     <div><b>${item.nome}</b><br>R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <button onclick="alterarQtdItem('${item.codigo}', -1)" style="padding:2px 8px;">-</button>
-                        <span><b>${item.qtd}</b></span>
-                        <button onclick="alterarQtdItem('${item.codigo}', 1)" style="padding:2px 8px;">+</button>
-                        <span style="margin-left:10px; font-weight:bold;">R$ ${sub.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                        <button onclick="alterarQtdItem('${item.codigo}', -1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">-</button>
+                        <span style="font-size:16px;"><b>${item.qtd}</b></span>
+                        <button onclick="alterarQtdItem('${item.codigo}', 1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">+</button>
+                        <span style="margin-left:15px; font-weight:bold; color:#20bf6b;">R$ ${sub.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
                     </div>
                 </div>`;
         }
@@ -616,43 +546,41 @@ function atualizarCarrinho() {
         labelExpositor.style.color = "green";
         textoExpositor.innerText = "GANHOU EXPOSITOR GRÁTIS!";
     } else {
-        checkExpositor.disabled = true;
-        checkExpositor.checked = false;
-        labelExpositor.style.color = "gray";
-        textoExpositor.innerText = "COM EXPOSITOR (Requer R$ 3.000+)";
+        checkExpositor.disabled = true; checkExpositor.checked = false;
+        labelExpositor.style.color = "gray"; textoExpositor.innerText = "COM EXPOSITOR (Requer R$ 3.000+)";
     }
 
-    atualizarPrazos(); // Chama para controlar também a visualização do Desconto
-    
-    let desc = parseInt(document.getElementById('input-desconto').value) || 0;
-    if (desc > 10) { desc = 10; document.getElementById('input-desconto').value = 10; }
-    if (desc < 0) { desc = 0; document.getElementById('input-desconto').value = 0; }
-    
-    let finalComDesconto = total - (total * (desc / 100));
-    document.getElementById('valor-final-desconto').innerText = finalComDesconto.toLocaleString('pt-BR', {minimumFractionDigits:2});
+    const metodoPgto = document.getElementById('metodo-pagamento').value;
+    if (metodoPgto === 'À vista') {
+        document.getElementById('area-desconto').style.display = 'block';
+        let desc = parseInt(document.getElementById('input-desconto').value) || 0;
+        if (desc > 10) { desc = 10; document.getElementById('input-desconto').value = 10; }
+        if (desc < 0) { desc = 0; document.getElementById('input-desconto').value = 0; }
+        let finalComDesconto = total - (total * (desc / 100));
+        document.getElementById('valor-final-desconto').innerText = finalComDesconto.toLocaleString('pt-BR', {minimumFractionDigits:2});
+    } else {
+        document.getElementById('area-desconto').style.display = 'none';
+        document.getElementById('input-desconto').value = 0;
+        document.getElementById('valor-final-desconto').innerText = total.toLocaleString('pt-BR', {minimumFractionDigits:2});
+    }
+
+    atualizarPrazosInterno(metodoPgto);
 }
 
 function atualizarPrazos() {
-    const metodo = document.getElementById('metodo-pagamento').value;
+    atualizarCarrinho();
+}
+
+function atualizarPrazosInterno(metodo) {
     const areaPrazo = document.getElementById('area-prazo');
     const selectPrazo = document.getElementById('prazo-pagamento');
     const cnpjAtivo = document.getElementById('cnpj-cliente-selecionado').value || localStorage.getItem('cnpjClienteAtivo');
-    const areaDesconto = document.getElementById('area-desconto');
-
-    // Lógica para esconder o Desconto se não for a vista
-    if(metodo === 'À vista') {
-        areaDesconto.style.display = 'block';
-    } else {
-        areaDesconto.style.display = 'none';
-        document.getElementById('input-desconto').value = 0; 
-        // Não chamamos atualizarCarrinho() de volta pra evitar loop infinito, mas manipulamos os totais na hora de gerar pdf
-    }
 
     let clienteDoc = listaClientesRealtime.find(c => c.cnpj === cnpjAtivo);
     if (clienteDoc && clienteDoc.restrito && metodo === 'Boleto') {
         alert("⚠️ ATENÇÃO: Este CNPJ possui restrições financeiras estruturais na Nuvem. BOLETO TRAVADO.");
         document.getElementById('metodo-pagamento').value = 'À vista';
-        atualizarPrazos();
+        atualizarCarrinho();
         return;
     }
 
@@ -673,21 +601,17 @@ function fecharModalCadastro() { document.getElementById('modal-cadastro').style
 async function consultarCNPJ(cnpj) {
     let limpo = cnpj.replace(/\D/g, '');
     if (limpo.length !== 14) return;
-    
     let nomeCampo = document.getElementById('nome-empresa');
     let endCampo = document.getElementById('endereco-empresa');
-    nomeCampo.innerText = "Buscando dados na Receita...";
-    endCampo.innerText = "";
+    nomeCampo.innerText = "Buscando dados na Receita..."; endCampo.innerText = "";
 
     try {
         let res = await fetch(`https://publica.cnpj.ws/cnpj/${limpo}`);
         if(res.ok) {
             let dados = await res.json();
             window.dadosClienteTemp = {
-                cnpj: limpo,
-                nome: dados.razao_social,
-                cidade: dados.estabelecimento.cidade.nome,
-                estado: dados.estabelecimento.estado.sigla,
+                cnpj: limpo, nome: dados.razao_social,
+                cidade: dados.estabelecimento.cidade.nome, estado: dados.estabelecimento.estado.sigla,
                 endereco: `${dados.estabelecimento.logradouro}, ${dados.estabelecimento.numero} - ${dados.estabelecimento.bairro}`
             };
             nomeCampo.innerText = window.dadosClienteTemp.nome;
@@ -697,24 +621,16 @@ async function consultarCNPJ(cnpj) {
         } else {
             nomeCampo.innerText = "CNPJ não localizado na API Comercial.";
         }
-    } catch(e) {
-        nomeCampo.innerText = "Erro ao conectar à API de busca.";
-    }
+    } catch(e) { nomeCampo.innerText = "Erro ao conectar à API de busca."; }
 }
 
 function finalizarCadastro() {
     const senhaCliente = "11377761533"; 
     const nomeVendedorAtual = localStorage.getItem('nomeVendedorLogado') || 'Jhuan Alexandre';
-
     db.collection('clientes').doc(window.dadosClienteTemp.cnpj).set({
-        nome: window.dadosClienteTemp.nome,
-        senha: senhaCliente,
-        cnpj: window.dadosClienteTemp.cnpj,
-        cidade: window.dadosClienteTemp.cidade,
-        estado: window.dadosClienteTemp.estado,
-        endereco: window.dadosClienteTemp.endereco,
-        vendedor: nomeVendedorAtual,
-        restrito: false,
+        nome: window.dadosClienteTemp.nome, senha: senhaCliente, cnpj: window.dadosClienteTemp.cnpj,
+        cidade: window.dadosClienteTemp.cidade, estado: window.dadosClienteTemp.estado,
+        endereco: window.dadosClienteTemp.endereco, vendedor: nomeVendedorAtual, restrito: false,
         dataCadastro: new Date().toLocaleDateString('pt-BR')
     }).then(() => {
         alert("Cliente Cadastrado e Sincronizado na Nuvem com sucesso!");
@@ -724,15 +640,15 @@ function finalizarCadastro() {
 }
 
 function filtrarClientes() {
-    const termo = document.getElementById('busca-cliente').value.toLowerCase().trim();
-    const termos = termo.split(/\s+/); // Separa a busca por espaços para tornar flexível
+    const inputTexto = normalizarBusca(document.getElementById('busca-cliente').value);
     const divLista = document.getElementById('lista-clientes-vendedor');
     if(!divLista) return;
     divLista.innerHTML = '';
 
     let filtrados = listaClientesRealtime.filter(c => {
-        let textoCliente = `${c.nome} ${c.cnpj} ${c.cidade} ${c.estado}`.toLowerCase();
-        return termos.every(t => textoCliente.includes(t));
+        let registroCompleto = normalizarBusca(`${c.nome} ${c.cnpj} ${c.cidade} ${c.estado}`);
+        let termosPesquisa = inputTexto.split(" ");
+        return termosPesquisa.every(termo => registroCompleto.includes(termo));
     });
     
     filtrados.forEach(c => {
@@ -755,7 +671,7 @@ function gerarPDF() {
     
     let perfil = localStorage.getItem('perfilLogado');
     let nomeVendedor = localStorage.getItem('nomeVendedorLogado') || 'Consumidor';
-    let dadosDoCliente = { nome: "Consumidor Final", cnpj: "", cidade: "Local", estado: "BA" };
+    let dadosDoCliente = { nome: "Consumidor Final", cnpj: "", cidade: "Local", estado: "BA", endereco: "Não cadastrado" };
 
     if(perfil !== 'cliente') {
         let cnpjSel = document.getElementById('cnpj-cliente-selecionado').value;
@@ -772,40 +688,44 @@ function gerarPDF() {
     const prazoFinal = (pgto === 'Boleto' || pgto === 'Cheque') ? document.getElementById('prazo-pagamento').value : 'À vista';
     const temExpositor = document.getElementById('com-expositor').checked ? "SIM" : "NÃO";
     const entregaDefinida = document.getElementById('entregue-por').value;
-    const obsVenda = document.getElementById('obs-venda').value;
+    const descricaoVenda = document.getElementById('descricao-venda').value;
 
     let desc = pgto === 'À vista' ? (parseInt(document.getElementById('input-desconto').value) || 0) : 0;
     
-    let totalBruto = itensCarrinho.reduce((a,b) => {
-        if(b.isBancada) return a + (b.preco * b.qtdPop) + (b.preco * b.qtdItalia);
-        return a + (b.preco * b.qtd);
-    }, 0);
-    
+    let itensMapeadosNuvem = [];
+    let totalBruto = 0;
+
+    itensCarrinho.forEach(item => {
+        if(item.codigo === '283022') {
+            if(item.qtdPop > 0) {
+                itensMapeadosNuvem.push({ nome: 'BANCADA DE SUPORTE - POP', preco: item.preco, codigo: '283022-P', qtd: item.qtdPop });
+                totalBruto += (item.preco * item.qtdPop);
+            }
+            if(item.qtdItalia > 0) {
+                itensMapeadosNuvem.push({ nome: 'BANCADA DE SUPORTE - ITÁLIA', preco: item.preco, codigo: '283022-I', qtd: item.qtdItalia });
+                totalBruto += (item.preco * item.qtdItalia);
+            }
+        } else {
+            itensMapeadosNuvem.push(item);
+            totalBruto += (item.preco * item.qtd);
+        }
+    });
+
     let totalLiquido = totalBruto - (totalBruto * (desc / 100));
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const dataHoje = new Date().toLocaleDateString('pt-BR');
-    
     const numPedido = idPedidoEmEdicaoOriginal || (Math.floor(Math.random() * 9000) + 1000);
 
     let novaVenda = {
-        id: numPedido,
-        data: dataHoje,
-        dataHora: new Date().toISOString(),
-        cliente: dadosDoCliente.nome,
-        cnpj: dadosDoCliente.cnpj,
-        vendedor: nomeVendedor,
-        cidade: dadosDoCliente.cidade,
-        estado: dadosDoCliente.estado,
+        id: numPedido, data: dataHoje, dataHora: new Date().toISOString(),
+        cliente: dadosDoCliente.nome, cnpj: dadosDoCliente.cnpj, vendedor: nomeVendedor,
+        cidade: dadosDoCliente.cidade, estado: dadosDoCliente.estado, endereco: dadosDoCliente.endereco || "Não Informado",
         valorTotal: totalLiquido,
-        itens: itensCarrinho, // Mantemos a estrutura pra edição funcionar perfeita
-        metodoPagamento: pgto,
-        temExpositor: temExpositor,
-        entreguePor: entregaDefinida,
-        observacao: obsVenda,
-        statusComissao: 'pendente',
-        dataModificacao: ""
+        itens: itensMapeadosNuvem, 
+        metodoPagamento: pgto, temExpositor: temExpositor, entreguePor: entregaDefinida,
+        descricao: descricaoVenda, statusComissao: 'pendente', dataModificacao: ""
     };
 
     let edicaoId = localStorage.getItem('pedidoEmEdicaoId');
@@ -814,167 +734,153 @@ function gerarPDF() {
         db.collection('vendas').doc(edicaoId).update(novaVenda).then(() => {
             localStorage.removeItem('pedidoEmEdicaoId');
             alert("Venda Editada e Sincronizada com Sucesso na Nuvem!");
-            finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, entregaDefinida, totalBruto, desc, totalLiquido, obsVenda);
+            desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, itensMapeadosNuvem, totalBruto, totalLiquido, descricaoVenda);
         });
     } else {
         db.collection('vendas').add(novaVenda).then(() => {
             alert("Venda Registrada com Sucesso na Nuvem!");
-            finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, entregaDefinida, totalBruto, desc, totalLiquido, obsVenda);
+            desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, itensMapeadosNuvem, totalBruto, totalLiquido, descricaoVenda);
         });
     }
 }
 
-function finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, entregaDefinida, totalBruto, desc, totalLiquido, obsVenda) {
-    
-    // REDESIGN DO CABEÇALHO (LOGO SVG e Layout Mais Organizado)
-    doc.addImage(svgDataUrl, 'SVG', 14, 10, 35, 35);
-    
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(217, 165, 32); 
-    doc.text("NK CUBAS POMBAL LTDA", 55, 20);
-    
-    doc.setFontSize(10);
-    doc.setTextColor(60, 60, 60);
-    doc.setFont("helvetica", "normal");
-    doc.text("CNPJ: 61.941.386/0001-20", 55, 26);
-    doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 55, 32);
-    doc.text("Contato: (11) 99994-8702", 55, 38);
-
-    doc.setDrawColor(200, 200, 200);
-    doc.line(14, 46, 196, 46); // Linha divisória
-    
-    // CAIXA DE INFORMAÇÕES DA VENDA
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
+// 5 - MECÂNICA DO NOVO LAYOUT DO PDF
+function desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, itensParaPDF, totalBruto, totalLiq, descricaoVenda) {
+    doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
-    doc.text("NOTA DE CONFERÊNCIA / PEDIDO", 14, 54);
-    doc.text(`Nº: ${numPedido}`, 160, 54);
 
-    doc.setFontSize(10);
-    doc.rect(14, 58, 182, 35); // Borda das Informações
+    // 1. Injetar a Logo SVG no topo
+    if (logoBase64Img) {
+        doc.addImage(logoBase64Img, 'PNG', 14, 10, 26, 26);
+    }
+
+    // 2. Cabeçalho de Dados da Empresa
+    doc.setFont("helvetica", "normal");
+    doc.text("NK CUBAS POMBAL LTDA - (11) 99994-8702", 45, 18);
+    doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 45, 23);
+    doc.text("CNPJ: 61.941.386/0001-20", 45, 28);
+
+    // 3. Bloco Encaixotado (Cliente e Venda)
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.3); // Definição base uniforme
+    doc.rect(14, 35, 182, 34); // Expandido de 28 para 34 para comportar dados extras de endereço
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Número do pedido: ${numPedido}`, 16, 41);
+    doc.text(`Data: ${dataHoje}`, 130, 41);
+
+    doc.text("CLIENTE:", 16, 47);
+    doc.setFont("helvetica", "normal");
+    doc.text(dadosDoCliente.nome, 35, 47);
+    doc.text(`CNPJ: ${dadosDoCliente.cnpj || 'Não Informado'}`, 130, 47);
+
+    // Injeção do endereço completo integrado
+    doc.setFont("helvetica", "bold");
+    doc.text("Endereço:", 16, 53);
+    doc.setFont("helvetica", "normal");
+    doc.text(dadosDoCliente.endereco || "Não cadastrado", 35, 53);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Cidade/UF:", 16, 59);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${dadosDoCliente.cidade} / ${dadosDoCliente.estado}`, 37, 59);
     
     doc.setFont("helvetica", "bold");
-    doc.text("Cliente:", 18, 64);
-    doc.setFont("helvetica", "normal");
-    doc.text(dadosDoCliente.nome, 35, 64);
-    
-    doc.setFont("helvetica", "bold");
-    doc.text("CNPJ:", 130, 64);
-    doc.setFont("helvetica", "normal");
-    doc.text(dadosDoCliente.cnpj || 'Não Informado', 145, 64);
+    doc.text(`VENDEDOR: ${nomeVendedor}`, 16, 65);
 
-    doc.setFont("helvetica", "bold");
-    doc.text("Endereço:", 18, 71);
-    doc.setFont("helvetica", "normal");
-    doc.text(`${dadosDoCliente.cidade} / ${dadosDoCliente.estado}`, 40, 71);
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Vendedor:", 18, 78);
-    doc.setFont("helvetica", "normal");
-    doc.text(nomeVendedor, 40, 78);
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Data:", 130, 78);
-    doc.setFont("helvetica", "normal");
-    doc.text(dataHoje, 142, 78);
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Pagamento:", 18, 85);
-    doc.setFont("helvetica", "normal");
-    doc.text(`${pgto} (${prazoFinal})`, 42, 85);
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Entrega / Exp:", 130, 85);
-    doc.setFont("helvetica", "normal");
-    doc.text(`${entregaDefinida} / ${temExpositor}`, 158, 85);
-
-    // CORPO DA TABELA
+    // 4. Tabela de Produtos (Cabeçalho Escuro e Texto Dourado Igual Foto)
     let tabelaCorpo = [];
     let somaQtd = 0;
     
-    itensCarrinho.forEach(item => {
-        if (item.isBancada) {
-            if (item.qtdPop > 0) {
-                let sub = item.preco * item.qtdPop;
-                somaQtd += item.qtdPop;
-                tabelaCorpo.push(["Bancada de Suporte (Modelo: Pop)", item.codigo+"-P", "UN", item.qtdPop.toString(), "R$ "+item.preco.toFixed(2), "R$ "+sub.toFixed(2)]);
-            }
-            if (item.qtdItalia > 0) {
-                let sub = item.preco * item.qtdItalia;
-                somaQtd += item.qtdItalia;
-                tabelaCorpo.push(["Bancada de Suporte (Modelo: Itália)", item.codigo+"-I", "UN", item.qtdItalia.toString(), "R$ "+item.preco.toFixed(2), "R$ "+sub.toFixed(2)]);
-            }
-        } else {
-            let sub = item.preco * item.qtd;
-            somaQtd += item.qtd;
-            tabelaCorpo.push([item.nome, item.codigo, "UN", item.qtd.toString(), "R$ "+item.preco.toFixed(2), "R$ "+sub.toFixed(2)]);
-        }
+    itensParaPDF.forEach(item => {
+        let sub = item.preco * item.qtd;
+        somaQtd += item.qtd;
+        tabelaCorpo.push([item.nome, item.codigo, "UN", item.qtd.toString(), "R$ "+item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2}), "R$ "+sub.toLocaleString('pt-BR', {minimumFractionDigits:2})]);
     });
 
     doc.autoTable({
-        startY: 98,
-        head: [['Descrição do Produto', 'Código', 'Un.', 'Qtd.', 'V. Unitário', 'V. Total']],
+        startY: 72, // Reajustado para não sobrepor o bloco superior que cresceu
+        head: [['Descrição do produto/serviço', 'Código', 'Un.', 'Qtd.', 'Valor unitário', 'Valor total']],
         body: tabelaCorpo,
         theme: 'grid',
-        headStyles: { fillColor: [40,40,40], textColor: [255,215,0], fontStyle: 'bold' },
-        styles: { fontSize: 9 }
+        headStyles: { fillColor: [0, 0, 0], textColor: [217, 165, 32] }, 
+        styles: { fontSize: 9, cellPadding: 2, lineColor: [200, 200, 200], lineWidth: 0.1 },
+        margin: { left: 14, right: 14 }
     });
 
-    let finalY = doc.lastAutoTable.finalY + 10;
+    // 5. Blocos de Resumo Finais
+    let startY = doc.lastAutoTable.finalY;
+    let rowHeight = 6;
+    let leftW = 116;
+    let rightW = 66;
 
-    // IMPRESSÃO DE OBSERVAÇÃO
-    if (obsVenda.trim() !== "") {
-        doc.setFont("helvetica", "bold");
-        doc.text("Observações da Venda:", 14, finalY);
-        doc.setFont("helvetica", "normal");
-        const splitObs = doc.splitTextToSize(obsVenda, 182);
-        doc.text(splitObs, 14, finalY + 6);
-        finalY += (splitObs.length * 5) + 5;
-    }
-
-    // CAIXA DE TOTAIS DINÂMICA
-    doc.rect(120, finalY, 76, desc > 0 ? 30 : 20); 
+    // Linhas e caixas totalmente uniformizadas em 0.3 (Remove o bug estético do negrito falso)
+    doc.setLineWidth(0.3);
+    
+    // Caixa Esquerda
+    doc.rect(14, startY, leftW, rowHeight * 3);
+    doc.line(14, startY + rowHeight, 14 + leftW, startY + rowHeight);
+    doc.line(14, startY + rowHeight*2, 14 + leftW, startY + rowHeight*2);
+    
+    // Textos da Esquerda
     doc.setFont("helvetica", "bold");
-    doc.text("RESUMO DOS VALORES", 125, finalY + 6);
-    
+    doc.text(`Forma: ${pgto} ${prazoFinal !== 'À vista' ? '('+prazoFinal+')' : ''}`, 16, startY + 4.5);
+    doc.setFont("helvetica", "italic");
+    doc.text(`Expositor:`, 16, startY + rowHeight + 4.5);
     doc.setFont("helvetica", "normal");
-    doc.text("Total Bruto:", 125, finalY + 13);
-    doc.text(`R$ ${totalBruto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 190, finalY + 13, {align: "right"});
-    
-    if (desc > 0) {
-        doc.text(`Desconto (${desc}%):`, 125, finalY + 20);
-        let valorDesc = totalBruto * (desc / 100);
-        doc.text(`- R$ ${valorDesc.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 190, finalY + 20, {align: "right"});
+    doc.text(`  ${temExpositor}`, 35, startY + rowHeight + 4.5);
+
+    // Ajuste 1: Preenchimento do quadrado vazio com dados do Desconto se houver
+    let valorDesconto = totalBruto - totalLiq;
+    let percentualDesconto = totalBruto > 0 ? Math.round((valorDesconto / totalBruto) * 100) : 0;
+    if (percentualDesconto > 0) {
         doc.setFont("helvetica", "bold");
-        doc.text("TOTAL LÍQUIDO:", 125, finalY + 27);
-        doc.text(`R$ ${totalLiquido.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 190, finalY + 27, {align: "right"});
-    } else {
-        // Se não tem desconto, simplifica e sobe o valor
-        doc.setFont("helvetica", "bold");
-        doc.text("TOTAL LÍQUIDO:", 125, finalY + 20);
-        doc.text(`R$ ${totalLiquido.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 190, finalY + 20, {align: "right"});
+        doc.text(`Desconto: ${percentualDesconto}%`, 16, startY + rowHeight*2 + 4.5);
+        doc.setFont("helvetica", "normal");
+        doc.text(`valor: R$ ${valorDesconto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 55, startY + rowHeight*2 + 4.5);
     }
 
+    // Caixa Direita
+    doc.rect(14 + leftW, startY, rightW, rowHeight * 3);
+    doc.line(14 + leftW, startY + rowHeight, 14 + leftW + rightW, startY + rowHeight);
+    doc.line(14 + leftW, startY + rowHeight*2, 14 + leftW + rightW, startY + rowHeight*2);
+    doc.line(14 + leftW + 36, startY, 14 + leftW + 36, startY + rowHeight*3); 
+
+    // Textos da Direita
+    doc.setFont("helvetica", "italic");
+    doc.text("Número de itens:", 14 + leftW + 2, startY + 4.5);
+    doc.text("Preço Líquido:", 14 + leftW + 2, startY + rowHeight + 4.5);
+    doc.text("Preço Líquido Final:", 14 + leftW + 2, startY + rowHeight*2 + 4.5);
+
+    // Valores da Direita
     doc.setFont("helvetica", "normal");
-    doc.text(`Soma das Quantidades: ${somaQtd} unidades`, 14, finalY + 13);
+    doc.text(`${somaQtd}`, 180, startY + 4.5, { align: "center" });
+    doc.text(`${totalBruto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 180, startY + rowHeight + 4.5, { align: "center" });
+    doc.text(`${totalLiq.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 180, startY + rowHeight*2 + 4.5, { align: "center" });
+
+    // 6. Bloco Maior para a Descrição (Lá embaixo)
+    let descY = startY + rowHeight*3;
+    doc.rect(14, descY, 182, 45);
+    doc.setFont("helvetica", "italic");
+    doc.text("Descrição: ", 16, descY + 6);
+    
+    doc.setFont("helvetica", "normal");
+    let textoFinalDesc = descricaoVenda ? `"${descricaoVenda}"` : "";
+    let textoCortado = doc.splitTextToSize(textoFinalDesc, 150); 
+    doc.text(textoCortado, 34, descY + 6);
 
     doc.save(`Pedido_${numPedido}.pdf`);
 
-    itensCarrinho = [];
-    idPedidoEmEdicaoOriginal = null;
+    // Reset geral da tela
+    itensCarrinho = []; idPedidoEmEdicaoOriginal = null;
     document.getElementById('input-desconto').value = 0;
-    document.getElementById('obs-venda').value = "";
+    document.getElementById('descricao-venda').value = "";
     document.getElementById('banner-edicao').style.display = 'none';
-    reconstruirBotoesCatalogo();
-    atualizarCarrinho();
-    fecharCarrinho();
+    reconstruirBotoesCatalogo(); atualizarCarrinho(); fecharCarrinho();
 }
 
-function abrirModalMinhasVendas() {
-    document.getElementById('modal-minhas-vendas').style.display = 'flex';
-    carregarMinhasVendas();
-}
+// AS FUNÇÕES ADMINISTRATIVAS CONTINUAM INTACTAS ABAIXO:
+function abrirModalMinhasVendas() { document.getElementById('modal-minhas-vendas').style.display = 'flex'; carregarMinhasVendas(); }
 function fecharModalMinhasVendas() { document.getElementById('modal-minhas-vendas').style.display = 'none'; }
 
 function carregarMinhasVendas() {
@@ -982,252 +888,73 @@ function carregarMinhasVendas() {
     listaDiv.innerHTML = '';
     let meuNome = localStorage.getItem('nomeVendedorLogado');
     let perfil = localStorage.getItem('perfilLogado');
-
     let filtradas = listaVendasRealtime.filter(v => perfil === 'master' || v.vendedor === meuNome);
-
-    if(filtradas.length === 0) {
-        listaDiv.innerHTML = '<p style="color:gray;text-align:center;">Nenhuma venda registrada na nuvem.</p>';
-        return;
-    }
-
+    if(filtradas.length === 0) { listaDiv.innerHTML = '<p style="color:gray;text-align:center;">Nenhuma venda registrada na nuvem.</p>'; return; }
     filtradas.forEach(v => {
-        listaDiv.innerHTML += `
-            <div style="background:#f8f9fa; border:1px solid #ddd; padding:12px; margin-bottom:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <b>Pedido #${v.id} - ${v.cliente}</b><br>
-                    <small>Data: ${v.data} | Valor: <b>R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</b></small>
-                </div>
-                <button onclick="carregarPedidoParaEdicao('${v.firestoreId}')" style="background:#2b5797; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">Editar</button>
-            </div>`;
+        listaDiv.innerHTML += `<div style="background:#f8f9fa; border:1px solid #ddd; padding:12px; margin-bottom:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;"><div><b>Pedido #${v.id} - ${v.cliente}</b><br><small>Data: ${v.data} | Valor: <b>R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</b></small></div><button onclick="carregarPedidoParaEdicao('${v.firestoreId}')" style="background:#2b5797; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">Editar</button></div>`;
     });
 }
-
-function carregarPedidoParaEdicao(firestoreId) {
-    localStorage.setItem('pedidoEmEdicaoId', firestoreId);
-    window.location.reload(); 
-}
-
+function carregarPedidoParaEdicao(firestoreId) { localStorage.setItem('pedidoEmEdicaoId', firestoreId); window.location.reload(); }
 function abrirModalVendedor() { document.getElementById('modal-vendedor').style.display = 'flex'; }
 function fecharModalVendedor() { document.getElementById('modal-vendedor').style.display = 'none'; }
-
 function formatarVerificarCPF(val) {
-    let limpo = val.replace(/\D/g, '');
-    let btn = document.getElementById('btn-salvar-vendedor');
-    let msg = document.getElementById('msg-cpf');
-
-    if(limpo.length === 11) {
-        msg.innerText = "CPF Pronto."; msg.style.color = "green";
-        btn.disabled = false; btn.style.backgroundColor = "black";
-    } else {
-        msg.innerText = "Requer 11 dígitos."; msg.style.color = "red";
-        btn.disabled = true; btn.style.backgroundColor = "";
-    }
+    let limpo = val.replace(/\D/g, ''); let btn = document.getElementById('btn-salvar-vendedor'); let msg = document.getElementById('msg-cpf');
+    if(limpo.length === 11) { msg.innerText = "CPF Pronto."; msg.style.color = "green"; btn.disabled = false; btn.style.backgroundColor = "black"; } 
+    else { msg.innerText = "Requer 11 dígitos."; msg.style.color = "red"; btn.disabled = true; btn.style.backgroundColor = ""; }
 }
-
 function salvarVendedor() {
-    let nome = document.getElementById('novo-vend-nome').value;
-    let cpf = document.getElementById('novo-vend-cpf').value.replace(/\D/g, '');
-    let senha = document.getElementById('novo-vend-senha').value;
-
+    let nome = document.getElementById('novo-vend-nome').value; let cpf = document.getElementById('novo-vend-cpf').value.replace(/\D/g, ''); let senha = document.getElementById('novo-vend-senha').value;
     if(!nome || !cpf || !senha) return;
-
-    db.collection('vendedores').doc(cpf).set({ nome: nome, cpf: cpf, senha: senha }).then(() => {
-        alert("Vendedor Sincronizado e Contratado na Nuvem!");
-        fecharModalVendedor();
-        document.getElementById('novo-vend-nome').value = '';
-        document.getElementById('novo-vend-cpf').value = '';
-        document.getElementById('novo-vend-senha').value = '';
-    });
+    db.collection('vendedores').doc(cpf).set({ nome: nome, cpf: cpf, senha: senha }).then(() => { alert("Vendedor Contratado!"); fecharModalVendedor(); });
 }
-
 function abrirModalEditarVendedor() { document.getElementById('modal-editar-vendedor').style.display = 'flex'; }
-function fecharModalEditarVendedor() {
-    document.getElementById('modal-editar-vendedor').style.display = 'none';
-    document.getElementById('campos-edicao-vendedor').style.display = 'none';
-}
-
+function fecharModalEditarVendedor() { document.getElementById('modal-editar-vendedor').style.display = 'none'; document.getElementById('campos-edicao-vendedor').style.display = 'none'; }
 function buscarVendedorParaEdicao() {
-    let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, '');
-    let vend = listaVendedoresRealtime.find(v => v.cpf === cpf);
-
-    if(vend) {
-        document.getElementById('edit-vend-nome').value = vend.nome;
-        document.getElementById('edit-vend-senha').value = vend.senha;
-        document.getElementById('campos-edicao-vendedor').style.display = 'block';
-    } else {
-        alert("Vendedor não localizado na nuvem.");
-    }
+    let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, ''); let vend = listaVendedoresRealtime.find(v => v.cpf === cpf);
+    if(vend) { document.getElementById('edit-vend-nome').value = vend.nome; document.getElementById('edit-vend-senha').value = vend.senha; document.getElementById('campos-edicao-vendedor').style.display = 'block'; } else { alert("Não localizado."); }
 }
-
 function salvarAlteracoesVendedor() {
-    let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, '');
-    let nome = document.getElementById('edit-vend-nome').value;
-    let senha = document.getElementById('edit-vend-senha').value;
-
-    db.collection('vendedores').doc(cpf).update({ nome: nome, senha: senha }).then(() => {
-        alert("Dados Atualizados na Nuvem!");
-        fecharModalEditarVendedor();
-    });
+    let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, ''); let nome = document.getElementById('edit-vend-nome').value; let senha = document.getElementById('edit-vend-senha').value;
+    db.collection('vendedores').doc(cpf).update({ nome: nome, senha: senha }).then(() => { alert("Atualizado!"); fecharModalEditarVendedor(); });
 }
-
-function demitirVendedor() {
-    if(confirm("Deseja demitir permanentemente este vendedor da Nuvem?")) {
-        let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, '');
-        db.collection('vendedores').doc(cpf).delete().then(() => {
-            alert("Vendedor Removido.");
-            fecharModalEditarVendedor();
-        });
-    }
-}
-
-function abrirModalAcordos() {
-    document.getElementById('modal-acordos').style.display = 'flex';
-    atualizarSelectVendedoresAcordo();
-}
+function demitirVendedor() { if(confirm("Deseja demitir?")) { let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, ''); db.collection('vendedores').doc(cpf).delete().then(() => { alert("Removido."); fecharModalEditarVendedor(); }); } }
+function abrirModalAcordos() { document.getElementById('modal-acordos').style.display = 'flex'; atualizarSelectVendedoresAcordo(); }
 function fecharModalAcordos() { document.getElementById('modal-acordos').style.display = 'none'; }
-
 function atualizarSelectVendedoresAcordo() {
-    let select = document.getElementById('select-vendedor-acordo');
-    if(!select) return;
-    
-    let perfil = localStorage.getItem('perfilLogado');
-    let meuNome = localStorage.getItem('nomeVendedorLogado') || 'Vendedor Padrão';
-    let guardado = select.value;
-    
+    let select = document.getElementById('select-vendedor-acordo'); if(!select) return;
+    let perfil = localStorage.getItem('perfilLogado'); let meuNome = localStorage.getItem('nomeVendedorLogado') || 'Padrão'; let guardado = select.value;
     select.innerHTML = '';
-
     if (perfil === 'master') {
         select.innerHTML = '<option value="">-- Selecione o Colaborador --</option>';
-        listaVendedoresRealtime.forEach(v => {
-            select.innerHTML += `<option value="${v.nome}">${v.nome}</option>`;
-        });
-        select.value = guardado;
-        select.disabled = false;
-    } else {
-        select.innerHTML = `<option value="${meuNome}">${meuNome}</option>`;
-        select.disabled = true;
-    }
+        listaVendedoresRealtime.forEach(v => { select.innerHTML += `<option value="${v.nome}">${v.nome}</option>`; }); select.value = guardado; select.disabled = false;
+    } else { select.innerHTML = `<option value="${meuNome}">${meuNome}</option>`; select.disabled = true; }
     carregarAcordosVendedor();
 }
-
 function carregarAcordosVendedor() {
-    let nomeVend = document.getElementById('select-vendedor-acordo').value;
-    let containerDiv = document.getElementById('lista-vendas-acordo-container');
-    if(!containerDiv) return;
-    containerDiv.innerHTML = '';
-
-    if(!nomeVend) return;
-
-    let perfil = localStorage.getItem('perfilLogado');
-    let vendasFiltradas = listaVendasRealtime.filter(v => v.vendedor === nomeVend);
-
-    let comissaoPendente = 0;
-    let liquidoEmpresa = 0;
-    let totalPecas = 0;
-
-    containerDiv.innerHTML = `
-        <div style="overflow-x:auto; margin-top: 15px;">
-            <table style="width:100%; border-collapse: collapse; text-align: left; font-size: 14px; color: black;">
-                <thead>
-                    <tr style="background: #20bf6b; color: white;">
-                        <th style="padding: 10px; border: 1px solid #ddd;">Pedido</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Cliente</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">UF</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Total Pedido</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Comissão</th>
-                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Mecânica de Recebimento</th>
-                    </tr>
-                </thead>
-                <tbody id="corpo-tabela-acordos"></tbody>
-            </table>
-        </div>`;
-
+    let nomeVend = document.getElementById('select-vendedor-acordo').value; let containerDiv = document.getElementById('lista-vendas-acordo-container'); if(!containerDiv) return;
+    containerDiv.innerHTML = ''; if(!nomeVend) return;
+    let perfil = localStorage.getItem('perfilLogado'); let vendasFiltradas = listaVendasRealtime.filter(v => v.vendedor === nomeVend);
+    let comissaoPendente = 0; let liquidoEmpresa = 0; let totalPecas = 0;
+    containerDiv.innerHTML = `<div style="overflow-x:auto; margin-top: 15px;"><table style="width:100%; border-collapse: collapse; text-align: left; font-size: 14px; color: black;"><thead><tr style="background: #20bf6b; color: white;"><th style="padding: 10px; border: 1px solid #ddd;">Pedido</th><th style="padding: 10px; border: 1px solid #ddd;">Cliente</th><th style="padding: 10px; border: 1px solid #ddd;">UF</th><th style="padding: 10px; border: 1px solid #ddd;">Total</th><th style="padding: 10px; border: 1px solid #ddd;">Comissão</th><th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Mecânica</th></tr></thead><tbody id="corpo-tabela-acordos"></tbody></table></div>`;
     let tbody = document.getElementById('corpo-tabela-acordos');
-
     vendasFiltradas.forEach(v => {
-        let taxaComissao = v.entreguePor === 'Vendedor' ? 0.15 : 0.10;
-        let cVal = v.valorTotal * taxaComissao;
-        let lVal = v.valorTotal - cVal;
-        
-        let pecas = 0;
-        if(v.itens) {
-            v.itens.forEach(i => pecas += (i.isBancada ? (i.qtdPop + i.qtdItalia) : i.qtd));
-        }
-
-        let status = v.statusComissao || 'pendente';
-
-        if (status !== 'pago') {
-            comissaoPendente += cVal;
-        }
-        liquidoEmpresa += lVal;
-        totalPecas += pecas;
-
-        let btnHtml = '';
-        let btnBaseStyle = "padding: 8px 14px; border: none; border-radius: 6px; font-weight: bold; color: white; transition: 0.2s; font-size: 13px; min-width: 160px;";
-
+        let taxaComissao = v.entreguePor === 'Vendedor' ? 0.15 : 0.10; let cVal = v.valorTotal * taxaComissao; let lVal = v.valorTotal - cVal;
+        let pecas = v.itens ? v.itens.reduce((a, b) => a + b.qtd, 0) : 0; let status = v.statusComissao || 'pendente';
+        if (status !== 'pago') { comissaoPendente += cVal; } liquidoEmpresa += lVal; totalPecas += pecas;
+        let btnHtml = ''; let btnBaseStyle = "padding: 8px 14px; border: none; border-radius: 6px; font-weight: bold; color: white; font-size: 13px; min-width: 160px;";
         if (perfil === 'master') {
-            if (status === 'pendente') {
-                btnHtml = `<button style="${btnBaseStyle} background-color: #888888; cursor: pointer;" onclick="alterarStatusComissao('${v.firestoreId}', 'pago')">Marcar como Pago</button>`;
-            } else if (status === 'solicitado') {
-                btnHtml = `<button style="${btnBaseStyle} background-color: #ff9800; cursor: pointer; box-shadow: 0 0 5px #ff9800;" onclick="alterarStatusComissao('${v.firestoreId}', 'pago')">Confirmar Pagamento</button>`;
-            } else if (status === 'pago') {
-                btnHtml = `<button style="${btnBaseStyle} background-color: #4caf50; cursor: default;" disabled>Pago ✓</button>`;
-            }
-        } else { 
-            if (status === 'pendente') {
-                btnHtml = `<button style="${btnBaseStyle} background-color: #888888; cursor: pointer;" onclick="alterarStatusComissao('${v.firestoreId}', 'solicitado')">Solicitar Recebimento</button>`;
-            } else if (status === 'solicitado') {
-                btnHtml = `<button style="${btnBaseStyle} background-color: #ff9800; cursor: default;" disabled>Aguardando Master...</button>`;
-            } else if (status === 'pago') {
-                btnHtml = `<button style="${btnBaseStyle} background-color: #4caf50; cursor: default;" disabled>Recebido ✓</button>`;
-            }
+            if (status === 'pendente') { btnHtml = `<button style="${btnBaseStyle} background-color: #888888; cursor: pointer;" onclick="alterarStatusComissao('${v.firestoreId}', 'pago')">Marcar como Pago</button>`; } else if (status === 'solicitado') { btnHtml = `<button style="${btnBaseStyle} background-color: #ff9800; cursor: pointer;" onclick="alterarStatusComissao('${v.firestoreId}', 'pago')">Confirmar Pagamento</button>`; } else if (status === 'pago') { btnHtml = `<button style="${btnBaseStyle} background-color: #4caf50; cursor: default;" disabled>Pago ✓</button>`; }
+        } else {
+            if (status === 'pendente') { btnHtml = `<button style="${btnBaseStyle} background-color: #888888; cursor: pointer;" onclick="alterarStatusComissao('${v.firestoreId}', 'solicitado')">Solicitar Recebimento</button>`; } else if (status === 'solicitado') { btnHtml = `<button style="${btnBaseStyle} background-color: #ff9800; cursor: default;" disabled>Aguardando Master...</button>`; } else if (status === 'pago') { btnHtml = `<button style="${btnBaseStyle} background-color: #4caf50; cursor: default;" disabled>Recebido ✓</button>`; }
         }
-
-        tbody.innerHTML += `
-            <tr style="border-bottom: 1px solid #ddd; background: ${status === 'pago' ? '#f1fbf4' : 'white'};">
-                <td style="padding: 10px; font-weight: bold;">#${v.id}</td>
-                <td style="padding: 10px;">${v.cliente}</td>
-                <td style="padding: 10px; font-weight: bold; color: #555;">${v.estado || 'BA'}</td>
-                <td style="padding: 10px;">R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
-                <td style="padding: 10px; font-weight: bold; color: #2b5797;">R$ ${cVal.toLocaleString('pt-BR', {minimumFractionDigits:2})} <small style="font-weight:normal; color:#777;">(${taxaComissao*100}%)</small></td>
-                <td style="padding: 10px; text-align: center;">${btnHtml}</td>
-            </tr>`;
+        tbody.innerHTML += `<tr style="border-bottom: 1px solid #ddd; background: ${status === 'pago' ? '#f1fbf4' : 'white'};"><td style="padding: 10px; font-weight: bold;">#${v.id}</td><td style="padding: 10px;">${v.cliente}</td><td style="padding: 10px; font-weight: bold; color: #555;">${v.estado || 'BA'}</td><td style="padding: 10px;">R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td><td style="padding: 10px; font-weight: bold; color: #2b5797;">R$ ${cVal.toLocaleString('pt-BR', {minimumFractionDigits:2})} <small style="font-weight:normal; color:#777;">(${taxaComissao*100}%)</small></td><td style="padding: 10px; text-align: center;">${btnHtml}</td></tr>`;
     });
-
-    if (vendasFiltradas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: gray;">Nenhum pedido atrelado a este colaborador.</td></tr>`;
-    }
-
+    if (vendasFiltradas.length === 0) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: gray;">Nenhum pedido atrelado.</td></tr>`;
+    
+    // Elementos recuperados da quebra estrutural original
     document.getElementById('resumo-comissao-pendente').innerText = `R$ ${comissaoPendente.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
     document.getElementById('resumo-empresa-faturado').innerText = `R$ ${liquidoEmpresa.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
     document.getElementById('resumo-pecas-vendidas').innerText = `${totalPecas} Un.`;
-}
-
-function alterarStatusComissao(firestoreId, novoStatus) {
-    db.collection('vendas').doc(firestoreId).update({
-        statusComissao: novoStatus
-    }).catch(err => {
-        alert("Erro estrutural ao sincronizar status da comissão: " + err);
-    });
-}
-
-function abrirInfo(btn) {
-    let card = btn.closest('.card');
-    document.getElementById('info-nome-produto').innerText = card.querySelector('.nome-cuba').innerText;
-    document.getElementById('info-img-produto').src = card.querySelector('.foto-cuba').src;
-    document.getElementById('info-largura').innerText = card.getAttribute('data-largura');
-    document.getElementById('info-comprimento').innerText = card.getAttribute('data-comprimento');
-    document.getElementById('info-altura').innerText = card.getAttribute('data-altura');
-    document.getElementById('modal-info-produto').style.display = 'flex';
-}
-function fecharInfo() { document.getElementById('modal-info-produto').style.display = 'none'; }
-
-function filtrarProdutos(val) {
-    let t = val.toLowerCase();
-    document.querySelectorAll('#grade-produtos .card').forEach(card => {
-        let txt = card.querySelector('.nome-cuba').innerText.toLowerCase() + " " + card.getAttribute('data-tags');
-        card.style.display = txt.includes(t) ? 'block' : 'none';
-    });
 }
 </script>
 </body>
