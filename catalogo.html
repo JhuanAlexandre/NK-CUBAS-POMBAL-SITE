@@ -249,22 +249,33 @@
                         <option value="Vendedor">Vendedor (15% Comissão)</option>
                     </select>
                 </div>
+                
+                <!-- Área de Desconto Dinâmica -->
                 <div id="area-desconto" style="margin-top: 10px; background: #d4edda; padding: 12px; border-radius: 6px; border: 1px solid #c3e6cb;">
                     <label style="font-weight: bold; color: #155724;">Desconto À VISTA (%):</label>
                     <input type="number" id="input-desconto" max="10" min="0" value="0" oninput="atualizarCarrinho()" style="width: 70px; padding: 5px; margin-left: 10px; border-radius: 4px; border: 1px solid #ccc;">
                     <span style="font-size: 12px; color: #155724;">(Máx 10%)</span>
                     <p style="margin-top: 5px; font-weight: bold; font-size: 15px; color: #155724;">Valor Final: R$ <span id="valor-final-desconto">0,00</span></p>
                 </div>
+
                 <div id="area-prazo" style="display: none; margin-top: 10px; background: #e9e9e9; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
                     <label style="font-size: 13px; font-weight: bold; color: black;">Prazo Liberado:</label>
                     <select id="prazo-pagamento" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; background: white; color: black;"></select>
                 </div>
-                <div id="area-selecao-cliente" style="display: none; background: #e9e9e9; padding: 12px; border-radius: 8px; margin-bottom: 15px; color: black;">
+
+                <div id="area-selecao-cliente" style="display: none; background: #e9e9e9; padding: 12px; border-radius: 8px; margin-bottom: 10px; color: black;">
                     <label style="font-weight: bold;">Para qual cliente é esta venda?</label>
-                    <input type="text" id="busca-cliente" placeholder="Buscar por Nome, Cidade ou CNPJ..." oninput="filtrarClientes()" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; background: white; color: black;">
+                    <input type="text" id="busca-cliente" placeholder="Buscar por Nome, Cidade, UF ou CNPJ..." oninput="filtrarClientes()" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; background: white; color: black;">
                     <div id="lista-clientes-vendedor" style="max-height: 120px; overflow-y: auto; margin-top: 10px; border-radius: 4px;"></div>
                     <input type="hidden" id="cnpj-cliente-selecionado">
                 </div>
+
+                <!-- Nova Área: Observação da Venda -->
+                <div style="background: #e9e9e9; padding: 12px; border-radius: 8px; margin-bottom: 15px; color: black;">
+                    <label style="font-weight: bold;">Descrição / Observação da Venda:</label>
+                    <textarea id="obs-venda" rows="2" placeholder="Ex: troca de uma cuba onix, entregar na doca a esquerda..." style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
                 <button class="btn-finalizar" onclick="gerarPDF()">FINALIZAR COMPRA E GERAR PDF</button>
             </div>
         </div>
@@ -338,7 +349,7 @@
         </div>
     </div>
 
-    <!-- PAINEL DE ACORDOS - ACESSÍVEL AGORA PARA VENDEDOR E MASTER -->
+    <!-- PAINEL DE ACORDOS -->
     <div id="modal-acordos" class="modal">
         <div class="modal-conteudo" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 95%; max-width: 850px; max-height: 85vh; overflow-y: auto;">
             <span class="fechar-modal" onclick="fecharModalAcordos()">&times;</span>
@@ -364,6 +375,21 @@ let listaClientesRealtime = [];
 let listaVendedoresRealtime = [];
 let listaVendasRealtime = [];
 let idPedidoEmEdicaoOriginal = null;
+
+// SVG String Convertido para DataURL nativo do jsPDF
+const svgLogoRaw = `<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 160 L450 160 Q445 300 370 340 L130 340 Q55 300 50 160" fill="none" stroke="#D9A520" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <g fill="#D9A520">
+        <rect x="245" y="40" width="70" height="10" rx="5"/>
+        <rect x="288" y="55" width="30" height="22" rx="10"/>
+        <path d="M215 95 Q215 70 235 70 L315 70 L315 145 L290 145 L290 90 L235 90 Q235 105 220 105 L215 105 Q210 105 210 100 L210 95 Q210 90 215 90"/>
+        <rect x="205" y="100" width="18" height="8" rx="4"/>
+    </g>
+    <text x="250" y="410" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="42" font-weight="bold" fill="#D9A520">NK CUBAS</text>
+    <text x="250" y="470" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="42" font-weight="bold" fill="#D9A520">POMBAL</text>
+</svg>`;
+const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgLogoRaw);
+
 
 window.onload = function() {
     let perfil = localStorage.getItem('perfilLogado');
@@ -394,7 +420,7 @@ window.onload = function() {
         let nomeVend = localStorage.getItem('nomeVendedorLogado') || 'Vendedor Padrão';
         document.getElementById('btn-cadastrar-cliente').style.display = 'block';
         document.getElementById('btn-minhas-vendas').style.display = 'block';
-        document.getElementById('btn-acordos-vendedores').style.display = 'block'; // Liberado para vendedores
+        document.getElementById('btn-acordos-vendedores').style.display = 'block';
         document.getElementById('info-vendedor-rodape').style.display = 'block';
         document.getElementById('nome-vendedor-tela').innerText = nomeVend;
         document.getElementById('area-selecao-cliente').style.display = 'block';
@@ -431,6 +457,10 @@ window.onload = function() {
                     document.getElementById('cnpj-cliente-selecionado').value = dados.cnpj;
                     document.getElementById('busca-cliente').value = dados.cliente;
                 }
+
+                if(dados.observacao) {
+                    document.getElementById('obs-venda').value = dados.observacao;
+                }
                 
                 reconstruirBotoesCatalogo();
                 abrirCarrinho();
@@ -462,7 +492,12 @@ function mudarBotao(botao) {
         botao.style.backgroundColor = "";
         botao.style.color = "";
     } else {
-        itensCarrinho.push({ nome: nome, preco: preco, codigo: codigo, qtd: 1 });
+        // Lógica Especial da Bancada
+        if(codigo === "283022") {
+            itensCarrinho.push({ codigo: codigo, nome: nome, preco: preco, isBancada: true, qtd: 1, qtdPop: 1, qtdItalia: 0 });
+        } else {
+            itensCarrinho.push({ nome: nome, preco: preco, codigo: codigo, qtd: 1 });
+        }
         botao.innerText = "✓ No Carrinho (1)";
         botao.style.backgroundColor = "#20bf6b";
         botao.style.color = "white";
@@ -476,7 +511,8 @@ function reconstruirBotoesCatalogo() {
         let cod = btn.getAttribute('data-codigo');
         let item = itensCarrinho.find(i => i.codigo === cod);
         if (item) {
-            btn.innerText = `✓ No Carrinho (${item.qtd})`;
+            let qty = item.isBancada ? (item.qtdPop + item.qtdItalia) : item.qtd;
+            btn.innerText = `✓ No Carrinho (${qty})`;
             btn.style.backgroundColor = "#20bf6b";
             btn.style.color = "white";
         } else {
@@ -499,25 +535,74 @@ function alterarQtdItem(codigo, delta) {
     atualizarCarrinho();
 }
 
+function alterarQtdBancada(codigo, tipo, delta) {
+    let item = itensCarrinho.find(i => i.codigo === codigo);
+    if (item) {
+        if (tipo === 'pop') item.qtdPop += delta;
+        if (tipo === 'italia') item.qtdItalia += delta;
+        
+        if (item.qtdPop < 0) item.qtdPop = 0;
+        if (item.qtdItalia < 0) item.qtdItalia = 0;
+
+        item.qtd = item.qtdPop + item.qtdItalia; // Para contagem do master
+
+        if (item.qtdPop === 0 && item.qtdItalia === 0) {
+            itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo);
+        }
+    }
+    reconstruirBotoesCatalogo();
+    atualizarCarrinho();
+}
+
 function atualizarCarrinho() {
-    document.getElementById('contador-carrinho').innerText = itensCarrinho.reduce((a, b) => a + b.qtd, 0);
+    let contQtd = 0;
+    itensCarrinho.forEach(b => contQtd += (b.isBancada ? (b.qtdPop + b.qtdItalia) : b.qtd));
+    document.getElementById('contador-carrinho').innerText = contQtd;
+    
     let lista = document.getElementById('lista-itens-carrinho');
     lista.innerHTML = '';
     
     let total = 0;
     itensCarrinho.forEach(item => {
-        let sub = item.preco * item.qtd;
-        total += sub;
-        lista.innerHTML += `
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px; color: black;">
-                <div><b>${item.nome}</b><br>R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <button onclick="alterarQtdItem('${item.codigo}', -1)" style="padding:2px 8px;">-</button>
-                    <span><b>${item.qtd}</b></span>
-                    <button onclick="alterarQtdItem('${item.codigo}', 1)" style="padding:2px 8px;">+</button>
-                    <span style="margin-left:10px; font-weight:bold;">R$ ${sub.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+        if (item.isBancada) {
+            let subPop = item.preco * item.qtdPop;
+            let subItalia = item.preco * item.qtdItalia;
+            total += subPop + subItalia;
+
+            lista.innerHTML += `
+            <div style="margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:10px; color: black; background: #fdfdfd; padding: 10px; border-radius: 6px;">
+                <b>Bancada de Suporte NK</b><br>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-left:10px;">
+                    <span style="font-size:14px;">↳ Modelo Pop (R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})})</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button onclick="alterarQtdBancada('${item.codigo}', 'pop', -1)" style="padding:4px 10px; cursor:pointer;">-</button>
+                        <span><b>${item.qtdPop}</b></span>
+                        <button onclick="alterarQtdBancada('${item.codigo}', 'pop', 1)" style="padding:4px 10px; cursor:pointer;">+</button>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-left:10px;">
+                    <span style="font-size:14px;">↳ Modelo Itália (R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})})</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button onclick="alterarQtdBancada('${item.codigo}', 'italia', -1)" style="padding:4px 10px; cursor:pointer;">-</button>
+                        <span><b>${item.qtdItalia}</b></span>
+                        <button onclick="alterarQtdBancada('${item.codigo}', 'italia', 1)" style="padding:4px 10px; cursor:pointer;">+</button>
+                    </div>
                 </div>
             </div>`;
+        } else {
+            let sub = item.preco * item.qtd;
+            total += sub;
+            lista.innerHTML += `
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px; color: black;">
+                    <div><b>${item.nome}</b><br>R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button onclick="alterarQtdItem('${item.codigo}', -1)" style="padding:2px 8px;">-</button>
+                        <span><b>${item.qtd}</b></span>
+                        <button onclick="alterarQtdItem('${item.codigo}', 1)" style="padding:2px 8px;">+</button>
+                        <span style="margin-left:10px; font-weight:bold;">R$ ${sub.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
+                    </div>
+                </div>`;
+        }
     });
 
     document.getElementById('valor-total').innerText = total.toLocaleString('pt-BR', {minimumFractionDigits:2});
@@ -537,7 +622,7 @@ function atualizarCarrinho() {
         textoExpositor.innerText = "COM EXPOSITOR (Requer R$ 3.000+)";
     }
 
-    atualizarPrazos();
+    atualizarPrazos(); // Chama para controlar também a visualização do Desconto
     
     let desc = parseInt(document.getElementById('input-desconto').value) || 0;
     if (desc > 10) { desc = 10; document.getElementById('input-desconto').value = 10; }
@@ -552,6 +637,16 @@ function atualizarPrazos() {
     const areaPrazo = document.getElementById('area-prazo');
     const selectPrazo = document.getElementById('prazo-pagamento');
     const cnpjAtivo = document.getElementById('cnpj-cliente-selecionado').value || localStorage.getItem('cnpjClienteAtivo');
+    const areaDesconto = document.getElementById('area-desconto');
+
+    // Lógica para esconder o Desconto se não for a vista
+    if(metodo === 'À vista') {
+        areaDesconto.style.display = 'block';
+    } else {
+        areaDesconto.style.display = 'none';
+        document.getElementById('input-desconto').value = 0; 
+        // Não chamamos atualizarCarrinho() de volta pra evitar loop infinito, mas manipulamos os totais na hora de gerar pdf
+    }
 
     let clienteDoc = listaClientesRealtime.find(c => c.cnpj === cnpjAtivo);
     if (clienteDoc && clienteDoc.restrito && metodo === 'Boleto') {
@@ -629,12 +724,16 @@ function finalizarCadastro() {
 }
 
 function filtrarClientes() {
-    const termo = document.getElementById('busca-cliente').value.toLowerCase();
+    const termo = document.getElementById('busca-cliente').value.toLowerCase().trim();
+    const termos = termo.split(/\s+/); // Separa a busca por espaços para tornar flexível
     const divLista = document.getElementById('lista-clientes-vendedor');
     if(!divLista) return;
     divLista.innerHTML = '';
 
-    let filtrados = listaClientesRealtime.filter(c => c.nome.toLowerCase().includes(termo) || c.cnpj.includes(termo) || c.cidade.toLowerCase().includes(termo));
+    let filtrados = listaClientesRealtime.filter(c => {
+        let textoCliente = `${c.nome} ${c.cnpj} ${c.cidade} ${c.estado}`.toLowerCase();
+        return termos.every(t => textoCliente.includes(t));
+    });
     
     filtrados.forEach(c => {
         divLista.innerHTML += `
@@ -673,9 +772,15 @@ function gerarPDF() {
     const prazoFinal = (pgto === 'Boleto' || pgto === 'Cheque') ? document.getElementById('prazo-pagamento').value : 'À vista';
     const temExpositor = document.getElementById('com-expositor').checked ? "SIM" : "NÃO";
     const entregaDefinida = document.getElementById('entregue-por').value;
+    const obsVenda = document.getElementById('obs-venda').value;
 
-    let desc = parseInt(document.getElementById('input-desconto').value) || 0;
-    let totalBruto = itensCarrinho.reduce((a,b) => a + (b.preco * b.qtd), 0);
+    let desc = pgto === 'À vista' ? (parseInt(document.getElementById('input-desconto').value) || 0) : 0;
+    
+    let totalBruto = itensCarrinho.reduce((a,b) => {
+        if(b.isBancada) return a + (b.preco * b.qtdPop) + (b.preco * b.qtdItalia);
+        return a + (b.preco * b.qtd);
+    }, 0);
+    
     let totalLiquido = totalBruto - (totalBruto * (desc / 100));
 
     const { jsPDF } = window.jspdf;
@@ -694,11 +799,12 @@ function gerarPDF() {
         cidade: dadosDoCliente.cidade,
         estado: dadosDoCliente.estado,
         valorTotal: totalLiquido,
-        itens: itensCarrinho,
+        itens: itensCarrinho, // Mantemos a estrutura pra edição funcionar perfeita
         metodoPagamento: pgto,
         temExpositor: temExpositor,
         entreguePor: entregaDefinida,
-        statusComissao: 'pendente', // Estados: pendente, solicitado, pago
+        observacao: obsVenda,
+        statusComissao: 'pendente',
         dataModificacao: ""
     };
 
@@ -708,60 +814,157 @@ function gerarPDF() {
         db.collection('vendas').doc(edicaoId).update(novaVenda).then(() => {
             localStorage.removeItem('pedidoEmEdicaoId');
             alert("Venda Editada e Sincronizada com Sucesso na Nuvem!");
-            finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor);
+            finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, entregaDefinida, totalBruto, desc, totalLiquido, obsVenda);
         });
     } else {
         db.collection('vendas').add(novaVenda).then(() => {
             alert("Venda Registrada com Sucesso na Nuvem!");
-            finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor);
+            finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, entregaDefinida, totalBruto, desc, totalLiquido, obsVenda);
         });
     }
 }
 
-function finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor) {
-    doc.setFontSize(9);
-    doc.text("NK CUBAS POMBAL LTDA - (11) 99994-8702", 14, 27);
-    doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 14, 32);
-    doc.text("CNPJ: 61.941.386/0001-20", 14, 37);
-    doc.rect(14, 43, 180, 32);
+function finalizarProcessoVenda(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, entregaDefinida, totalBruto, desc, totalLiquido, obsVenda) {
+    
+    // REDESIGN DO CABEÇALHO (LOGO SVG e Layout Mais Organizado)
+    doc.addImage(svgDataUrl, 'SVG', 14, 10, 35, 35);
+    
+    doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text(`Número do pedido: ${numPedido}`, 16, 49);
-    doc.text(`Data: ${dataHoje}`, 140, 49);
-    doc.text("CLIENTE:", 16, 57);
+    doc.setTextColor(217, 165, 32); 
+    doc.text("NK CUBAS POMBAL LTDA", 55, 20);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(60, 60, 60);
     doc.setFont("helvetica", "normal");
-    doc.text(dadosDoCliente.nome, 35, 57);
-    doc.text(`CNPJ: ${dadosDoCliente.cnpj || 'Não Informado'}`, 140, 57);
-    doc.text(`Localidade: ${dadosDoCliente.cidade} / ${dadosDoCliente.estado}`, 16, 63);
-    doc.setFont("helvetica", "bold");
-    doc.text(`VENDEDOR: ${nomeVendedor}`, 16, 70);
-    doc.text(`Forma: ${pgto} (${prazoFinal}) | Expositor: ${temExpositor}`, 95, 70);
+    doc.text("CNPJ: 61.941.386/0001-20", 55, 26);
+    doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 55, 32);
+    doc.text("Contato: (11) 99994-8702", 55, 38);
 
+    doc.setDrawColor(200, 200, 200);
+    doc.line(14, 46, 196, 46); // Linha divisória
+    
+    // CAIXA DE INFORMAÇÕES DA VENDA
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    doc.text("NOTA DE CONFERÊNCIA / PEDIDO", 14, 54);
+    doc.text(`Nº: ${numPedido}`, 160, 54);
+
+    doc.setFontSize(10);
+    doc.rect(14, 58, 182, 35); // Borda das Informações
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Cliente:", 18, 64);
+    doc.setFont("helvetica", "normal");
+    doc.text(dadosDoCliente.nome, 35, 64);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("CNPJ:", 130, 64);
+    doc.setFont("helvetica", "normal");
+    doc.text(dadosDoCliente.cnpj || 'Não Informado', 145, 64);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Endereço:", 18, 71);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${dadosDoCliente.cidade} / ${dadosDoCliente.estado}`, 40, 71);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Vendedor:", 18, 78);
+    doc.setFont("helvetica", "normal");
+    doc.text(nomeVendedor, 40, 78);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Data:", 130, 78);
+    doc.setFont("helvetica", "normal");
+    doc.text(dataHoje, 142, 78);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Pagamento:", 18, 85);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${pgto} (${prazoFinal})`, 42, 85);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Entrega / Exp:", 130, 85);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${entregaDefinida} / ${temExpositor}`, 158, 85);
+
+    // CORPO DA TABELA
     let tabelaCorpo = [];
     let somaQtd = 0;
+    
     itensCarrinho.forEach(item => {
-        let sub = item.preco * item.qtd;
-        somaQtd += item.qtd;
-        tabelaCorpo.push([item.nome, item.codigo, "UN", item.qtd.toString(), "R$ "+item.preco.toFixed(2), "R$ "+sub.toFixed(2)]);
+        if (item.isBancada) {
+            if (item.qtdPop > 0) {
+                let sub = item.preco * item.qtdPop;
+                somaQtd += item.qtdPop;
+                tabelaCorpo.push(["Bancada de Suporte (Modelo: Pop)", item.codigo+"-P", "UN", item.qtdPop.toString(), "R$ "+item.preco.toFixed(2), "R$ "+sub.toFixed(2)]);
+            }
+            if (item.qtdItalia > 0) {
+                let sub = item.preco * item.qtdItalia;
+                somaQtd += item.qtdItalia;
+                tabelaCorpo.push(["Bancada de Suporte (Modelo: Itália)", item.codigo+"-I", "UN", item.qtdItalia.toString(), "R$ "+item.preco.toFixed(2), "R$ "+sub.toFixed(2)]);
+            }
+        } else {
+            let sub = item.preco * item.qtd;
+            somaQtd += item.qtd;
+            tabelaCorpo.push([item.nome, item.codigo, "UN", item.qtd.toString(), "R$ "+item.preco.toFixed(2), "R$ "+sub.toFixed(2)]);
+        }
     });
 
     doc.autoTable({
-        startY: 82,
-        head: [['Descrição do produto/serviço', 'Código', 'Un.', 'Qtd.', 'Valor unitário', 'Valor total']],
+        startY: 98,
+        head: [['Descrição do Produto', 'Código', 'Un.', 'Qtd.', 'V. Unitário', 'V. Total']],
         body: tabelaCorpo,
         theme: 'grid',
-        headStyles: { fillColor: [30,30,30], textColor: [255,215,0] }
+        headStyles: { fillColor: [40,40,40], textColor: [255,215,0], fontStyle: 'bold' },
+        styles: { fontSize: 9 }
     });
 
-    let yF = doc.lastAutoTable.finalY + 10;
-    doc.text(`Soma das Qtdes: ${somaQtd}`, 14, yF);
-    let totalTexto = document.getElementById('valor-final-desconto').innerText;
-    doc.text(`TOTAL LIQUIDO: R$ ${totalTexto}`, 130, yF + 6);
+    let finalY = doc.lastAutoTable.finalY + 10;
+
+    // IMPRESSÃO DE OBSERVAÇÃO
+    if (obsVenda.trim() !== "") {
+        doc.setFont("helvetica", "bold");
+        doc.text("Observações da Venda:", 14, finalY);
+        doc.setFont("helvetica", "normal");
+        const splitObs = doc.splitTextToSize(obsVenda, 182);
+        doc.text(splitObs, 14, finalY + 6);
+        finalY += (splitObs.length * 5) + 5;
+    }
+
+    // CAIXA DE TOTAIS DINÂMICA
+    doc.rect(120, finalY, 76, desc > 0 ? 30 : 20); 
+    doc.setFont("helvetica", "bold");
+    doc.text("RESUMO DOS VALORES", 125, finalY + 6);
+    
+    doc.setFont("helvetica", "normal");
+    doc.text("Total Bruto:", 125, finalY + 13);
+    doc.text(`R$ ${totalBruto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 190, finalY + 13, {align: "right"});
+    
+    if (desc > 0) {
+        doc.text(`Desconto (${desc}%):`, 125, finalY + 20);
+        let valorDesc = totalBruto * (desc / 100);
+        doc.text(`- R$ ${valorDesc.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 190, finalY + 20, {align: "right"});
+        doc.setFont("helvetica", "bold");
+        doc.text("TOTAL LÍQUIDO:", 125, finalY + 27);
+        doc.text(`R$ ${totalLiquido.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 190, finalY + 27, {align: "right"});
+    } else {
+        // Se não tem desconto, simplifica e sobe o valor
+        doc.setFont("helvetica", "bold");
+        doc.text("TOTAL LÍQUIDO:", 125, finalY + 20);
+        doc.text(`R$ ${totalLiquido.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 190, finalY + 20, {align: "right"});
+    }
+
+    doc.setFont("helvetica", "normal");
+    doc.text(`Soma das Quantidades: ${somaQtd} unidades`, 14, finalY + 13);
 
     doc.save(`Pedido_${numPedido}.pdf`);
 
     itensCarrinho = [];
     idPedidoEmEdicaoOriginal = null;
     document.getElementById('input-desconto').value = 0;
+    document.getElementById('obs-venda').value = "";
     document.getElementById('banner-edicao').style.display = 'none';
     reconstruirBotoesCatalogo();
     atualizarCarrinho();
@@ -901,7 +1104,6 @@ function atualizarSelectVendedoresAcordo() {
         select.value = guardado;
         select.disabled = false;
     } else {
-        // Se for vendedor, ele só pode ver o próprio nome trancado no campo
         select.innerHTML = `<option value="${meuNome}">${meuNome}</option>`;
         select.disabled = true;
     }
@@ -923,7 +1125,6 @@ function carregarAcordosVendedor() {
     let liquidoEmpresa = 0;
     let totalPecas = 0;
 
-    // Estrutura básica da tabela de auditoria individualizada
     containerDiv.innerHTML = `
         <div style="overflow-x:auto; margin-top: 15px;">
             <table style="width:100%; border-collapse: collapse; text-align: left; font-size: 14px; color: black;">
@@ -947,18 +1148,20 @@ function carregarAcordosVendedor() {
         let taxaComissao = v.entreguePor === 'Vendedor' ? 0.15 : 0.10;
         let cVal = v.valorTotal * taxaComissao;
         let lVal = v.valorTotal - cVal;
-        let pecas = v.itens ? v.itens.reduce((a, b) => a + b.qtd, 0) : 0;
+        
+        let pecas = 0;
+        if(v.itens) {
+            v.itens.forEach(i => pecas += (i.isBancada ? (i.qtdPop + i.qtdItalia) : i.qtd));
+        }
 
         let status = v.statusComissao || 'pendente';
 
-        // Atualização dos cards informativos superiores
         if (status !== 'pago') {
             comissaoPendente += cVal;
         }
         liquidoEmpresa += lVal;
         totalPecas += pecas;
 
-        // Configuração visual dos botões por regras de estado (Cinza, Laranja e Verde)
         let btnHtml = '';
         let btnBaseStyle = "padding: 8px 14px; border: none; border-radius: 6px; font-weight: bold; color: white; transition: 0.2s; font-size: 13px; min-width: 160px;";
 
@@ -970,7 +1173,7 @@ function carregarAcordosVendedor() {
             } else if (status === 'pago') {
                 btnHtml = `<button style="${btnBaseStyle} background-color: #4caf50; cursor: default;" disabled>Pago ✓</button>`;
             }
-        } else { // Regras para o Perfil Vendedor
+        } else { 
             if (status === 'pendente') {
                 btnHtml = `<button style="${btnBaseStyle} background-color: #888888; cursor: pointer;" onclick="alterarStatusComissao('${v.firestoreId}', 'solicitado')">Solicitar Recebimento</button>`;
             } else if (status === 'solicitado') {
@@ -1003,8 +1206,6 @@ function carregarAcordosVendedor() {
 function alterarStatusComissao(firestoreId, novoStatus) {
     db.collection('vendas').doc(firestoreId).update({
         statusComissao: novoStatus
-    }).then(() => {
-        // Atualização automática via snapshot realtime
     }).catch(err => {
         alert("Erro estrutural ao sincronizar status da comissão: " + err);
     });
