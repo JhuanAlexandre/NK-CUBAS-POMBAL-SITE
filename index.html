@@ -81,7 +81,7 @@
             const senha = document.getElementById('senha').value;
 
             if (!usuario || !senha) {
-                alert("Por favor, preencha todos os campos!");
+                mostrarToast("Por favor, preencha todos os campos!");
                 return;
             }
 
@@ -100,7 +100,7 @@
                             localStorage.setItem('documentoLogado', usuario);
                             window.location.href = 'catalogo.html';
                         } else {
-                            alert("Senha do vendedor incorreta!");
+                            mostrarToast("Senha do vendedor incorreta!");
                         }
                     } else if (usuario === '61941386000120') {
                         // AUTO-RECUPERAÇÃO DO MASTER: Se o documento sumiu do Firebase, recria ao logar com as credenciais padrão
@@ -113,17 +113,17 @@
                                 localStorage.setItem('perfilLogado', 'master');
                                 localStorage.setItem('nomeVendedorLogado', "NK CUBAS MASTER");
                                 localStorage.setItem('documentoLogado', '61941386000120');
-                                alert("Cadastro Master não encontrado, mas foi restaurado e recriado com sucesso no Firebase!");
+                               mostrarToast("Cadastro Master não encontrado, mas foi restaurado e recriado com sucesso no Firebase!");
                                 window.location.href = 'catalogo.html';
                             });
                         } else {
-                            alert("Cadastro Administrativo Master não encontrado na nuvem. Use a senha de segurança para restaurar.");
+                            mostrarToast("Cadastro Administrativo Master não encontrado na nuvem. Use a senha de segurança para restaurar.");
                         }
                     } else {
-                        alert("Vendedor não encontrado ou dados incorretos!");
+                        mostrarToast("Vendedor não encontrado ou dados incorretos!");
                     }
                 }).catch((error) => {
-                    alert("Erro ao conectar ao servidor: " + error);
+                    mostrarToast("Erro ao conectar ao servidor: " + error);
                 });
             } else {
                 // Busca o cliente na Nuvem do Firebase pelo CNPJ
@@ -135,16 +135,17 @@
                             localStorage.setItem('cnpjClienteAtivo', usuario); 
                             window.location.href = 'catalogo.html';
                         } else { 
-                            alert("Senha de cliente incorreta!"); 
+                            mostrarToast("Senha de cliente incorreta!"); 
                         }
                     } else {
-                        alert("Este CNPJ não possui cadastro ativo na Nuvem. Solicite o cadastro ao seu vendedor!");
+                        mostrarToast("Este CNPJ não possui cadastro ativo na Nuvem. Solicite o cadastro ao seu vendedor!");
                     }
                 }).catch((error) => {
-                    alert("Erro ao conectar ao servidor: " + error);
+                    mostrarToast("Erro ao conectar ao servidor: " + error);
                 });
             }
         }
     </script>
 </body>
 </html>
+
