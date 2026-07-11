@@ -65,6 +65,9 @@
             <button id="btn-minhas-vendas" style="display: none; background-color: #2b5797; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalMinhasVendas()">📝 Minhas Vendas (Editar)</button>
             <button id="btn-acordos-vendedores" style="display: none; background-color: #20bf6b; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalAcordos()">🤝 Acordos com Vendedores</button>
             <button id="btn-cadastrar-vendedor" style="display: none; background-color: #222; color: white; border: 1px solid #444; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalVendedor()">⚙️ Cadastrar Vendedor (Master)</button>
+            <button id="btn-editar-produtos" style="display: none; background-color: #8e44ad; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px;" onclick="window.location.href='painel-produtos.html'">📦 Editar Produtos (Master)</button>
+
+            <button id="btn-entregas" style="display: none; background-color: #f39c12; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px;" onclick="window.location.href='entregas.html'">🚚 Painel de Entregas</button>
             <button id="btn-editar-vendedor" style="display: none; background-color: #4b6584; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalEditarVendedor()">✏️ Editar / Demitir Vendedor</button>
             <button id="btn-menu-vendas" style="display: none; background-color: #8b0000; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px;" onclick="window.location.href='vendas.html'">📊 Menu de Vendas (Painel Master)</button>
         </div>
@@ -845,25 +848,44 @@ function desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor,
     doc.text(`${totalBruto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 180, startY + rowHeight + 4.5, { align: "center" });
     doc.text(`${totalLiq.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 180, startY + rowHeight*2 + 4.5, { align: "center" });
 
-    // 6. Bloco Maior para a Descrição (Lá embaixo)
-    let descY = startY + rowHeight*3;
+   // 6. Bloco Maior para a Descrição (Lá embaixo)
+    let descY = startY + (rowHeight * 3) + 5; // Pega o Y atual (após o resumo) e dá uma pequena margem
+    let alturaPagina = doc.internal.pageSize.height;
+
+    // VERIFICAÇÃO DE QUEBRA DE PÁGINA (A mágica que resolve o bug)
+    // Se a posição Y + o tamanho do bloco (45) ultrapassar o limite da página, cria uma folha nova
+    if (descY + 45 > alturaPagina - 10) {
+        doc.addPage(); // Adiciona uma nova página no PDF
+        descY = 20;    // Posiciona o bloco de observação lá no topo dessa nova folha
+    }
+
+    // Desenha o quadrado do bloco
+    doc.setLineWidth(0.3);
     doc.rect(14, descY, 182, 45);
-    doc.setFont("helvetica", "italic");
-    doc.text("Descrição: ", 16, descY + 6);
     
+    // Título das observações
+    doc.setFont("helvetica", "bolditalic");
+    doc.text("Observações do Pedido: ", 16, descY + 6);
+    
+    // Injeção do texto informado pelo vendedor ou cliente
     doc.setFont("helvetica", "normal");
-    let textoFinalDesc = descricaoVenda ? `"${descricaoVenda}"` : "";
-    let textoCortado = doc.splitTextToSize(textoFinalDesc, 150); 
-    doc.text(textoCortado, 34, descY + 6);
+    let textoFinalDesc = descricaoVenda ? descricaoVenda : "Nenhuma observação informada.";
+    
+    // Divide o texto automaticamente para ele quebrar linha se for muito longo (limite de 178 de largura)
+    let textoCortado = doc.splitTextToSize(textoFinalDesc, 178); 
+    
+    // Imprime o texto NA LINHA DE BAIXO (descY + 12), para não amontoar em cima do título
+    doc.text(textoCortado, 16, descY + 12); 
 
     doc.save(`Pedido_${numPedido}.pdf`);
 
-    // Reset geral da tela
+    // Reset geral da tela (mantido igual ao seu código original)
     itensCarrinho = []; idPedidoEmEdicaoOriginal = null;
     document.getElementById('input-desconto').value = 0;
     document.getElementById('descricao-venda').value = "";
     document.getElementById('banner-edicao').style.display = 'none';
     reconstruirBotoesCatalogo(); atualizarCarrinho(); fecharCarrinho();
+}
 }
 
 // AS FUNÇÕES ADMINISTRATIVAS CONTINUAM INTACTAS ABAIXO:
