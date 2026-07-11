@@ -1,0 +1,516 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Produtos - NK Cubas</title>
+    
+    <!-- Scripts do Firebase (Mantendo as mesmas credenciais do seu projeto) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZAotfkbiPDmMi0nFKS0wvV9x_3QDZE3E",
+            authDomain: "nk-cubas.firebaseapp.com",
+            projectId: "nk-cubas",
+            storageBucket: "nk-cubas.firebasestorage.app",
+            messagingSenderId: "1097535658296",
+            appId: "1:1097535658296:web:3ae4e02b4b73e3343c89cd"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
+    <style>
+        /* Estilos baseados no seu tema escuro corporativo (NK Cubas) */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0d0d0d; color: #fff; padding: 20px; }
+        
+        .area-topo { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffd700; padding-bottom: 15px; margin-bottom: 20px; }
+        .area-topo h1 { color: #ffd700; text-transform: uppercase; }
+        
+        .botoes-topo button { padding: 10px 20px; font-weight: bold; font-size: 15px; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-left: 10px; }
+        .btn-voltar { background-color: #dc3545; color: white; }
+        .btn-abas { background-color: #333; color: white; }
+        .btn-abas.ativo { background-color: #ffd700; color: black; }
+        
+        .secao { display: none; }
+        .secao.ativa { display: block; }
+        
+        /* Layout Gerenciar Hierarquias (Tags) */
+        .grade-tags { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .card-tag { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 10px; }
+        .card-tag h3 { color: #ffd700; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; text-align: center; }
+        .lista-tags { display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; margin-bottom: 15px; }
+        .item-tag { display: flex; justify-content: space-between; align-items: center; background: #2a2a2a; padding: 8px 12px; border-radius: 6px; }
+        .btn-excluir-tag { background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-add-tag { width: 100%; background: #28a745; color: white; padding: 10px; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; }
+
+        /* Layout Produtos */
+        .area-acoes-produtos { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .grade-produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card-produto { background: #1a1a1a; border: 2px solid #ffd700; border-radius: 10px; padding: 15px; text-align: center; }
+        .card-produto img { width: 100%; height: 200px; object-fit: contain; background: #000; border-radius: 8px; margin-bottom: 10px; }
+        .card-produto h3 { color: #ffd700; margin-bottom: 5px; font-size: 22px; text-transform: uppercase; }
+        .card-produto p { font-size: 14px; margin-bottom: 4px; color: #ccc; }
+        .card-produto .codigo { font-size: 12px; color: #888; font-family: monospace; font-weight: bold; background: #222; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-bottom: 10px; }
+        .botoes-prod { display: flex; gap: 10px; margin-top: 15px; }
+        .botoes-prod button { flex: 1; padding: 10px; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .btn-edit { background: #17a2b8; color: white; }
+        .btn-del { background: #dc3545; color: white; }
+
+        /* Modal Formulário Produto */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; }
+        .modal-conteudo { background: #1a1a1a; color: white; padding: 25px; border-radius: 10px; width: 95%; max-width: 700px; max-height: 90vh; overflow-y: auto; border: 2px solid #ffd700; position: relative; }
+        .fechar-modal { position: absolute; right: 20px; top: 15px; font-size: 30px; color: #ffd700; cursor: pointer; font-weight: bold; }
+        
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #ffd700; }
+        .form-group input[type="text"], .form-group input[type="number"], .form-group select { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #444; background: #222; color: #fff; font-size: 15px; outline: none; }
+        .grade-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        
+        /* Checkboxes para Adjetivos */
+        .area-checkboxes { display: flex; flex-wrap: wrap; gap: 10px; background: #222; padding: 10px; border-radius: 5px; border: 1px solid #444; }
+        .area-checkboxes label { color: #fff; font-weight: normal; font-size: 14px; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        
+        /* Notificações Toast */
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 15px 20px; border-radius: 8px; color: white; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); animation: fadeIn 0.3s, fadeOut 0.5s 3s forwards; }
+        .toast.sucesso { background-color: #28a745; }
+        .toast.erro { background-color: #dc3545; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
+    </style>
+</head>
+<body>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="area-topo">
+        <h1>Painel de Produtos - Master</h1>
+        <div class="botoes-topo">
+            <button class="btn-abas ativo" onclick="mudarAba('secao-produtos')">📦 Gerenciar Produtos</button>
+            <button class="btn-abas" onclick="mudarAba('secao-tags')">🏷️ Hierarquias / Tags</button>
+            <button class="btn-voltar" onclick="window.location.href='catalogo.html'">🚪 Voltar ao Catálogo</button>
+        </div>
+    </div>
+
+    <!-- SEÇÃO 1: GERENCIAMENTO DE PRODUTOS -->
+    <div id="secao-produtos" class="secao ativa">
+        <div class="area-acoes-produtos">
+            <input type="text" id="busca-produto" placeholder="Buscar por nome ou código..." oninput="filtrarPainelProdutos()" style="padding: 10px; border-radius: 8px; width: 300px; background: #222; color: #fff; border: 1px solid #ffd700;">
+            <button onclick="abrirModalProduto()" style="background: #20bf6b; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">➕ Adicionar Novo Produto</button>
+        </div>
+        <div class="grade-produtos" id="lista-produtos-admin">
+            <!-- Renderizados via JS -->
+        </div>
+    </div>
+
+    <!-- SEÇÃO 2: GERENCIAMENTO DE TAGS / HIERARQUIA -->
+    <div id="secao-tags" class="secao">
+        <h2 style="margin-bottom: 20px; color: #ccc; text-align: center;">Módulo de Organização e Filtros do Catálogo</h2>
+        <div class="grade-tags">
+            
+            <div class="card-tag">
+                <h3>🏢 Empresa / Fabricante</h3>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 10px; text-align:center;">Top do Catálogo (Ex: NK Cubas, SP Metais)</p>
+                <div class="lista-tags" id="lista-empresas"></div>
+                <button class="btn-add-tag" onclick="adicionarTag('empresas')">+ Adicionar Empresa</button>
+            </div>
+
+            <div class="card-tag">
+                <h3>🧱 Material</h3>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 10px; text-align:center;">Ex: Louça Branca, Inox</p>
+                <div class="lista-tags" id="lista-materiais"></div>
+                <button class="btn-add-tag" onclick="adicionarTag('materiais')">+ Adicionar Material</button>
+            </div>
+
+            <div class="card-tag">
+                <h3>📂 Subcategorias</h3>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 10px; text-align:center;">Ex: Clássicas, Para Casais</p>
+                <div class="lista-tags" id="lista-subcategorias"></div>
+                <button class="btn-add-tag" onclick="adicionarTag('subcategorias')">+ Adicionar Subcategoria</button>
+            </div>
+
+            <div class="card-tag">
+                <h3>✨ Adjetivos (Filtros)</h3>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 10px; text-align:center;">Ex: Econômica, Quadrada, Fosca</p>
+                <div class="lista-tags" id="lista-adjetivos"></div>
+                <button class="btn-add-tag" onclick="adicionarTag('adjetivos')">+ Adicionar Adjetivo</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL DE CRIAR/EDITAR PRODUTO -->
+    <div id="modal-produto" class="modal">
+        <div class="modal-conteudo">
+            <span class="fechar-modal" onclick="fecharModalProduto()">&times;</span>
+            <h2 id="titulo-modal-produto" style="text-align: center; margin-bottom: 20px; color: #ffd700;">CADASTRAR PRODUTO</h2>
+            
+            <form id="form-produto" onsubmit="salvarProduto(event)">
+                <input type="hidden" id="prod-id">
+                
+                <div class="form-group">
+                    <label>Nome do Produto (Ex: CUBA ITÁLIA)</label>
+                    <input type="text" id="prod-nome" required>
+                </div>
+
+                <div class="grade-inputs">
+                    <div class="form-group">
+                        <label>Empresa</label>
+                        <select id="prod-empresa" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Material</label>
+                        <select id="prod-material" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Subcategoria</label>
+                        <select id="prod-subcategoria" required></select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Adjetivos / Tags (Selecione vários)</label>
+                    <div class="area-checkboxes" id="prod-area-adjetivos">
+                        <!-- Gerado via JS -->
+                    </div>
+                </div>
+
+                <div class="grade-inputs">
+                    <div class="form-group">
+                        <label>Preço Base (R$)</label>
+                        <input type="number" id="prod-preco" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>URL da Foto (Link)</label>
+                        <input type="text" id="prod-foto" placeholder="https://... ou caminho local" required>
+                    </div>
+                </div>
+
+                <div class="grade-inputs">
+                    <div class="form-group"><label>Largura</label><input type="text" id="prod-largura" placeholder="Ex: 35 cm"></div>
+                    <div class="form-group"><label>Comprimento</label><input type="text" id="prod-comprimento" placeholder="Ex: 40 cm"></div>
+                    <div class="form-group"><label>Altura</label><input type="text" id="prod-altura" placeholder="Ex: 12 cm"></div>
+                </div>
+
+                <div class="form-group" style="background: #333; padding: 15px; border-radius: 8px;">
+                    <label>Subprodutos (Variações no Carrinho sem alterar preço)</label>
+                    <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Ex: Na Bancada, o cliente escolhe "Modelo Pop" ou "Modelo Itália". Se não houver, deixe vazio.</p>
+                    <div id="lista-subprodutos-form"></div>
+                    <button type="button" onclick="adicionarCampoSubproduto()" style="background:#555; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer; margin-top:5px;">+ Adicionar Variação</button>
+                </div>
+
+                <button type="submit" style="width: 100%; padding: 15px; background: #ffd700; color: #000; border: none; font-weight: bold; font-size: 18px; border-radius: 8px; cursor: pointer; margin-top: 10px;">💾 SALVAR PRODUTO</button>
+            </form>
+        </div>
+    </div>
+
+<script>
+    // VARIAVEIS GLOBAIS
+    let tagsGlobais = { empresas: [], materiais: [], subcategorias: [], adjetivos: [] };
+    let produtosGlobais = [];
+
+    // VALIDAÇÃO DE ACESSO MASTER
+    window.onload = function() {
+        let perfil = localStorage.getItem('perfilLogado');
+        if (perfil !== 'master') {
+            alert("Acesso restrito à Diretoria/Master.");
+            window.location.href = 'catalogo.html';
+            return;
+        }
+
+        // CARREGA HIERARQUIAS (TAGS)
+        db.collection('configuracoes').doc('hierarquias').onSnapshot(doc => {
+            if(doc.exists) {
+                tagsGlobais = doc.data();
+            } else {
+                // Estrutura inicial se o banco estiver vazio
+                tagsGlobais = { empresas: ["NK Cubas", "SP Metais"], materiais: ["Louça Sintética Branca"], subcategorias: ["Clássicas"], adjetivos: ["Econômica"] };
+                db.collection('configuracoes').doc('hierarquias').set(tagsGlobais);
+            }
+            renderizarTagsPainel();
+            alimentarSelectsDoFormulario();
+        });
+
+        // CARREGA PRODUTOS
+        db.collection('produtos').onSnapshot(snapshot => {
+            produtosGlobais = [];
+            snapshot.forEach(doc => { produtosGlobais.push({ id: doc.id, ...doc.data() }); });
+            renderizarProdutos();
+        });
+    };
+
+    // ==========================================
+    // SISTEMA DE NAVEGAÇÃO
+    // ==========================================
+    function mudarAba(abaId) {
+        document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
+        document.getElementById(abaId).classList.add('ativa');
+        
+        document.querySelectorAll('.btn-abas').forEach(b => b.classList.remove('ativo'));
+        event.target.classList.add('ativo');
+    }
+
+    function mostrarToast(msg, tipo = 'sucesso') {
+        const t = document.createElement('div');
+        t.className = `toast ${tipo}`;
+        t.innerText = msg;
+        document.getElementById('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 4000);
+    }
+
+    // ==========================================
+    // MÓDULO DE HIERARQUIAS E TAGS
+    // ==========================================
+    function renderizarTagsPainel() {
+        ['empresas', 'materiais', 'subcategorias', 'adjetivos'].forEach(categoria => {
+            const div = document.getElementById(`lista-${categoria}`);
+            div.innerHTML = '';
+            (tagsGlobais[categoria] || []).forEach((tag, index) => {
+                div.innerHTML += `
+                    <div class="item-tag">
+                        <span>${tag}</span>
+                        <button class="btn-excluir-tag" onclick="removerTag('${categoria}', ${index})">X</button>
+                    </div>`;
+            });
+        });
+    }
+
+    function adicionarTag(categoria) {
+        let nova = prompt("Digite o nome da nova Tag:");
+        if (nova && nova.trim() !== "") {
+            if (!tagsGlobais[categoria]) tagsGlobais[categoria] = [];
+            tagsGlobais[categoria].push(nova.trim());
+            db.collection('configuracoes').doc('hierarquias').update({ [categoria]: tagsGlobais[categoria] })
+                .then(() => mostrarToast("Tag adicionada!"));
+        }
+    }
+
+    function removerTag(categoria, index) {
+        if (confirm("Remover esta Tag? Ela pode afetar produtos que a utilizam.")) {
+            tagsGlobais[categoria].splice(index, 1);
+            db.collection('configuracoes').doc('hierarquias').update({ [categoria]: tagsGlobais[categoria] })
+                .then(() => mostrarToast("Tag removida!"));
+        }
+    }
+
+    // ==========================================
+    // MÓDULO DE PRODUTOS
+    // ==========================================
+    function renderizarProdutos() {
+        let termo = document.getElementById('busca-produto').value.toLowerCase();
+        const grade = document.getElementById('lista-produtos-admin');
+        grade.innerHTML = '';
+
+        let filtrados = produtosGlobais.filter(p => 
+            p.nome.toLowerCase().includes(termo) || p.codigo.includes(termo)
+        );
+
+        filtrados.forEach(p => {
+            let infoAdjetivos = p.adjetivos ? p.adjetivos.join(', ') : 'Nenhum';
+            let infoSub = p.subprodutos && p.subprodutos.length > 0 ? `<br><small style="color:#00ffff;">Tem ${p.subprodutos.length} Variações</small>` : '';
+
+            grade.innerHTML += `
+                <div class="card-produto">
+                    <img src="${p.foto}" alt="${p.nome}" onerror="this.src='foto-cuba/logo.jpeg'">
+                    <h3>${p.nome}</h3>
+                    <div class="codigo">CÓDIGO: ${p.codigo}</div>
+                    <p><b>🏢 Empresa:</b> ${p.empresa}</p>
+                    <p><b>🧱 Material:</b> ${p.material}</p>
+                    <p><b>📂 Subcategoria:</b> ${p.subcategoria}</p>
+                    <p style="font-size:12px; color:#aaa; margin-top:5px;">Tags: [${infoAdjetivos}]</p>
+                    ${infoSub}
+                    <h2 style="color:#20bf6b; margin-top:10px;">R$ ${p.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</h2>
+                    
+                    <div class="botoes-prod">
+                        <button class="btn-edit" onclick="abrirModalEdicao('${p.id}')">✏️ Editar</button>
+                        <button class="btn-del" onclick="excluirProduto('${p.id}', '${p.codigo}')">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function filtrarPainelProdutos() { renderizarProdutos(); }
+
+    function alimentarSelectsDoFormulario() {
+        let preencherSelect = (idSelect, lista) => {
+            let sel = document.getElementById(idSelect);
+            let val = sel.value; // guarda o valor atual caso esteja editando
+            sel.innerHTML = '<option value="">-- Selecione --</option>';
+            (lista || []).forEach(item => {
+                sel.innerHTML += `<option value="${item}">${item}</option>`;
+            });
+            if(lista.includes(val)) sel.value = val;
+        };
+        
+        preencherSelect('prod-empresa', tagsGlobais.empresas);
+        preencherSelect('prod-material', tagsGlobais.materiais);
+        preencherSelect('prod-subcategoria', tagsGlobais.subcategorias);
+
+        // Checkboxes de adjetivos
+        let divAdj = document.getElementById('prod-area-adjetivos');
+        divAdj.innerHTML = '';
+        (tagsGlobais.adjetivos || []).forEach(adj => {
+            divAdj.innerHTML += `<label><input type="checkbox" name="chk-adjetivos" value="${adj}"> ${adj}</label>`;
+        });
+    }
+
+    // SUBPRODUTOS DINÂMICOS
+    function adicionarCampoSubproduto(valor = "") {
+        const div = document.createElement('div');
+        div.style.display = 'flex'; div.style.gap = '10px'; div.style.marginBottom = '8px';
+        div.innerHTML = `
+            <input type="text" class="input-sub" placeholder="Nome da Variação (Ex: Modelo Pop)" value="${valor}" style="flex:1; padding:8px; border-radius:4px; outline:none;">
+            <button type="button" onclick="this.parentElement.remove()" style="background:#dc3545; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-weight:bold;">X</button>
+        `;
+        document.getElementById('lista-subprodutos-form').appendChild(div);
+    }
+
+    function abrirModalProduto() {
+        document.getElementById('form-produto').reset();
+        document.getElementById('prod-id').value = "";
+        document.getElementById('titulo-modal-produto').innerText = "CADASTRAR NOVO PRODUTO";
+        document.getElementById('lista-subprodutos-form').innerHTML = ""; // Limpa variações
+        document.getElementById('modal-produto').style.display = 'flex';
+    }
+
+    function fecharModalProduto() {
+        document.getElementById('modal-produto').style.display = 'none';
+    }
+
+    function abrirModalEdicao(idProduto) {
+        let p = produtosGlobais.find(x => x.id === idProduto);
+        if(!p) return;
+
+        abrirModalProduto();
+        document.getElementById('titulo-modal-produto').innerText = "EDITAR PRODUTO - CÓD: " + p.codigo;
+        
+        document.getElementById('prod-id').value = p.id;
+        document.getElementById('prod-nome').value = p.nome;
+        document.getElementById('prod-empresa').value = p.empresa;
+        document.getElementById('prod-material').value = p.material;
+        document.getElementById('prod-subcategoria').value = p.subcategoria;
+        document.getElementById('prod-preco').value = p.preco;
+        document.getElementById('prod-foto').value = p.foto;
+        document.getElementById('prod-largura').value = p.largura || "";
+        document.getElementById('prod-comprimento').value = p.comprimento || "";
+        document.getElementById('prod-altura').value = p.altura || "";
+
+        // Marca Checkboxes
+        document.querySelectorAll('input[name="chk-adjetivos"]').forEach(chk => {
+            chk.checked = (p.adjetivos || []).includes(chk.value);
+        });
+
+        // Subprodutos
+        document.getElementById('lista-subprodutos-form').innerHTML = "";
+        if(p.subprodutos && p.subprodutos.length > 0) {
+            p.subprodutos.forEach(sub => adicionarCampoSubproduto(sub));
+        }
+    }
+
+    // ==========================================
+    // MECÂNICA DO CÓDIGO DE 6 DÍGITOS + TRAVA
+    // ==========================================
+    async function gerarCodigoSeguro() {
+        while (true) {
+            let cod = Math.floor(100000 + Math.random() * 900000).toString(); // Gera 6 dígitos
+
+            // 1. Verifica se já está ativo em algum produto
+            let snapshotAtivos = await db.collection('produtos').where('codigo', '==', cod).get();
+            if (!snapshotAtivos.empty) continue; // Conflito, tenta outro
+
+            // 2. Verifica quarentena na coleção de inativos (7 dias)
+            let docInativo = await db.collection('codigos_inativos').doc(cod).get();
+            if (docInativo.exists) {
+                let dataExclusao = new Date(docInativo.data().dataExclusao);
+                let diffTime = Math.abs(new Date() - dataExclusao);
+                let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays <= 7) {
+                    continue; // Está travado na quarentena, tenta outro
+                }
+            }
+
+            return cod; // Aprovado
+        }
+    }
+
+    // ==========================================
+    // SALVAR E EXCLUIR NO FIREBASE
+    // ==========================================
+    async function salvarProduto(e) {
+        e.preventDefault();
+        
+        let id = document.getElementById('prod-id').value;
+        
+        // Coleta Subprodutos
+        let arraySub = [];
+        document.querySelectorAll('.input-sub').forEach(input => {
+            if(input.value.trim() !== "") arraySub.push(input.value.trim());
+        });
+
+        // Coleta Adjetivos
+        let arrayAdj = [];
+        document.querySelectorAll('input[name="chk-adjetivos"]:checked').forEach(chk => {
+            arrayAdj.push(chk.value);
+        });
+
+        let dadosParaSalvar = {
+            nome: document.getElementById('prod-nome').value,
+            empresa: document.getElementById('prod-empresa').value,
+            material: document.getElementById('prod-material').value,
+            subcategoria: document.getElementById('prod-subcategoria').value,
+            adjetivos: arrayAdj,
+            preco: parseFloat(document.getElementById('prod-preco').value),
+            foto: document.getElementById('prod-foto').value,
+            largura: document.getElementById('prod-largura').value,
+            comprimento: document.getElementById('prod-comprimento').value,
+            altura: document.getElementById('prod-altura').value,
+            subprodutos: arraySub
+        };
+
+        let btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true; btn.innerText = "⏳ SALVANDO...";
+
+        try {
+            if (id) {
+                // Atualização
+                await db.collection('produtos').doc(id).update(dadosParaSalvar);
+                mostrarToast("Produto Atualizado com Sucesso!");
+            } else {
+                // Novo Cadastro - Gera o código restrito
+                let novoCodigo = await gerarCodigoSeguro();
+                dadosParaSalvar.codigo = novoCodigo;
+                dadosParaSalvar.dataCadastro = new Date().toISOString();
+                
+                await db.collection('produtos').add(dadosParaSalvar);
+                mostrarToast("Produto Criado! Código gerado: " + novoCodigo);
+            }
+            fecharModalProduto();
+        } catch (error) {
+            mostrarToast("Erro ao salvar: " + error, "erro");
+        } finally {
+            btn.disabled = false; btn.innerText = "💾 SALVAR PRODUTO";
+        }
+    }
+
+    async function excluirProduto(id, codigo) {
+        if(confirm(`⚠️ ATENÇÃO: Tem certeza que deseja excluir o produto Cód: ${codigo}?\n\nEle será removido do catálogo e o código ${codigo} ficará INATIVO POR 1 SEMANA para evitar confusões.`)) {
+            try {
+                await db.collection('produtos').doc(id).delete();
+                // Coloca o código na quarentena
+                await db.collection('codigos_inativos').doc(codigo).set({
+                    dataExclusao: new Date().toISOString()
+                });
+                mostrarToast("Produto Excluído e Código retido na quarentena.");
+            } catch (error) {
+                mostrarToast("Erro ao excluir.", "erro");
+            }
+        }
+    }
+</script>
+</body>
+</html>

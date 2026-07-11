@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Entregas - NK Cubas</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZAotfkbiPDmMi0nFKS0wvV9x_3QDZE3E",
+            authDomain: "nk-cubas.firebaseapp.com",
+            projectId: "nk-cubas",
+            storageBucket: "nk-cubas.firebasestorage.app",
+            messagingSenderId: "1097535658296",
+            appId: "1:1097535658296:web:3ae4e02b4b73e3343c89cd"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
+    <style>
+        body { background-color: #0d0d0d; color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .topo { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffd700; padding-bottom: 15px; margin-bottom: 20px; }
+        .abas { display: flex; gap: 15px; margin-bottom: 20px; }
+        .btn-aba { padding: 12px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; border: none; background: #333; color: white; transition: 0.2s; }
+        .btn-aba.ativo { background: #ffd700; color: black; }
+        .grupo-estado { background: #141414; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .titulo-estado { color: #ffd700; border-bottom: 1px dashed #555; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; }
+        .grupo-cidade { margin-left: 15px; margin-bottom: 15px; }
+        .titulo-cidade { color: #20bf6b; margin-bottom: 10px; font-size: 18px; }
+        .card-pedido { background: #222; border-left: 5px solid #3867d6; padding: 15px; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
+        .btn-entregar { background: #20bf6b; color: white; padding: 10px 15px; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .btn-desfazer { background: #dc3545; color: white; padding: 10px 15px; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="topo">
+        <div>
+            <h1 style="color: #ffd700; margin: 0;">🚚 Logística e Entregas</h1>
+            <p style="margin: 5px 0 0 0; color: #888;" id="info-usuario-logado"></p>
+        </div>
+        <button onclick="window.location.hrefEsse é um upgrade de peso! A estruturação por hierarquias, códigos fixos e a separação logística com um painel de entregas transformam o sistema em uma ferramenta robusta e altamente profissional. 
+
+Como conversamos sobre estruturar lógicas complexas e otimizar scripts, o foco aqui é garantir que a comunicação entre o Firebase e as páginas seja fluida e que a interface reflita essa nova organização de forma limpa.
+
+Abaixo está o código completo do novo **Painel de Entregas** e, em seguida, o guia exato do que você precisa modificar no **Catálogo** e nos scripts de vendas para que tudo converse perfeitamente.
+
+---
+
+### 1. Novo Painel: `entregas.html`
+Este arquivo gerencia a logística. Ele filtra as vendas (Master vê tudo, vendedor vê apenas as dele), organiza da mais antiga para a mais nova, separa entre "Pendentes" e "Entregues", e agrupa por Estado > Cidade > Cliente.
+
+Crie o arquivo `entregas.html` e cole o código abaixo:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Entregas - NK Cubas</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="[https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js)"></script>
+    <script src="[https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js](https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js)"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZAotfkbiPDmMi0nFKS0wvV9x_3QDZE3E",
+            authDomain: "nk-cubas.firebaseapp.com",
+            projectId: "nk-cubas",
+            storageBucket: "nk-cubas.firebasestorage.app",
+            messagingSenderId: "1097535658296",
+            appId: "1:1097535658296:web:3ae4e02b4b73e3343c89cd"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
+    <style>
+        body { background-color: #0d0d0d; color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        .topo-entregas { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffd700; padding-bottom: 15px; margin-bottom: 20px; }
+        .btn-voltar { background: #444; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        .sessao-entregas { margin-bottom: 40px; }
+        .titulo-sessao { color: #ffd700; border-bottom: 1px dashed #444; padding-bottom: 10px; margin-bottom: 15px; }
+        .grupo-estado { background: #141414; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .grupo-cidade { margin-left: 15px; border-left: 2px solid #ffd700; padding-left: 15px; margin-top: 10px; }
+        .card-pedido { background: #222; padding: 12px; border-radius: 6px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #444; }
+        .btn-entregar { background: #20bf6b; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-desfazer { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .tag-status { font-size: 11px; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
+        .pendente { background: #f39c12; color: black; }
+        .entregue { background: #20bf6b; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="topo-entregas">
+        <div>
+            <h1 style="color: #ffd700; margin: 0;">🚚 Painel de Logística e Entregas</h1>
+            <p id="subtitulo-painel" style="color: #aaa; margin-top: 5px;"></p>
+        </div>
+        <button class="btn-voltar" onclick="window.location.href='catalogo.html'">⬅️ Voltar ao Catálogo</button>
+    </div>
+
+    <div class="sessao-entregas">
+        <h2 class="titulo-sessao">⏳ Pedidos Pendentes de Entrega</h2>
+        <div id="lista-pendentes"></div>
+    </div>
+
+    <div class="sessao-entregas">
+        <h2 class="titulo-sessao">✅ Pedidos Entregues</h2>
+        <div id="lista-entregues"></div>
+    </div>
+
+<script>
+    let docLogado = localStorage.getItem('documentoLogado');
+    let perfilLogado = localStorage.getItem('perfilLogado');
+    let nomeLogado = localStorage.getItem('nomeVendedorLogado');
+
+    window.onload = () => {
+        document.getElementById('subtitulo-painel').innerText = perfilLogado === 'master' ? "Visão Geral: Todos os Vendedores" : `Suas Entregas: ${nomeLogado}`;
+        carregarEntregas();
+    };
+
+    function carregarEntregas() {
+        db.collection('vendas').onSnapshot(snapshot => {
+            let vendas = [];
+            snapshot.forEach(doc => {
+                let data = doc.data();
+                // Filtra: se não for master, vê apenas as próprias vendas
+                if (perfilLogado === 'master' || data.vendedorId === docLogado || data.vendedor === nomeLogado) {
+                    vendas.push({ idFirestore: doc.id, ...data });
+                }
+            });
+
+            // Ordena da mais ANTIGA para a mais NOVA
+            vendas.sort((a, b) => {
+                let dataA = a.dataHora ? a.dataHora : a.data;
+                let dataB = b.dataHora ? b.dataHora : b.data;
+                return dataA.localeCompare(dataB);
+            });
+
+            let pendentes = vendas.filter(v => v.statusEntrega !== 'Entregue');
+            let entregues = vendas.filter(v => v.statusEntrega === 'Entregue');
+
+            renderizarGrupo(pendentes, 'lista-pendentes', true);
+            renderizarGrupo(entregues, 'lista-entregues', false);
+        });
+    }
+
+    function renderizarGrupo(lista, elementoId, isPendente) {
+        let container = document.getElementById(elementoId);
+        container.innerHTML = '';
+
+        if (lista.length === 0) {
+            container.innerHTML = `<p style="color: #666; font-style: italic;">Nenhum pedido nesta categoria.</p>`;
+            return;
+        }
+
+        // Agrupamento: Estado -> Cidade -> Cliente
+        let agrupado = {};
+        lista.forEach(venda => {
+            let est = venda.estado || 'Sem Estado';
+            let cid = venda.cidade || 'Sem Cidade';
+            let cli = venda.cliente || 'Desconhecido';
+            
+            if(!agrupado[est]) agrupado[est] = {};
+            if(!agrupado[est][cid]) agrupado[est][cid] = {};
+            if(!agrupado[est][cid][cli]) agrupado[est][cid][cli] = [];
+            
+            agrupado[est][cid][cli].push(venda);
+        });
+
+        for (let estado in agrupado) {
+            let htmlEstado = `<div class="grupo-estado"><h3 style="color: white;">📍 Estado: ${estado}</h3>`;
+            
+            for (let cidade in agrupado[estado]) {
+                htmlEstado += `<div class="grupo-cidade"><h4 style="color: #ccc;">🌆 Cidade: ${cidade}</h4>`;
+                
+                for (let cliente in agrupado[estado][cidade]) {
+                    htmlEstado += `<h5 style="color: #ffd700; margin-top: 15px; margin-bottom: 5px;">👤 Cliente: ${cliente}</h5>`;
+                    
+                    agrupado[estado][cidade][cliente].forEach(venda => {
+                        let btnAcao = isPendente 
+                            ? `<button class="btn-entregar" onclick="alterarStatus('${venda.idFirestore}', 'Entregue')">Marcar Entregue</button>`
+                            : `<button class="btn-desfazer" onclick="alterarStatus('${venda.idFirestore}', 'Pendente')">Desfazer</button>`;
+                            
+                        let statusTag = isPendente ? `<span class="tag-status pendente">Pendente</span>` : `<span class="tag-status entregue">Entregue</span>`;
+
+                        htmlEstado += `
+                            <div class="card-pedido">
+                                <div>
+                                    <strong style="color: white; font-size: 15px;">Pedido #${venda.id}</strong> ${statusTag}<br>
+                                    <span style="font-size: 12px; color: #aaa;">Data: ${venda.data} | Valor: R$ ${venda.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span><br>
+                                    <span style="font-size: 12px; color: #888;">Itens: ${venda.itens ? venda.itens.map(i=>i.nome).join(', ') : 'N/A'}</span>
+                                </div>
+                                <div>${btnAcao}</div>
+                            </div>
+                        `;
+                    });
+                }
+                htmlEstado += `</div>`;
+            }
+            htmlEstado += `</div>`;
+            container.innerHTML += htmlEstado;
+        }
+    }
+
+    function alterarStatus(idFirestore, novoStatus) {
+        db.collection('vendas').doc(idFirestore).update({
+            statusEntrega: novoStatus
+        }).then(() => {
+            console.log("Status atualizado com sucesso!");
+        }).catch(err => {
+            alert("Erro ao atualizar: " + err);
+        });
+    }
+</script>
+</body>
+</html>
