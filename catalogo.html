@@ -60,6 +60,7 @@
 
     <div class="area-topo">
         <div style="display: flex; flex-direction: column; gap: 10px; margin-right: auto;">
+            <button id="btn-voltar-login" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="window.location.href='index.html'">🚪 Sair</button>
             <button id="btn-cadastrar-cliente" style="display: none; background-color: #ffd700; color: black; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalCadastro()">+ Cadastrar Cliente</button>
             <button id="btn-minhas-vendas" style="display: none; background-color: #2b5797; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalMinhasVendas()">📝 Minhas Vendas (Editar)</button>
             <button id="btn-acordos-vendedores" style="display: none; background-color: #20bf6b; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer;" onclick="abrirModalAcordos()">🤝 Acordos com Vendedores</button>
@@ -75,142 +76,7 @@
     <h1 class="titulo-site">Catálogo NK Cubas</h1>
 
     <div class="catalogo" id="grade-produtos">
-        <!-- PRODUTOS NORMAIS -->
-        <div class="card" data-tags="italia exclusiva economica barata" data-largura="36,5 cm" data-comprimento="27 cm" data-altura="9 cm">
-            <h2 class="nome-cuba">CUBA ITÁLIA</h2>
-            <div class="conteudo-card">
-                <img src="foto-cuba/italia-foto.jfif" alt="Cuba Itália" class="foto-cuba">
-                <div class="info-direita">
-                    <p class="preco-grande">R$ 73,10</p>
-                    <p class="subtitulo">Linha de Cubas Exclusivas</p>
-                    <div class="area-botoes">
-                        <button class="btn-inf" onclick="abrirInfo(this)">Inf</button>
-                        <button class="btn-comprar" data-codigo="283014" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" data-tags="pop exclusiva barata economica" data-largura="31 cm" data-comprimento="29 cm" data-altura="9 cm">
-            <h2 class="nome-cuba">CUBA POP</h2>
-            <div class="conteudo-card">
-                <img src="foto-cuba/pop-foto.jfif" alt="Cuba Pop" class="foto-cuba">
-                <div class="info-direita">
-                    <p class="preco-grande">R$ 73,10</p>
-                    <p class="subtitulo">Linha de Cubas Exclusivas</p>
-                    <div class="area-botoes">
-                        <button class="btn-inf" onclick="abrirInfo(this)">Inf</button>
-                        <button class="btn-comprar" data-codigo="283015" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" data-tags="roma classica tradicional grande" data-largura="35 cm" data-comprimento="39 cm" data-altura="12 cm">
-            <h2 class="nome-cuba">CUBA ROMA</h2>
-            <div class="conteudo-card">
-                <img src="foto-cuba/roma-foto.jfif" alt="Cuba Roma" class="foto-cuba">
-                <div class="info-direita">
-                    <p class="preco-grande">R$ 139,40</p>
-                    <p class="subtitulo">Linha de Cubas Clássicas</p>
-                    <div class="area-botoes">
-                        <button class="btn-inf" onclick="abrirInfo(this)">Inf</button>
-                        <button class="btn-comprar" data-codigo="283016" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" data-tags="onix classica barata economica" data-largura="30 cm" data-comprimento="26 cm" data-altura="Não informada">
-            <h2 class="nome-cuba">CUBA ÔNIX</h2>
-            <div class="conteudo-card">
-                <img src="foto-cuba/onix-foto.jfif" alt="Cuba Ônix" class="foto-cuba">
-                <div class="info-direita">
-                    <p class="preco-grande">R$ 73,10</p>
-                    <p class="subtitulo">Linha de Cubas Clássicas</p>
-                    <div class="area-botoes">
-                        <button class="btn-inf" onclick="abrirInfo(this)">Inf</button>
-                        <button class="btn-comprar" data-codigo="283017" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" data-tags="folha design sofisticado moderna" data-largura="42 cm" data-comprimento="32,5 cm" data-altura="12 cm">
-            <h2 class="nome-cuba">CUBA FOLHA</h2>
-            <div class="conteudo-card">
-                <img src="foto-cuba/folha-foto.jfif" alt="Cuba Folha" class="foto-cuba">
-                <div class="info-direita">
-                    <p class="preco-grande">R$ 74,90</p>
-                    <p class="subtitulo">Linha Design Sofisticado</p>
-                    <div class="area-botoes">
-                        <button class="btn-inf" onclick="abrirInfo(this)">Inf</button>
-                        <button class="btn-comprar" data-codigo="283018" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" data-tags="paris design sofisticado elegante" data-largura="34 cm" data-comprimento="33,5 cm" data-altura="11,5 cm">
-            <h2 class="nome-cuba">CUBA PARIS</h2>
-            <div class="conteudo-card">
-                <img src="foto-cuba/paris-foto.jfif" alt="Cuba Paris" class="foto-cuba">
-                <div class="info-direita">
-                    <p class="preco-grande">R$ 94,28</p>
-                    <p class="subtitulo">Linha Design Sofisticado</p>
-                    <div class="area-botoes">
-                        <button class="btn-inf" onclick="abrirInfo(this)">Inf</button>
-                        <button class="btn-comprar" data-codigo="283019" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" data-tags="aurora casal exclusiva luxo destaque" data-largura="48 cm" data-comprimento="33 cm" data-altura="9 cm">
-            <h2 class="nome-cuba">CUBA AURORA</h2>
-            <div class="conteudo-card">
-                <img src="foto-cuba/aurora-foto.jfif" alt="Cuba Aurora" class="foto-cuba">
-                <div class="info-direita">
-                    <p class="preco-grande">R$ 198,90</p>
-                    <p class="subtitulo">Linha de Cubas Exclusivas (Para Casais)</p>
-                    <div class="area-botoes">
-                        <button class="btn-inf" onclick="abrirInfo(this)">Inf</button>
-                        <button class="btn-comprar" data-codigo="283020" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" data-tags="lisboa casal exclusiva luxo destaque" data-largura="48 cm" data-comprimento="36 cm" data-altura="13,5 cm">
-            <h2 class="nome-cuba">CUBA LISBOA</h2>
-            <div class="conteudo-card">
-                <img src="foto-cuba/lisboa-foto.jfif" alt="Cuba Lisboa" class="foto-cuba">
-                <div class="info-direita">
-                    <p class="preco-grande">R$ 198,90</p>
-                    <p class="subtitulo">Linha de Cubas Exclusivas (Para Casais)</p>
-                    <div class="area-botoes">
-                        <button class="btn-inf" onclick="abrirInfo(this)">Inf</button>
-                        <button class="btn-comprar" data-codigo="283021" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- BANCADA DE SUPORTE -->
-        <div class="card" data-tags="bancada suporte nk banheiro pop italia" data-largura="55 cm" data-comprimento="35 cm" data-altura="Não informada">
-            <h2 class="nome-cuba">BANCADA DE SUPORTE</h2>
-            <div class="conteudo-card">
-                <img src="foto-cuba/bancada-foto.jfif" alt="Bancada de Suporte" class="foto-cuba">
-                <div class="info-direita">
-                    <p class="preco-grande">R$ 117,30</p>
-                    <p class="subtitulo">Bancada de Suporte NK</p>
-                    <div class="area-botoes">
-                        <button class="btn-inf" onclick="abrirInfo(this)">Inf</button>
-                        <button class="btn-comprar" data-codigo="283022" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Os produtos serão injetados aqui via JavaScript -->
     </div>
 
     <!-- MODAIS E CARRINHO -->
@@ -256,13 +122,7 @@
                         <option value="Cheque">Cheque</option>
                     </select>
                 </div>
-                <div class="pagamento" style="margin-top:5px;">
-                    <label>Responsável pela Entrega:</label>
-                    <select id="entregue-por" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                        <option value="Empresa">Empresa (10% Comissão)</option>
-                        <option value="Vendedor">Vendedor (15% Comissão)</option>
-                    </select>
-                </div>
+                
                 
                 <!-- Área de Desconto Dinâmica -->
                 <div id="area-desconto" style="margin-top: 10px; background: #d4edda; padding: 12px; border-radius: 6px; border: 1px solid #c3e6cb;">
@@ -307,6 +167,34 @@ let listaClientesRealtime = [];
 let listaVendedoresRealtime = [];
 let listaVendasRealtime = [];
 let idPedidoEmEdicaoOriginal = null;
+// =========================================
+// SISTEMA DE NOTIFICAÇÕES (TOAST)
+// =========================================
+function mostrarToast(mensagem, tipo = 'sucesso') {
+    // Verifica se o container já existe, se não, cria
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    // Cria a notificação
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo}`;
+    
+    // Define o ícone com base no tipo
+    let icone = tipo === 'sucesso' ? '✅ ' : tipo === 'erro' ? '❌ ' : '⚠️ ';
+    toast.innerHTML = `<span>${icone} ${mensagem}</span>`;
+
+    container.appendChild(toast);
+
+    // Some sozinho após 3.5 segundos
+    setTimeout(() => {
+        toast.classList.add('fadeOut');
+        toast.addEventListener('animationend', () => toast.remove());
+    }, 3500);
+}
 
 // Normalizador Inteligente para Buscas (Remove Acentos e Capitalização)
 const normalizarBusca = str => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
@@ -335,6 +223,75 @@ window.onload = function() {
         if (document.getElementById('modal-minhas-vendas').style.display === 'flex') carregarMinhasVendas();
         carregarAcordosVendedor();
     });
+
+    // Array global para armazenar os produtos do banco
+let listaProdutosRealtime = [];
+
+function carregarProdutos() {
+    db.collection('produtos').onSnapshot(snapshot => {
+        listaProdutosRealtime = [];
+        snapshot.forEach(doc => listaProdutosRealtime.push(doc.data()));
+        renderizarCatalogo(listaProdutosRealtime);
+    });
+}
+
+function renderizarCatalogo(lista) {
+    let container = document.getElementById('grade-produtos');
+    container.innerHTML = '';
+
+    // Agrupar por Empresa e depois por Material
+    let agrupado = {};
+    lista.forEach(p => {
+        let emp = p.empresa || 'Outros';
+        let mat = p.material || 'Geral';
+        if (!agrupado[emp]) agrupado[emp] = {};
+        if (!agrupado[emp][mat]) agrupado[emp][mat] = [];
+        agrupado[emp][mat].push(p);
+    });
+
+    for (let empresa in agrupado) {
+        // Separação de Empresa (Espaço maior e Logo)
+        container.innerHTML += `
+            <div style="width: 100%; margin-top: 50px; text-align: center;">
+                <img src="foto-cuba/logo-${empresa.toLowerCase().replace(/\s/g, '')}.png" onerror="this.style.display='none'" style="max-height: 80px;">
+                <h2 style="color: #ffd700; border-bottom: 2px solid #555; padding-bottom: 10px; margin-bottom: 20px;">${empresa}</h2>
+            </div>
+        `;
+
+        for (let material in agrupado[empresa]) {
+            // Separação de Material (Metade do espaço, título grande)
+            container.innerHTML += `
+                <div style="width: 100%; margin-top: 25px;">
+                    <h3 style="color: #fff; font-size: 24px; text-transform: uppercase; margin-bottom: 15px; border-left: 4px solid #ffd700; padding-left: 10px;">MATERIAL: ${material}</h3>
+                </div>
+            `;
+
+            // Renderizar os Produtos daquela subcategoria
+            agrupado[empresa][material].forEach(prod => {
+                // Código pequeno embaixo do nome (conforme solicitado) e tags embaixo das dimensões
+                container.innerHTML += `
+                    <div class="card produto-card" data-nome="${prod.nome.toLowerCase()}" data-tags="${(prod.tags || []).join(' ').toLowerCase()}">
+                        <h2 class="nome-cuba">${prod.nome}</h2>
+                        <span style="display:block; text-align:center; font-size:11px; color:#888; font-family:monospace;">Cód: ${prod.codigo}</span>
+                        <div class="conteudo-card">
+                            <img src="${prod.fotoUrl || 'foto-cuba/placeholder.jfif'}" class="foto-cuba">
+                            <div class="info-direita">
+                                <p class="preco-grande">R$ ${prod.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
+                                <p class="subtitulo">${prod.subCategoria || ''}</p>
+                                <p style="font-size: 10px; color: #aaa; margin-top: 5px;">Dimensões: ${prod.largura} x ${prod.comprimento} x ${prod.altura}</p>
+                                <p style="font-size: 10px; color: #ffd700; margin-top: 2px;">Tags: ${(prod.tags || []).join(', ')}</p>
+                                <div class="area-botoes">
+                                    <button class="btn-comprar" data-codigo="${prod.codigo}" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    }
+    reconstruirBotoesCatalogo();
+}
 
     if (perfil === 'vendedor' || perfil === 'master') {
         let nomeVend = localStorage.getItem('nomeVendedorLogado') || 'Vendedor Padrão';
@@ -578,7 +535,7 @@ function atualizarPrazosInterno(metodo) {
 
     let clienteDoc = listaClientesRealtime.find(c => c.cnpj === cnpjAtivo);
     if (clienteDoc && clienteDoc.restrito && metodo === 'Boleto') {
-        alert("⚠️ ATENÇÃO: Este CNPJ possui restrições financeiras estruturais na Nuvem. BOLETO TRAVADO.");
+       mostrarToast("⚠️ ATENÇÃO: Este CNPJ possui restrições financeiras estruturais na Nuvem. BOLETO TRAVADO.");
         document.getElementById('metodo-pagamento').value = 'À vista';
         atualizarCarrinho();
         return;
@@ -603,8 +560,25 @@ async function consultarCNPJ(cnpj) {
     if (limpo.length !== 14) return;
     let nomeCampo = document.getElementById('nome-empresa');
     let endCampo = document.getElementById('endereco-empresa');
-    nomeCampo.innerText = "Buscando dados na Receita..."; endCampo.innerText = "";
+    nomeCampo.innerText = "Verificando dados..."; endCampo.innerText = "";
+    document.getElementById('btn-confirmar-cadastro').disabled = true;
 
+    // 1. Checa primeiro no Firebase se já existe
+// Substitua o trecho de verificação dentro da sua função consultarCNPJ(cnpj):
+    let docRef = await db.collection('clientes').doc(limpo).get();
+    if (docRef.exists) {
+        let dadosExistentes = docRef.data();
+        let meuNome = localStorage.getItem('nomeVendedorLogado');
+        
+        if (dadosExistentes.vendedor === meuNome) {
+            nomeCampo.innerHTML = `<span style="color: red; font-size: 14px;">❌ Cliente já cadastrado na sua carteira.</span>`;
+        } else {
+            nomeCampo.innerHTML = `<span style="color: red; font-size: 14px;">❌ Cliente já cadastrado por: <b>${dadosExistentes.vendedor}</b></span>`;
+        }
+        return; // Impede o cadastro
+    }
+
+    // 2. Se não existe, busca na Receita Federal
     try {
         let res = await fetch(`https://publica.cnpj.ws/cnpj/${limpo}`);
         if(res.ok) {
@@ -623,7 +597,6 @@ async function consultarCNPJ(cnpj) {
         }
     } catch(e) { nomeCampo.innerText = "Erro ao conectar à API de busca."; }
 }
-
 function finalizarCadastro() {
     const senhaCliente = "11377761533"; 
     const nomeVendedorAtual = localStorage.getItem('nomeVendedorLogado') || 'Jhuan Alexandre';
@@ -633,7 +606,7 @@ function finalizarCadastro() {
         endereco: window.dadosClienteTemp.endereco, vendedor: nomeVendedorAtual, restrito: false,
         dataCadastro: new Date().toLocaleDateString('pt-BR')
     }).then(() => {
-        alert("Cliente Cadastrado e Sincronizado na Nuvem com sucesso!");
+        mostrarToast("Cliente Cadastrado e Sincronizado na Nuvem com sucesso!");
         document.getElementById('input-cnpj').value = "";
         fecharModalCadastro();
     });
@@ -645,15 +618,29 @@ function filtrarClientes() {
     if(!divLista) return;
     divLista.innerHTML = '';
 
+    let meuNome = localStorage.getItem('nomeVendedorLogado');
+    let perfil = localStorage.getItem('perfilLogado');
+
+    // Filtra para exibir apenas os clientes deste vendedor (Master vê todos)
     let filtrados = listaClientesRealtime.filter(c => {
+        let pertenceAoVendedor = (perfil === 'master' || c.vendedor === meuNome);
+        if (!pertenceAoVendedor) return false;
+
         let registroCompleto = normalizarBusca(`${c.nome} ${c.cnpj} ${c.cidade} ${c.estado}`);
         let termosPesquisa = inputTexto.split(" ");
         return termosPesquisa.every(termo => registroCompleto.includes(termo));
     });
+
+    // Ordena do cadastro MAIS NOVO (topo) para o MAIS ANTIGO (baixo)
+    filtrados.sort((a, b) => {
+        // Converte DD/MM/YYYY para YYYYMMDD para comparar corretamente
+        let formatarData = (dataStr) => dataStr ? dataStr.split('/').reverse().join('') : '0';
+        return formatarData(b.dataCadastro).localeCompare(formatarData(a.dataCadastro));
+    });
     
     filtrados.forEach(c => {
         divLista.innerHTML += `
-            <label style="display:block; background:white; padding:8px; margin-bottom:5px; border-radius:4px; cursor:pointer; border:1px solid #ccc;">
+            <label style="display:block; background:white; padding:8px; margin-bottom:5px; border-radius:4px; cursor:pointer; border:1px solid #ccc; color: black;">
                 <input type="radio" name="rad-cli" onclick="selecionarClientePedido('${c.cnpj}', '${c.nome.replace(/'/g, "\\'")}')"> 
                 <b>${c.nome}</b> (${c.cidade}-${c.estado}) ${c.restrito ? '<span style="color:red;font-weight:bold;">[RESTRITO]</span>' : ''}
             </label>`;
@@ -667,7 +654,7 @@ function selecionarClientePedido(cnpj, nome) {
 }
 
 function gerarPDF() {
-    if(itensCarrinho.length === 0) { alert("Carrinho Vazio!"); return; }
+    if(itensCarrinho.length === 0) { mostrarToast("Carrinho Vazio!"); return; }
     
     let perfil = localStorage.getItem('perfilLogado');
     let nomeVendedor = localStorage.getItem('nomeVendedorLogado') || 'Consumidor';
@@ -675,7 +662,7 @@ function gerarPDF() {
 
     if(perfil !== 'cliente') {
         let cnpjSel = document.getElementById('cnpj-cliente-selecionado').value;
-        if(!cnpjSel) { alert("Selecione um cliente para vincular a esta venda."); return; }
+        if(!cnpjSel) { mostrarToast("Selecione um cliente para vincular a esta venda."); return; }
         let cDoc = listaClientesRealtime.find(c => c.cnpj === cnpjSel);
         if(cDoc) dadosDoCliente = cDoc;
     } else {
@@ -733,12 +720,12 @@ function gerarPDF() {
         novaVenda.dataModificacao = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR');
         db.collection('vendas').doc(edicaoId).update(novaVenda).then(() => {
             localStorage.removeItem('pedidoEmEdicaoId');
-            alert("Venda Editada e Sincronizada com Sucesso na Nuvem!");
+            mostrarToast("Venda Editada e Sincronizada com Sucesso na Nuvem!");
             desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, itensMapeadosNuvem, totalBruto, totalLiquido, descricaoVenda);
         });
     } else {
         db.collection('vendas').add(novaVenda).then(() => {
-            alert("Venda Registrada com Sucesso na Nuvem!");
+            mostrarToast("Venda Registrada com Sucesso na Nuvem!");
             desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor, pgto, prazoFinal, temExpositor, itensMapeadosNuvem, totalBruto, totalLiquido, descricaoVenda);
         });
     }
@@ -884,16 +871,43 @@ function abrirModalMinhasVendas() { document.getElementById('modal-minhas-vendas
 function fecharModalMinhasVendas() { document.getElementById('modal-minhas-vendas').style.display = 'none'; }
 
 function carregarMinhasVendas() {
-    let listaDiv = document.getElementById('lista-minhas-vendas');
-    listaDiv.innerHTML = '';
+    let container = document.getElementById('lista-minhas-vendas');
+    if (!container) return;
+    container.innerHTML = '';
+    
     let meuNome = localStorage.getItem('nomeVendedorLogado');
     let perfil = localStorage.getItem('perfilLogado');
-    let filtradas = listaVendasRealtime.filter(v => perfil === 'master' || v.vendedor === meuNome);
-    if(filtradas.length === 0) { listaDiv.innerHTML = '<p style="color:gray;text-align:center;">Nenhuma venda registrada na nuvem.</p>'; return; }
-    filtradas.forEach(v => {
-        listaDiv.innerHTML += `<div style="background:#f8f9fa; border:1px solid #ddd; padding:12px; margin-bottom:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;"><div><b>Pedido #${v.id} - ${v.cliente}</b><br><small>Data: ${v.data} | Valor: <b>R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</b></small></div><button onclick="carregarPedidoParaEdicao('${v.firestoreId}')" style="background:#2b5797; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">Editar</button></div>`;
+
+    // Pega TODAS as vendas sem filtrar tipo de pagamento
+    let minhas = listaVendasRealtime.filter(v => perfil === 'master' || v.vendedor === meuNome);
+
+    // Ordena da mais recente (topo) para a mais antiga (baixo) usando a dataHora ISO
+    minhas.sort((a, b) => new Date(b.dataHora) - new Date(a.dataHora));
+
+    if(minhas.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:20px;">Nenhuma venda registrada ainda.</p>';
+        return;
+    }
+
+    minhas.forEach(v => {
+        container.innerHTML += `
+            <div style="background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #ddd; margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <strong style="color:#2b5797; font-size:16px;">Pedido #${v.id}</strong>
+                    <span style="background:#222; color:#fff; padding:3px 8px; border-radius:4px; font-size:12px;">${v.data}</span>
+                </div>
+                <p style="margin:4px 0; font-size:14px;"><b>Cliente:</b> ${v.cliente}</p>
+                <p style="margin:4px 0; font-size:14px;"><b>Pagamento:</b> ${v.metodoPagamento} - <b>Total:</b> R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
+                <div style="margin-top:10px; display:flex; gap:10px;">
+                    <button onclick="editarPedido('${v.firestoreId}')" style="background:#ffd700; color:black; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">✏️ Editar Pedido</button>
+                    <!-- O botão de PDF usará o novo layout depois -->
+                </div>
+            </div>
+        `;
     });
 }
+
+
 function carregarPedidoParaEdicao(firestoreId) { localStorage.setItem('pedidoEmEdicaoId', firestoreId); window.location.reload(); }
 function abrirModalVendedor() { document.getElementById('modal-vendedor').style.display = 'flex'; }
 function fecharModalVendedor() { document.getElementById('modal-vendedor').style.display = 'none'; }
@@ -905,19 +919,19 @@ function formatarVerificarCPF(val) {
 function salvarVendedor() {
     let nome = document.getElementById('novo-vend-nome').value; let cpf = document.getElementById('novo-vend-cpf').value.replace(/\D/g, ''); let senha = document.getElementById('novo-vend-senha').value;
     if(!nome || !cpf || !senha) return;
-    db.collection('vendedores').doc(cpf).set({ nome: nome, cpf: cpf, senha: senha }).then(() => { alert("Vendedor Contratado!"); fecharModalVendedor(); });
+    db.collection('vendedores').doc(cpf).set({ nome: nome, cpf: cpf, senha: senha }).then(() => { mostrarToast("Vendedor Contratado!"); fecharModalVendedor(); });
 }
 function abrirModalEditarVendedor() { document.getElementById('modal-editar-vendedor').style.display = 'flex'; }
 function fecharModalEditarVendedor() { document.getElementById('modal-editar-vendedor').style.display = 'none'; document.getElementById('campos-edicao-vendedor').style.display = 'none'; }
 function buscarVendedorParaEdicao() {
     let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, ''); let vend = listaVendedoresRealtime.find(v => v.cpf === cpf);
-    if(vend) { document.getElementById('edit-vend-nome').value = vend.nome; document.getElementById('edit-vend-senha').value = vend.senha; document.getElementById('campos-edicao-vendedor').style.display = 'block'; } else { alert("Não localizado."); }
+    if(vend) { document.getElementById('edit-vend-nome').value = vend.nome; document.getElementById('edit-vend-senha').value = vend.senha; document.getElementById('campos-edicao-vendedor').style.display = 'block'; } else { mostrarToast("Não localizado."); }
 }
 function salvarAlteracoesVendedor() {
     let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, ''); let nome = document.getElementById('edit-vend-nome').value; let senha = document.getElementById('edit-vend-senha').value;
-    db.collection('vendedores').doc(cpf).update({ nome: nome, senha: senha }).then(() => { alert("Atualizado!"); fecharModalEditarVendedor(); });
+    db.collection('vendedores').doc(cpf).update({ nome: nome, senha: senha }).then(() => {mostrarToast("Atualizado!"); fecharModalEditarVendedor(); });
 }
-function demitirVendedor() { if(confirm("Deseja demitir?")) { let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, ''); db.collection('vendedores').doc(cpf).delete().then(() => { alert("Removido."); fecharModalEditarVendedor(); }); } }
+function demitirVendedor() { if(confirm("Deseja demitir?")) { let cpf = document.getElementById('edit-vend-cpf').value.replace(/\D/g, ''); db.collection('vendedores').doc(cpf).delete().then(() => { mostrarToast("Removido."); fecharModalEditarVendedor(); }); } }
 function abrirModalAcordos() { document.getElementById('modal-acordos').style.display = 'flex'; atualizarSelectVendedoresAcordo(); }
 function fecharModalAcordos() { document.getElementById('modal-acordos').style.display = 'none'; }
 function atualizarSelectVendedoresAcordo() {
@@ -959,3 +973,5 @@ function carregarAcordosVendedor() {
 </script>
 </body>
 </html>
+
+
