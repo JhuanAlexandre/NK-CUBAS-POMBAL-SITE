@@ -126,7 +126,6 @@
                     </select>
                 </div>
                 
-                
                 <!-- Área de Desconto Dinâmica -->
                 <div id="area-desconto" style="margin-top: 10px; background: #d4edda; padding: 12px; border-radius: 6px; border: 1px solid #c3e6cb;">
                     <label style="font-weight: bold; color: #155724;">Desconto À VISTA (%):</label>
@@ -159,9 +158,13 @@
 
     <!-- Modais Administrativos -->
     <div id="modal-minhas-vendas" class="modal"><div class="modal-conteudo" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 95%; max-width: 600px; max-height: 80vh; overflow-y: auto;"><span class="fechar-modal" onclick="fecharModalMinhasVendas()">&times;</span><h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; color: #2b5797;">MINHAS VENDAS</h2><div id="lista-minhas-vendas"></div></div></div>
+    
     <div id="modal-info-produto" class="modal"><div class="modal-conteudo" style="text-align: center; background-color: #1a1a1a; color: white; border: 2px solid #ffd700; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;"><span class="fechar-modal" onclick="fecharInfo()" style="color: #ffd700;">&times;</span><h2 id="info-nome-produto" style="color: #ffd700; margin-bottom: 20px; font-size: 26px;"></h2><img id="info-img-produto" src="" style="width: 250px; height: 250px; object-fit: contain; margin-bottom: 20px; background: black; border-radius: 10px; border: 1px solid #333;"><div style="font-size: 18px; line-height: 1.8; text-align: left; padding: 0 20px;"><p><strong style="color: #ffd700;">Largura:</strong> <span id="info-largura"></span></p><p><strong style="color: #ffd700;">Comprimento:</strong> <span id="info-comprimento"></span></p><p><strong style="color: #ffd700;">Altura:</strong> <span id="info-altura"></span></p></div></div></div>
+    
     <div id="modal-vendedor" class="modal"><div class="modal-conteudo" style="background-color: #f4f4f4; color: black; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;"><span class="fechar-modal" onclick="fecharModalVendedor()">&times;</span><h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 20px;">CADASTRAR NOVO VENDEDOR</h2><div style="margin-bottom: 15px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome do Vendedor</label><input type="text" id="novo-vend-nome" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"></div><div style="margin-bottom: 15px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">CPF (Apenas números)</label><input type="text" id="novo-vend-cpf" maxlength="11" oninput="formatarVerificarCPF(this.value)" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"><span id="msg-cpf" style="font-size: 14px; font-weight: bold; margin-top: 5px; display: block;"></span></div><div style="margin-bottom: 20px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Senha de Acesso</label><input type="password" id="novo-vend-senha" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"></div><button id="btn-salvar-vendedor" disabled onclick="salvarVendedor()" style="width: 100%; padding: 15px; background-color: #555555; color: white; border: none; font-weight: bold; font-size: 18px; border-radius: 10px; cursor: not-allowed;">CONTRATAR VENDEDOR</button></div></div>
+    
     <div id="modal-editar-vendedor" class="modal"><div class="modal-conteudo" style="background-color: #f4f4f4; color: black; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;"><span class="fechar-modal" onclick="fecharModalEditarVendedor()">&times;</span><h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 20px;">EDITAR / DEMITIR VENDEDOR</h2><div style="margin-bottom: 15px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">CPF do Vendedor (Apenas números)</label><input type="text" id="edit-vend-cpf" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"><button onclick="buscarVendedorParaEdicao()" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #333; color: white; border: none; font-weight: bold; border-radius: 5px; cursor: pointer;">Buscar Vendedor</button></div><div id="campos-edicao-vendedor" style="display: none;"><div style="margin-bottom: 15px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Nome do Vendedor</label><input type="text" id="edit-vend-nome" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"></div><div style="margin-bottom: 20px;"><label style="font-weight: bold; display: block; margin-bottom: 5px;">Senha de Acesso</label><input type="password" id="edit-vend-senha" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: white; color: black;"></div><button onclick="salvarAlteracoesVendedor()" style="width: 100%; padding: 12px; background-color: green; color: white; border: none; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer; margin-bottom: 10px;">SALVAR ALTERAÇÕES</button><button onclick="demitirVendedor()" style="width: 100%; padding: 12px; background-color: red; color: white; border: none; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer;">DEMITIR VENDEDOR</button></div></div></div>
+    
     <div id="modal-acordos" class="modal"><div class="modal-conteudo" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 95%; max-width: 850px; max-height: 85vh; overflow-y: auto;"><span class="fechar-modal" onclick="fecharModalAcordos()">&times;</span><h2 style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 22px; color: #20bf6b;">COMPENSAÇÕES E ACORDOS</h2><div style="margin-bottom: 20px;"><label style="font-weight: bold;">Selecione o Vendedor:</label><select id="select-vendedor-acordo" onchange="carregarAcordosVendedor()" style="width: 100%; padding: 10px; border-radius: 5px; font-size: 16px; margin-top: 5px; background: white; color: black; border: 1px solid #ccc;"></select></div><div id="resumo-acordos" style="display: flex; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; justify-content: space-around; font-weight: bold; text-align: center; flex-wrap: wrap;"><div>Comissão Pendente:<br><span id="resumo-comissao-pendente" style="color: red; font-size: 18px;">R$ 0,00</span></div><div>Líquido Empresa:<br><span id="resumo-empresa-faturado" style="color: green; font-size: 18px;">R$ 0,00</span></div><div>Total Peças:<br><span id="resumo-pecas-vendidas" style="color: blue; font-size: 18px;">0 Un.</span></div></div><div id="lista-vendas-acordo-container"></div></div></div>
 
 <script>
@@ -170,11 +173,12 @@ let listaClientesRealtime = [];
 let listaVendedoresRealtime = [];
 let listaVendasRealtime = [];
 let idPedidoEmEdicaoOriginal = null;
+let listaProdutosRealtime = []; // Movida para acesso global!
+
 // =========================================
 // SISTEMA DE NOTIFICAÇÕES (TOAST)
 // =========================================
 function mostrarToast(mensagem, tipo = 'sucesso') {
-    // Verifica se o container já existe, se não, cria
     let container = document.getElementById('toast-container');
     if (!container) {
         container = document.createElement('div');
@@ -182,24 +186,19 @@ function mostrarToast(mensagem, tipo = 'sucesso') {
         document.body.appendChild(container);
     }
 
-    // Cria a notificação
     const toast = document.createElement('div');
     toast.className = `toast ${tipo}`;
     
-    // Define o ícone com base no tipo
     let icone = tipo === 'sucesso' ? '✅ ' : tipo === 'erro' ? '❌ ' : '⚠️ ';
     toast.innerHTML = `<span>${icone} ${mensagem}</span>`;
-
     container.appendChild(toast);
 
-    // Some sozinho após 3.5 segundos
     setTimeout(() => {
         toast.classList.add('fadeOut');
         toast.addEventListener('animationend', () => toast.remove());
     }, 3500);
 }
 
-// Normalizador Inteligente para Buscas (Remove Acentos e Capitalização)
 const normalizarBusca = str => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 
 window.onload = function() {
@@ -227,74 +226,8 @@ window.onload = function() {
         carregarAcordosVendedor();
     });
 
-    // Array global para armazenar os produtos do banco
-let listaProdutosRealtime = [];
-
-function carregarProdutos() {
-    db.collection('produtos').onSnapshot(snapshot => {
-        listaProdutosRealtime = [];
-        snapshot.forEach(doc => listaProdutosRealtime.push(doc.data()));
-        renderizarCatalogo(listaProdutosRealtime);
-    });
-}
-
-function renderizarCatalogo(lista) {
-    let container = document.getElementById('grade-produtos');
-    container.innerHTML = '';
-
-    // Agrupar por Empresa e depois por Material
-    let agrupado = {};
-    lista.forEach(p => {
-        let emp = p.empresa || 'Outros';
-        let mat = p.material || 'Geral';
-        if (!agrupado[emp]) agrupado[emp] = {};
-        if (!agrupado[emp][mat]) agrupado[emp][mat] = [];
-        agrupado[emp][mat].push(p);
-    });
-
-    for (let empresa in agrupado) {
-        // Separação de Empresa (Espaço maior e Logo)
-        container.innerHTML += `
-            <div style="width: 100%; margin-top: 50px; text-align: center;">
-                <img src="foto-cuba/logo-${empresa.toLowerCase().replace(/\s/g, '')}.png" onerror="this.style.display='none'" style="max-height: 80px;">
-                <h2 style="color: #ffd700; border-bottom: 2px solid #555; padding-bottom: 10px; margin-bottom: 20px;">${empresa}</h2>
-            </div>
-        `;
-
-        for (let material in agrupado[empresa]) {
-            // Separação de Material (Metade do espaço, título grande)
-            container.innerHTML += `
-                <div style="width: 100%; margin-top: 25px;">
-                    <h3 style="color: #fff; font-size: 24px; text-transform: uppercase; margin-bottom: 15px; border-left: 4px solid #ffd700; padding-left: 10px;">MATERIAL: ${material}</h3>
-                </div>
-            `;
-
-            // Renderizar os Produtos daquela subcategoria
-            agrupado[empresa][material].forEach(prod => {
-                // Código pequeno embaixo do nome (conforme solicitado) e tags embaixo das dimensões
-                container.innerHTML += `
-                    <div class="card produto-card" data-nome="${prod.nome.toLowerCase()}" data-tags="${(prod.tags || []).join(' ').toLowerCase()}">
-                        <h2 class="nome-cuba">${prod.nome}</h2>
-                        <span style="display:block; text-align:center; font-size:11px; color:#888; font-family:monospace;">Cód: ${prod.codigo}</span>
-                        <div class="conteudo-card">
-                            <img src="${prod.fotoUrl || 'foto-cuba/placeholder.jfif'}" class="foto-cuba">
-                            <div class="info-direita">
-                                <p class="preco-grande">R$ ${prod.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
-                                <p class="subtitulo">${prod.subCategoria || ''}</p>
-                                <p style="font-size: 10px; color: #aaa; margin-top: 5px;">Dimensões: ${prod.largura} x ${prod.comprimento} x ${prod.altura}</p>
-                                <p style="font-size: 10px; color: #ffd700; margin-top: 2px;">Tags: ${(prod.tags || []).join(', ')}</p>
-                                <div class="area-botoes">
-                                    <button class="btn-comprar" data-codigo="${prod.codigo}" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-    }
-    reconstruirBotoesCatalogo();
-}
+    // AGORA A FUNÇÃO É DISPARADA QUANDO A TELA INICIA!
+    carregarProdutos();
 
     if (perfil === 'vendedor' || perfil === 'master') {
         let nomeVend = localStorage.getItem('nomeVendedorLogado') || 'Vendedor Padrão';
@@ -328,7 +261,6 @@ function renderizarCatalogo(lista) {
             if(doc.exists){
                 let dados = doc.data();
                 
-                // Mapeia os itens do pedido antigo para o novo formato do carrinho
                 let cartReconstruido = [];
                 let itemBancada = { nome: 'BANCADA DE SUPORTE', preco: 117.30, codigo: '283022', qtdPop: 0, qtdItalia: 0 };
                 let achouBancada = false;
@@ -364,6 +296,84 @@ function renderizarCatalogo(lista) {
     }
 };
 
+// Funções base de produtos extraídas do OnLoad
+function carregarProdutos() {
+    db.collection('produtos').onSnapshot(snapshot => {
+        listaProdutosRealtime = [];
+        snapshot.forEach(doc => listaProdutosRealtime.push(doc.data()));
+        renderizarCatalogo(listaProdutosRealtime);
+    });
+}
+
+// Criada a função que permite a barra de busca funcionar
+function filtrarProdutos(termo) {
+    if (!termo) {
+        renderizarCatalogo(listaProdutosRealtime);
+        return;
+    }
+    termo = normalizarBusca(termo);
+    let filtrados = listaProdutosRealtime.filter(p => {
+        let n = normalizarBusca(p.nome || '');
+        let c = normalizarBusca(p.codigo || '');
+        let t = p.tags ? normalizarBusca(p.tags.join(' ')) : '';
+        return n.includes(termo) || c.includes(termo) || t.includes(termo);
+    });
+    renderizarCatalogo(filtrados);
+}
+
+function renderizarCatalogo(lista) {
+    let container = document.getElementById('grade-produtos');
+    container.innerHTML = '';
+
+    let agrupado = {};
+    lista.forEach(p => {
+        let emp = p.empresa || 'Outros';
+        let mat = p.material || 'Geral';
+        if (!agrupado[emp]) agrupado[emp] = {};
+        if (!agrupado[emp][mat]) agrupado[emp][mat] = [];
+        agrupado[emp][mat].push(p);
+    });
+
+    for (let empresa in agrupado) {
+        container.innerHTML += `
+            <div style="width: 100%; margin-top: 50px; text-align: center;">
+                <img src="foto-cuba/logo-${empresa.toLowerCase().replace(/\s/g, '')}.png" onerror="this.style.display='none'" style="max-height: 80px;">
+                <h2 style="color: #ffd700; border-bottom: 2px solid #555; padding-bottom: 10px; margin-bottom: 20px;">${empresa}</h2>
+            </div>
+        `;
+
+        for (let material in agrupado[empresa]) {
+            container.innerHTML += `
+                <div style="width: 100%; margin-top: 25px;">
+                    <h3 style="color: #fff; font-size: 24px; text-transform: uppercase; margin-bottom: 15px; border-left: 4px solid #ffd700; padding-left: 10px;">MATERIAL: ${material}</h3>
+                </div>
+            `;
+
+            agrupado[empresa][material].forEach(prod => {
+                container.innerHTML += `
+                    <div class="card produto-card" data-nome="${prod.nome.toLowerCase()}" data-tags="${(prod.tags || []).join(' ').toLowerCase()}">
+                        <h2 class="nome-cuba">${prod.nome}</h2>
+                        <span style="display:block; text-align:center; font-size:11px; color:#888; font-family:monospace;">Cód: ${prod.codigo}</span>
+                        <div class="conteudo-card">
+                            <img src="${prod.fotoUrl || 'foto-cuba/placeholder.jfif'}" class="foto-cuba">
+                            <div class="info-direita">
+                                <p class="preco-grande">R$ ${prod.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
+                                <p class="subtitulo">${prod.subCategoria || ''}</p>
+                                <p style="font-size: 10px; color: #aaa; margin-top: 5px;">Dimensões: ${prod.largura} x ${prod.comprimento} x ${prod.altura}</p>
+                                <p style="font-size: 10px; color: #ffd700; margin-top: 2px;">Tags: ${(prod.tags || []).join(', ')}</p>
+                                <div class="area-botoes">
+                                    <button class="btn-comprar" data-codigo="${prod.codigo}" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    }
+    reconstruirBotoesCatalogo();
+}
+
 function cancelarEdicaoPedido() {
     localStorage.removeItem('pedidoEmEdicaoId');
     window.location.reload();
@@ -371,6 +381,7 @@ function cancelarEdicaoPedido() {
 
 function abrirCarrinho() { document.getElementById('modal-carrinho').style.display = 'flex'; }
 function fecharCarrinho() { document.getElementById('modal-carrinho').style.display = 'none'; }
+function fecharInfo() { document.getElementById('modal-info-produto').style.display = 'none'; }
 
 function mudarBotao(botao) {
     let card = botao.closest('.card');
@@ -566,8 +577,6 @@ async function consultarCNPJ(cnpj) {
     nomeCampo.innerText = "Verificando dados..."; endCampo.innerText = "";
     document.getElementById('btn-confirmar-cadastro').disabled = true;
 
-    // 1. Checa primeiro no Firebase se já existe
-// Substitua o trecho de verificação dentro da sua função consultarCNPJ(cnpj):
     let docRef = await db.collection('clientes').doc(limpo).get();
     if (docRef.exists) {
         let dadosExistentes = docRef.data();
@@ -578,10 +587,9 @@ async function consultarCNPJ(cnpj) {
         } else {
             nomeCampo.innerHTML = `<span style="color: red; font-size: 14px;">❌ Cliente já cadastrado por: <b>${dadosExistentes.vendedor}</b></span>`;
         }
-        return; // Impede o cadastro
+        return;
     }
 
-    // 2. Se não existe, busca na Receita Federal
     try {
         let res = await fetch(`https://publica.cnpj.ws/cnpj/${limpo}`);
         if(res.ok) {
@@ -624,7 +632,6 @@ function filtrarClientes() {
     let meuNome = localStorage.getItem('nomeVendedorLogado');
     let perfil = localStorage.getItem('perfilLogado');
 
-    // Filtra para exibir apenas os clientes deste vendedor (Master vê todos)
     let filtrados = listaClientesRealtime.filter(c => {
         let pertenceAoVendedor = (perfil === 'master' || c.vendedor === meuNome);
         if (!pertenceAoVendedor) return false;
@@ -634,9 +641,7 @@ function filtrarClientes() {
         return termosPesquisa.every(termo => registroCompleto.includes(termo));
     });
 
-    // Ordena do cadastro MAIS NOVO (topo) para o MAIS ANTIGO (baixo)
     filtrados.sort((a, b) => {
-        // Converte DD/MM/YYYY para YYYYMMDD para comparar corretamente
         let formatarData = (dataStr) => dataStr ? dataStr.split('/').reverse().join('') : '0';
         return formatarData(b.dataCadastro).localeCompare(formatarData(a.dataCadastro));
     });
@@ -677,7 +682,7 @@ function gerarPDF() {
     const pgto = document.getElementById('metodo-pagamento').value;
     const prazoFinal = (pgto === 'Boleto' || pgto === 'Cheque') ? document.getElementById('prazo-pagamento').value : 'À vista';
     const temExpositor = document.getElementById('com-expositor').checked ? "SIM" : "NÃO";
-    const entregaDefinida = document.getElementById('entregue-por').value;
+    const entregaDefinida = document.getElementById('entregue-por') ? document.getElementById('entregue-por').value : 'Transportadora';
     const descricaoVenda = document.getElementById('descricao-venda').value;
 
     let desc = pgto === 'À vista' ? (parseInt(document.getElementById('input-desconto').value) || 0) : 0;
@@ -739,21 +744,18 @@ function desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor,
     doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
 
-    // 1. Injetar a Logo SVG no topo
     if (logoBase64Img) {
         doc.addImage(logoBase64Img, 'PNG', 14, 10, 26, 26);
     }
 
-    // 2. Cabeçalho de Dados da Empresa
     doc.setFont("helvetica", "normal");
     doc.text("NK CUBAS POMBAL LTDA - (11) 99994-8702", 45, 18);
     doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 45, 23);
     doc.text("CNPJ: 61.941.386/0001-20", 45, 28);
 
-    // 3. Bloco Encaixotado (Cliente e Venda)
     doc.setDrawColor(0);
-    doc.setLineWidth(0.3); // Definição base uniforme
-    doc.rect(14, 35, 182, 34); // Expandido de 28 para 34 para comportar dados extras de endereço
+    doc.setLineWidth(0.3);
+    doc.rect(14, 35, 182, 34); 
 
     doc.setFont("helvetica", "bold");
     doc.text(`Número do pedido: ${numPedido}`, 16, 41);
@@ -764,7 +766,6 @@ function desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor,
     doc.text(dadosDoCliente.nome, 35, 47);
     doc.text(`CNPJ: ${dadosDoCliente.cnpj || 'Não Informado'}`, 130, 47);
 
-    // Injeção do endereço completo integrado
     doc.setFont("helvetica", "bold");
     doc.text("Endereço:", 16, 53);
     doc.setFont("helvetica", "normal");
@@ -778,7 +779,6 @@ function desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor,
     doc.setFont("helvetica", "bold");
     doc.text(`VENDEDOR: ${nomeVendedor}`, 16, 65);
 
-    // 4. Tabela de Produtos (Cabeçalho Escuro e Texto Dourado Igual Foto)
     let tabelaCorpo = [];
     let somaQtd = 0;
     
@@ -789,7 +789,7 @@ function desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor,
     });
 
     doc.autoTable({
-        startY: 72, // Reajustado para não sobrepor o bloco superior que cresceu
+        startY: 72, 
         head: [['Descrição do produto/serviço', 'Código', 'Un.', 'Qtd.', 'Valor unitário', 'Valor total']],
         body: tabelaCorpo,
         theme: 'grid',
@@ -798,21 +798,17 @@ function desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor,
         margin: { left: 14, right: 14 }
     });
 
-    // 5. Blocos de Resumo Finais
     let startY = doc.lastAutoTable.finalY;
     let rowHeight = 6;
     let leftW = 116;
     let rightW = 66;
 
-    // Linhas e caixas totalmente uniformizadas em 0.3 (Remove o bug estético do negrito falso)
     doc.setLineWidth(0.3);
     
-    // Caixa Esquerda
     doc.rect(14, startY, leftW, rowHeight * 3);
     doc.line(14, startY + rowHeight, 14 + leftW, startY + rowHeight);
     doc.line(14, startY + rowHeight*2, 14 + leftW, startY + rowHeight*2);
     
-    // Textos da Esquerda
     doc.setFont("helvetica", "bold");
     doc.text(`Forma: ${pgto} ${prazoFinal !== 'À vista' ? '('+prazoFinal+')' : ''}`, 16, startY + 4.5);
     doc.setFont("helvetica", "italic");
@@ -820,7 +816,6 @@ function desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor,
     doc.setFont("helvetica", "normal");
     doc.text(`  ${temExpositor}`, 35, startY + rowHeight + 4.5);
 
-    // Ajuste 1: Preenchimento do quadrado vazio com dados do Desconto se houver
     let valorDesconto = totalBruto - totalLiq;
     let percentualDesconto = totalBruto > 0 ? Math.round((valorDesconto / totalBruto) * 100) : 0;
     if (percentualDesconto > 0) {
@@ -830,63 +825,51 @@ function desenharNovoPDF(doc, numPedido, dataHoje, dadosDoCliente, nomeVendedor,
         doc.text(`valor: R$ ${valorDesconto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 55, startY + rowHeight*2 + 4.5);
     }
 
-    // Caixa Direita
     doc.rect(14 + leftW, startY, rightW, rowHeight * 3);
     doc.line(14 + leftW, startY + rowHeight, 14 + leftW + rightW, startY + rowHeight);
     doc.line(14 + leftW, startY + rowHeight*2, 14 + leftW + rightW, startY + rowHeight*2);
     doc.line(14 + leftW + 36, startY, 14 + leftW + 36, startY + rowHeight*3); 
 
-    // Textos da Direita
     doc.setFont("helvetica", "italic");
     doc.text("Número de itens:", 14 + leftW + 2, startY + 4.5);
     doc.text("Preço Líquido:", 14 + leftW + 2, startY + rowHeight + 4.5);
     doc.text("Preço Líquido Final:", 14 + leftW + 2, startY + rowHeight*2 + 4.5);
 
-    // Valores da Direita
     doc.setFont("helvetica", "normal");
     doc.text(`${somaQtd}`, 180, startY + 4.5, { align: "center" });
     doc.text(`${totalBruto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 180, startY + rowHeight + 4.5, { align: "center" });
     doc.text(`${totalLiq.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 180, startY + rowHeight*2 + 4.5, { align: "center" });
 
-   // 6. Bloco Maior para a Descrição (Lá embaixo)
-    let descY = startY + (rowHeight * 3) + 5; // Pega o Y atual (após o resumo) e dá uma pequena margem
+    let descY = startY + (rowHeight * 3) + 5; 
     let alturaPagina = doc.internal.pageSize.height;
 
-    // VERIFICAÇÃO DE QUEBRA DE PÁGINA (A mágica que resolve o bug)
-    // Se a posição Y + o tamanho do bloco (45) ultrapassar o limite da página, cria uma folha nova
     if (descY + 45 > alturaPagina - 10) {
-        doc.addPage(); // Adiciona uma nova página no PDF
-        descY = 20;    // Posiciona o bloco de observação lá no topo dessa nova folha
+        doc.addPage();
+        descY = 20;   
     }
 
-    // Desenha o quadrado do bloco
     doc.setLineWidth(0.3);
     doc.rect(14, descY, 182, 45);
     
-    // Título das observações
     doc.setFont("helvetica", "bolditalic");
     doc.text("Observações do Pedido: ", 16, descY + 6);
     
-    // Injeção do texto informado pelo vendedor ou cliente
     doc.setFont("helvetica", "normal");
     let textoFinalDesc = descricaoVenda ? descricaoVenda : "Nenhuma observação informada.";
     
-    // Divide o texto automaticamente para ele quebrar linha se for muito longo (limite de 178 de largura)
     let textoCortado = doc.splitTextToSize(textoFinalDesc, 178); 
     
-    // Imprime o texto NA LINHA DE BAIXO (descY + 12), para não amontoar em cima do título
     doc.text(textoCortado, 16, descY + 12); 
 
     doc.save(`Pedido_${numPedido}.pdf`);
 
-    // Reset geral da tela (mantido igual ao seu código original)
     itensCarrinho = []; idPedidoEmEdicaoOriginal = null;
     document.getElementById('input-desconto').value = 0;
     document.getElementById('descricao-venda').value = "";
     document.getElementById('banner-edicao').style.display = 'none';
     reconstruirBotoesCatalogo(); atualizarCarrinho(); fecharCarrinho();
-}
-}
+} 
+// AQUI ESTAVA A CHAVE EXTRA (REMOVIDA)
 
 // AS FUNÇÕES ADMINISTRATIVAS CONTINUAM INTACTAS ABAIXO:
 function abrirModalMinhasVendas() { document.getElementById('modal-minhas-vendas').style.display = 'flex'; carregarMinhasVendas(); }
@@ -900,10 +883,8 @@ function carregarMinhasVendas() {
     let meuNome = localStorage.getItem('nomeVendedorLogado');
     let perfil = localStorage.getItem('perfilLogado');
 
-    // Pega TODAS as vendas sem filtrar tipo de pagamento
     let minhas = listaVendasRealtime.filter(v => perfil === 'master' || v.vendedor === meuNome);
 
-    // Ordena da mais recente (topo) para a mais antiga (baixo) usando a dataHora ISO
     minhas.sort((a, b) => new Date(b.dataHora) - new Date(a.dataHora));
 
     if(minhas.length === 0) {
@@ -921,14 +902,12 @@ function carregarMinhasVendas() {
                 <p style="margin:4px 0; font-size:14px;"><b>Cliente:</b> ${v.cliente}</p>
                 <p style="margin:4px 0; font-size:14px;"><b>Pagamento:</b> ${v.metodoPagamento} - <b>Total:</b> R$ ${v.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
                 <div style="margin-top:10px; display:flex; gap:10px;">
-                    <button onclick="editarPedido('${v.firestoreId}')" style="background:#ffd700; color:black; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">✏️ Editar Pedido</button>
-                    <!-- O botão de PDF usará o novo layout depois -->
+                    <button onclick="carregarPedidoParaEdicao('${v.firestoreId}')" style="background:#ffd700; color:black; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">✏️ Editar Pedido</button>
                 </div>
             </div>
         `;
     });
 }
-
 
 function carregarPedidoParaEdicao(firestoreId) { localStorage.setItem('pedidoEmEdicaoId', firestoreId); window.location.reload(); }
 function abrirModalVendedor() { document.getElementById('modal-vendedor').style.display = 'flex'; }
@@ -966,6 +945,14 @@ function atualizarSelectVendedoresAcordo() {
     } else { select.innerHTML = `<option value="${meuNome}">${meuNome}</option>`; select.disabled = true; }
     carregarAcordosVendedor();
 }
+
+// Criei a função para alterar as comissões funcionar corretamente!
+function alterarStatusComissao(idFirestore, novoStatus) {
+    db.collection('vendas').doc(idFirestore).update({ statusComissao: novoStatus }).then(() => {
+        mostrarToast("Status atualizado com sucesso!");
+    });
+}
+
 function carregarAcordosVendedor() {
     let nomeVend = document.getElementById('select-vendedor-acordo').value; let containerDiv = document.getElementById('lista-vendas-acordo-container'); if(!containerDiv) return;
     containerDiv.innerHTML = ''; if(!nomeVend) return;
@@ -987,7 +974,6 @@ function carregarAcordosVendedor() {
     });
     if (vendasFiltradas.length === 0) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: gray;">Nenhum pedido atrelado.</td></tr>`;
     
-    // Elementos recuperados da quebra estrutural original
     document.getElementById('resumo-comissao-pendente').innerText = `R$ ${comissaoPendente.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
     document.getElementById('resumo-empresa-faturado').innerText = `R$ ${liquidoEmpresa.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
     document.getElementById('resumo-pecas-vendidas').innerText = `${totalPecas} Un.`;
@@ -995,5 +981,3 @@ function carregarAcordosVendedor() {
 </script>
 </body>
 </html>
-
-
