@@ -236,10 +236,13 @@ window.onload = function() {
         document.getElementById('info-vendedor-rodape').style.display = 'block';
         document.getElementById('nome-vendedor-tela').innerText = nomeVend;
         document.getElementById('area-selecao-cliente').style.display = 'block';
+        // ADICIONE ESTA LINHA ABAIXO PARA MOSTRAR O BOTÃO:
+         document.getElementById('btn-entregas').style.display = 'block';
 
         if (perfil === 'master' || documentoLogado === '61941386000120') {
             document.getElementById('btn-cadastrar-vendedor').style.display = 'block';
             document.getElementById('btn-editar-vendedor').style.display = 'block';
+            document.getElementById('btn-editar-produtos').style.display = 'block';
             document.getElementById('btn-menu-vendas').style.display = 'block';
             document.getElementById('nome-vendedor-tela').innerText = "MASTER: " + nomeVend;
         }
@@ -981,4 +984,3 @@ function carregarAcordosVendedor() {
 </body>
 </html>
 
-btn-editar-produtos
