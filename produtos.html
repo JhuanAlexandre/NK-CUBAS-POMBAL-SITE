@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +8,7 @@
     <!-- Scripts do Firebase (Mantendo as mesmas credenciais do seu projeto) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDZAotfkbiPDmMi0nFKS0wvV9x_3QDZE3E",
@@ -183,10 +184,12 @@
                         <label>Preço Base (R$)</label>
                         <input type="number" id="prod-preco" step="0.01" required>
                     </div>
-                    <div class="form-group">
-                        <label>URL da Foto (Link)</label>
-                        <input type="text" id="prod-foto" placeholder="https://... ou caminho local" required>
-                    </div>
+                   <div class="form-group">
+                      <label>Foto do Produto (Anexar Arquivo)</label>
+                      <input type="file" id="prod-foto-file" accept="image/*" onchange="fazerUploadImagem(this)" style="padding: 10px; background: #222; color: #fff; width: 100%; border-radius: 5px;">
+                      <input type="hidden" id="prod-foto" required>
+                      <p id="status-upload" style="color: #ffd700; font-size: 13px; margin-top: 5px; font-weight: bold;"></p>
+                   </div>
                 </div>
 
                 <div class="grade-inputs">
@@ -511,6 +514,30 @@
             }
         }
     }
+
+    const storage = firebase.storage();
+
+async function fazerUploadImagem(input) {
+    let file = input.files[0];
+    if (!file) return;
+
+    let statusTxt = document.getElementById('status-upload');
+    statusTxt.innerText = "⏳ Carregando imagem, aguarde...";
+    
+    try {
+        let storageRef = storage.ref('fotos-produtos/' + Date.now() + '_' + file.name);
+        await storageRef.put(file);
+        let url = await storageRef.getDownloadURL();
+        
+        document.getElementById('prod-foto').value = url;
+        statusTxt.innerText = "✅ Imagem anexada com sucesso! Pronta para salvar.";
+    } catch (error) {
+        statusTxt.innerText = "❌ Erro ao enviar imagem.";
+        console.error(error);
+    }
+}
+
 </script>
 </body>
 </html>
+
