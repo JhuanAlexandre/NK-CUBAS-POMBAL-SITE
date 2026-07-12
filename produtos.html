@@ -186,7 +186,7 @@
                     </div>
                     <div class="form-group">
     <label>Foto do Produto (Anexar arquivo)</label>
-    <input type="file" id="prod-foto-file" accept="image/*">
+   <input type="file" id="prod-foto-file" accept="image/*, .jfif">
     <input type="hidden" id="prod-foto"> <!-- Mantém a URL invisível para o sistema -->
     <small id="status-upload" style="color: #ffd700; display: none;">Enviando imagem, aguarde...</small>
 </div>
@@ -470,18 +470,26 @@
 
     try {
         // 1. PRIMEIRO FAZ O UPLOAD DA FOTO (SE O USUÁRIO ANEXOU UMA NOVA)
-        if (fileInput && fileInput.files.length > 0) {
-            let file = fileInput.files[0];
-            btn.innerText = "⏳ ENVIANDO FOTO...";
-            document.getElementById('status-upload').style.display = 'block';
-            
-            let storageRef = firebase.storage().ref('produtos/' + Date.now() + '_' + file.name);
-            let uploadTask = await storageRef.put(file);
-            urlFoto = await uploadTask.ref.getDownloadURL();
-            
-            document.getElementById('prod-foto').value = urlFoto;
-            document.getElementById('status-upload').style.display = 'none';
-        }
+       if (fileInput && fileInput.files.length > 0) {
+    let file = fileInput.files[0];
+    btn.innerText = "⏳ ENVIANDO FOTO...";
+    document.getElementById('status-upload').style.display = 'block';
+    
+    // Força o tipo para JPEG se o arquivo for .jfif
+    let metadata = {};
+    if (file.name.toLowerCase().endsWith('.jfif')) {
+        metadata = { contentType: 'image/jpeg' };
+    }
+    
+    let storageRef = firebase.storage().ref('produtos/' + Date.now() + '_' + file.name);
+    
+    // Passa o metadata junto com o arquivo
+    let uploadTask = await storageRef.put(file, metadata); 
+    urlFoto = await uploadTask.ref.getDownloadURL();
+    
+    document.getElementById('prod-foto').value = urlFoto;
+    document.getElementById('status-upload').style.display = 'none';
+}
 
         // 2. DEPOIS MONTA O OBJETO PARA SALVAR (AGORA COM A URL DA FOTO ATUALIZADA)
         let dadosParaSalvar = {
@@ -540,4 +548,3 @@
 </body>
 </html>
 
-let btn = e.target.querySelector('button[type="submit"]'); btn.disabled = true;
