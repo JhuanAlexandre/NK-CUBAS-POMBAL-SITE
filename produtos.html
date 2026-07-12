@@ -6,9 +6,9 @@
     <title>Painel de Produtos - NK Cubas</title>
     
     <!-- Scripts do Firebase (Mantendo as mesmas credenciais do seu projeto) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDZAotfkbiPDmMi0nFKS0wvV9x_3QDZE3E",
@@ -184,12 +184,12 @@
                         <label>Preço Base (R$)</label>
                         <input type="number" id="prod-preco" step="0.01" required>
                     </div>
-                   <div class="form-group">
-                      <label>Foto do Produto (Anexar Arquivo)</label>
-                      <input type="file" id="prod-foto-file" accept="image/*" onchange="fazerUploadImagem(this)" style="padding: 10px; background: #222; color: #fff; width: 100%; border-radius: 5px;">
-                      <input type="hidden" id="prod-foto" required>
-                      <p id="status-upload" style="color: #ffd700; font-size: 13px; margin-top: 5px; font-weight: bold;"></p>
-                   </div>
+                    <div class="form-group">
+    <label>Foto do Produto (Anexar arquivo)</label>
+    <input type="file" id="prod-foto-file" accept="image/*">
+    <input type="hidden" id="prod-foto"> <!-- Mantém a URL invisível para o sistema -->
+    <small id="status-upload" style="color: #ffd700; display: none;">Enviando imagem, aguarde...</small>
+</div>
                 </div>
 
                 <div class="grade-inputs">
@@ -412,6 +412,7 @@
         if(p.subprodutos && p.subprodutos.length > 0) {
             p.subprodutos.forEach(sub => adicionarCampoSubproduto(sub));
         }
+        document.getElementById('prod-foto-file').value = "";
     }
 
     // ==========================================
@@ -444,23 +445,45 @@
     // ==========================================
     // SALVAR E EXCLUIR NO FIREBASE
     // ==========================================
-    async function salvarProduto(e) {
-        e.preventDefault();
-        
-        let id = document.getElementById('prod-id').value;
-        
-        // Coleta Subprodutos
-        let arraySub = [];
-        document.querySelectorAll('.input-sub').forEach(input => {
-            if(input.value.trim() !== "") arraySub.push(input.value.trim());
-        });
+   async function salvarProduto(e) {
+    e.preventDefault();
+    
+    let id = document.getElementById('prod-id').value;
+    let btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true; 
+    btn.innerText = "⏳ SALVANDO...";
+    
+    // Coleta Subprodutos
+    let arraySub = [];
+    document.querySelectorAll('.input-sub').forEach(input => {
+        if(input.value.trim() !== "") arraySub.push(input.value.trim());
+    });
 
-        // Coleta Adjetivos
-        let arrayAdj = [];
-        document.querySelectorAll('input[name="chk-adjetivos"]:checked').forEach(chk => {
-            arrayAdj.push(chk.value);
-        });
+    // Coleta Adjetivos
+    let arrayAdj = [];
+    document.querySelectorAll('input[name="chk-adjetivos"]:checked').forEach(chk => {
+        arrayAdj.push(chk.value);
+    });
 
+    let urlFoto = document.getElementById('prod-foto').value;
+    let fileInput = document.getElementById('prod-foto-file');
+
+    try {
+        // 1. PRIMEIRO FAZ O UPLOAD DA FOTO (SE O USUÁRIO ANEXOU UMA NOVA)
+        if (fileInput && fileInput.files.length > 0) {
+            let file = fileInput.files[0];
+            btn.innerText = "⏳ ENVIANDO FOTO...";
+            document.getElementById('status-upload').style.display = 'block';
+            
+            let storageRef = firebase.storage().ref('produtos/' + Date.now() + '_' + file.name);
+            let uploadTask = await storageRef.put(file);
+            urlFoto = await uploadTask.ref.getDownloadURL();
+            
+            document.getElementById('prod-foto').value = urlFoto;
+            document.getElementById('status-upload').style.display = 'none';
+        }
+
+        // 2. DEPOIS MONTA O OBJETO PARA SALVAR (AGORA COM A URL DA FOTO ATUALIZADA)
         let dadosParaSalvar = {
             nome: document.getElementById('prod-nome').value,
             empresa: document.getElementById('prod-empresa').value,
@@ -468,37 +491,36 @@
             subcategoria: document.getElementById('prod-subcategoria').value,
             adjetivos: arrayAdj,
             preco: parseFloat(document.getElementById('prod-preco').value),
-            foto: document.getElementById('prod-foto').value,
+            foto: urlFoto,
             largura: document.getElementById('prod-largura').value,
             comprimento: document.getElementById('prod-comprimento').value,
             altura: document.getElementById('prod-altura').value,
             subprodutos: arraySub
         };
 
-        let btn = e.target.querySelector('button[type="submit"]');
-        btn.disabled = true; btn.innerText = "⏳ SALVANDO...";
-
-        try {
-            if (id) {
-                // Atualização
-                await db.collection('produtos').doc(id).update(dadosParaSalvar);
-                mostrarToast("Produto Atualizado com Sucesso!");
-            } else {
-                // Novo Cadastro - Gera o código restrito
-                let novoCodigo = await gerarCodigoSeguro();
-                dadosParaSalvar.codigo = novoCodigo;
-                dadosParaSalvar.dataCadastro = new Date().toISOString();
-                
-                await db.collection('produtos').add(dadosParaSalvar);
-                mostrarToast("Produto Criado! Código gerado: " + novoCodigo);
-            }
-            fecharModalProduto();
-        } catch (error) {
-            mostrarToast("Erro ao salvar: " + error, "erro");
-        } finally {
-            btn.disabled = false; btn.innerText = "💾 SALVAR PRODUTO";
+        // 3. FINALMENTE SALVA NO BANCO DE DADOS
+        if (id) {
+            // Atualização
+            await db.collection('produtos').doc(id).update(dadosParaSalvar);
+            mostrarToast("Produto Atualizado com Sucesso!");
+        } else {
+            // Novo Cadastro
+            let novoCodigo = await gerarCodigoSeguro();
+            dadosParaSalvar.codigo = novoCodigo;
+            dadosParaSalvar.dataCadastro = new Date().toISOString();
+            
+            await db.collection('produtos').add(dadosParaSalvar);
+            mostrarToast("Produto Criado! Código gerado: " + novoCodigo);
         }
+
+        fecharModalProduto();
+    } catch (error) {
+        mostrarToast("Erro ao salvar: " + error, "erro");
+    } finally {
+        btn.disabled = false; 
+        btn.innerText = "💾 SALVAR PRODUTO";
     }
+}
 
     async function excluirProduto(id, codigo) {
         if(confirm(`⚠️ ATENÇÃO: Tem certeza que deseja excluir o produto Cód: ${codigo}?\n\nEle será removido do catálogo e o código ${codigo} ficará INATIVO POR 1 SEMANA para evitar confusões.`)) {
@@ -514,30 +536,8 @@
             }
         }
     }
-
-    const storage = firebase.storage();
-
-async function fazerUploadImagem(input) {
-    let file = input.files[0];
-    if (!file) return;
-
-    let statusTxt = document.getElementById('status-upload');
-    statusTxt.innerText = "⏳ Carregando imagem, aguarde...";
-    
-    try {
-        let storageRef = storage.ref('fotos-produtos/' + Date.now() + '_' + file.name);
-        await storageRef.put(file);
-        let url = await storageRef.getDownloadURL();
-        
-        document.getElementById('prod-foto').value = url;
-        statusTxt.innerText = "✅ Imagem anexada com sucesso! Pronta para salvar.";
-    } catch (error) {
-        statusTxt.innerText = "❌ Erro ao enviar imagem.";
-        console.error(error);
-    }
-}
-
 </script>
 </body>
 </html>
 
+let btn = e.target.querySelector('button[type="submit"]'); btn.disabled = true;
