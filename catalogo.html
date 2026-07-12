@@ -331,9 +331,12 @@ function renderizarCatalogo(lista) {
     lista.forEach(p => {
         let emp = p.empresa || 'Outros';
         let mat = p.material || 'Geral';
+        let sub = p.subCategoria || 'Outros Modelos'; // NOVO: 3º nível
+        
         if (!agrupado[emp]) agrupado[emp] = {};
-        if (!agrupado[emp][mat]) agrupado[emp][mat] = [];
-        agrupado[emp][mat].push(p);
+        if (!agrupado[emp][mat]) agrupado[emp][mat] = {};
+        if (!agrupado[emp][mat][sub]) agrupado[emp][mat][sub] = [];
+        agrupado[emp][mat][sub].push(p);
     });
 
     for (let empresa in agrupado) {
@@ -347,35 +350,44 @@ function renderizarCatalogo(lista) {
         for (let material in agrupado[empresa]) {
             container.innerHTML += `
                 <div style="width: 100%; margin-top: 25px;">
-                    <h3 style="color: #fff; font-size: 24px; text-transform: uppercase; margin-bottom: 15px; border-left: 4px solid #ffd700; padding-left: 10px;">MATERIAL: ${material}</h3>
+                    <h3 style="color: #fff; font-size: 24px; text-transform: uppercase; margin-bottom: 5px; border-left: 4px solid #ffd700; padding-left: 10px;">MATERIAL: ${material}</h3>
                 </div>
             `;
 
-            agrupado[empresa][material].forEach(prod => {
+            for (let subcategoria in agrupado[empresa][material]) {
                 container.innerHTML += `
-                    <div class="card produto-card" data-nome="${prod.nome.toLowerCase()}" data-tags="${(prod.tags || []).join(' ').toLowerCase()}">
-                        <h2 class="nome-cuba">${prod.nome}</h2>
-                        <span style="display:block; text-align:center; font-size:11px; color:#888; font-family:monospace;">Cód: ${prod.codigo}</span>
-                        <div class="conteudo-card">
-                            <img src="${prod.fotoUrl || 'foto-cuba/placeholder.jfif'}" class="foto-cuba">
-                            <div class="info-direita">
-                                <p class="preco-grande">R$ ${prod.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
-                                <p class="subtitulo">${prod.subCategoria || ''}</p>
-                                <p style="font-size: 10px; color: #aaa; margin-top: 5px;">Dimensões: ${prod.largura} x ${prod.comprimento} x ${prod.altura}</p>
-                                <p style="font-size: 10px; color: #ffd700; margin-top: 2px;">Tags: ${(prod.tags || []).join(', ')}</p>
-                                <div class="area-botoes">
-                                    <button class="btn-comprar" data-codigo="${prod.codigo}" onclick="mudarBotao(this)">Adicionar ao carrinho</button>
+                    <div style="width: 100%; margin-top: 15px; margin-bottom: 15px;">
+                        <h4 style="color: #20bf6b; font-size: 20px; text-transform: uppercase; border-bottom: 1px dashed #333; padding-bottom: 5px;">📂 ${subcategoria}</h4>
+                    </div>
+                `;
+
+                agrupado[empresa][material][subcategoria].forEach(prod => {
+                    let tagsExibicao = (prod.tags || []).join(', '); // Adjetivos como info
+                    let subsArray = prod.subprodutos || [];
+                    
+                    container.innerHTML += `
+                        <div class="card produto-card" data-nome="${prod.nome.toLowerCase()}" data-tags="${(prod.tags || []).join(' ').toLowerCase()}">
+                            <h2 class="nome-cuba">${prod.nome}</h2>
+                            <span style="display:block; text-align:center; font-size:11px; color:#888; font-family:monospace;">Cód: ${prod.codigo}</span>
+                            <div class="conteudo-card">
+                                <img src="${prod.fotoUrl || 'foto-cuba/placeholder.jfif'}" class="foto-cuba">
+                                <div class="info-direita">
+                                    <p class="preco-grande">R$ ${prod.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
+                                    <p style="font-size: 10px; color: #aaa; margin-top: 5px;">Dimensões: ${prod.largura} x ${prod.comprimento} x ${prod.altura}</p>
+                                    <p style="font-size: 10px; color: #ffd700; margin-top: 2px;">Adjetivos: ${tagsExibicao}</p>
+                                    <div class="area-botoes">
+                                        <button class="btn-comprar" data-codigo="${prod.codigo}" data-subprodutos='${JSON.stringify(subsArray)}' onclick="mudarBotao(this)">Adicionar ao carrinho</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
         }
     }
     reconstruirBotoesCatalogo();
 }
-
 function cancelarEdicaoPedido() {
     localStorage.removeItem('pedidoEmEdicaoId');
     window.location.reload();
@@ -391,6 +403,7 @@ function mudarBotao(botao) {
     let precoTexto = card.querySelector('.preco-grande').innerText.replace('R$ ', '').replace(',', '.');
     let preco = parseFloat(precoTexto);
     let codigo = botao.getAttribute('data-codigo');
+    let subsData = JSON.parse(botao.getAttribute('data-subprodutos') || "[]");
 
     let encontrado = itensCarrinho.find(i => i.codigo === codigo);
     if (encontrado) {
@@ -399,10 +412,13 @@ function mudarBotao(botao) {
         botao.style.backgroundColor = "";
         botao.style.color = "";
     } else {
-        if (codigo === '283022') {
-            itensCarrinho.push({ nome: nome, preco: preco, codigo: codigo, qtdPop: 1, qtdItalia: 0 });
+        if (subsData.length > 0) {
+            let obj = { nome: nome, preco: preco, codigo: codigo, isSub: true, qtdSubs: {} };
+            subsData.forEach(s => obj.qtdSubs[s] = 0);
+            obj.qtdSubs[subsData[0]] = 1; // Deixa o primeiro com 1 pra não bugar
+            itensCarrinho.push(obj);
         } else {
-            itensCarrinho.push({ nome: nome, preco: preco, codigo: codigo, qtd: 1 });
+            itensCarrinho.push({ nome: nome, preco: preco, codigo: codigo, isSub: false, qtd: 1 });
         }
         botao.innerText = "✓ No Carrinho";
         botao.style.backgroundColor = "#20bf6b";
@@ -410,14 +426,13 @@ function mudarBotao(botao) {
     }
     atualizarCarrinho();
 }
-
 function reconstruirBotoesCatalogo() {
     let botoes = document.querySelectorAll('.btn-comprar');
     botoes.forEach(btn => {
         let cod = btn.getAttribute('data-codigo');
         let item = itensCarrinho.find(i => i.codigo === cod);
         if (item) {
-            let somatoria = cod === '283022' ? (item.qtdPop + item.qtdItalia) : item.qtd;
+            let somatoria = item.isSub ? Object.values(item.qtdSubs).reduce((a,b)=>a+b,0) : item.qtd;
             btn.innerText = `✓ No Carrinho (${somatoria})`;
             btn.style.backgroundColor = "#20bf6b";
             btn.style.color = "white";
@@ -429,32 +444,25 @@ function reconstruirBotoesCatalogo() {
     });
 }
 
-function alterarQtdItem(codigo, delta) {
+function alterarQtdItem(codigo, delta, nomeSub = null) {
     let item = itensCarrinho.find(i => i.codigo === codigo);
     if (item) {
-        item.qtd += delta;
-        if (item.qtd <= 0) itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo);
-    }
-    reconstruirBotoesCatalogo();
-    atualizarCarrinho();
-}
-
-function alterarQtdBancada(codigo, tipo, delta) {
-    let item = itensCarrinho.find(i => i.codigo === codigo);
-    if(item) {
-        if(tipo === 'Pop') item.qtdPop += delta;
-        if(tipo === 'Italia') item.qtdItalia += delta;
-        
-        if(item.qtdPop < 0) item.qtdPop = 0;
-        if(item.qtdItalia < 0) item.qtdItalia = 0;
-
-        if(item.qtdPop === 0 && item.qtdItalia === 0) {
-            itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo);
+        if (item.isSub && nomeSub) {
+            item.qtdSubs[nomeSub] += delta;
+            if (item.qtdSubs[nomeSub] < 0) item.qtdSubs[nomeSub] = 0;
+            
+            let totalSubs = Object.values(item.qtdSubs).reduce((a,b)=>a+b,0);
+            if (totalSubs === 0) itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo); // Se todos os subs zerarem, remove do carrinho
+        } else {
+            item.qtd += delta;
+            if (item.qtd <= 0) itensCarrinho = itensCarrinho.filter(i => i.codigo !== codigo);
         }
     }
     reconstruirBotoesCatalogo();
     atualizarCarrinho();
 }
+
+
 
 function atualizarCarrinho() {
     let qtdGlobal = 0;
@@ -466,30 +474,37 @@ function atualizarCarrinho() {
     let total = 0;
     
     itensCarrinho.forEach(item => {
-        if (item.codigo === '283022') {
-            let sub = item.preco * (item.qtdPop + item.qtdItalia);
+       let qtdGlobal = 0;
+    itensCarrinho.forEach(i => { qtdGlobal += (i.isSub ? Object.values(i.qtdSubs).reduce((a,b)=>a+b,0) : i.qtd); });
+    document.getElementById('contador-carrinho').innerText = qtdGlobal;
+
+    let lista = document.getElementById('lista-itens-carrinho');
+    lista.innerHTML = '';
+    let total = 0;
+    
+    itensCarrinho.forEach(item => {
+        if (item.isSub) {
+            let totalItens = Object.values(item.qtdSubs).reduce((a,b)=>a+b,0);
+            let sub = item.preco * totalItens;
             total += sub;
+            
+            let htmlSubs = '';
+            for(let subNome in item.qtdSubs) {
+                htmlSubs += `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#f9f9f9; padding:6px 10px; border-radius:5px; margin-bottom:5px;">
+                    <span style="font-size:14px; font-weight:bold; color:#444;">↳ Modelo ${subNome}</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button onclick="alterarQtdItem('${item.codigo}', -1, '${subNome}')" style="padding:2px 10px; cursor:pointer; font-weight:bold;">-</button>
+                        <span style="font-size:16px;"><b>${item.qtdSubs[subNome]}</b></span>
+                        <button onclick="alterarQtdItem('${item.codigo}', 1, '${subNome}')" style="padding:2px 10px; cursor:pointer; font-weight:bold;">+</button>
+                    </div>
+                </div>`;
+            }
+            
             lista.innerHTML += `
                 <div style="margin-bottom:12px; border:1px solid #ddd; padding:10px; border-radius:8px; background:white; color: black;">
                     <div style="margin-bottom:8px;"><b>${item.nome}</b><br>R$ ${item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2})} <small style="color:gray;">/ cada</small></div>
-                    
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#f9f9f9; padding:6px 10px; border-radius:5px; margin-bottom:5px;">
-                        <span style="font-size:14px; font-weight:bold; color:#444;">↳ Modelo POP</span>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <button onclick="alterarQtdBancada('${item.codigo}', 'Pop', -1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">-</button>
-                            <span style="font-size:16px;"><b>${item.qtdPop}</b></span>
-                            <button onclick="alterarQtdBancada('${item.codigo}', 'Pop', 1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">+</button>
-                        </div>
-                    </div>
-                    
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#f9f9f9; padding:6px 10px; border-radius:5px;">
-                        <span style="font-size:14px; font-weight:bold; color:#444;">↳ Modelo ITÁLIA</span>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <button onclick="alterarQtdBancada('${item.codigo}', 'Italia', -1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">-</button>
-                            <span style="font-size:16px;"><b>${item.qtdItalia}</b></span>
-                            <button onclick="alterarQtdBancada('${item.codigo}', 'Italia', 1)" style="padding:2px 10px; cursor:pointer; font-weight:bold;">+</button>
-                        </div>
-                    </div>
+                    ${htmlSubs}
                     <div style="text-align:right; font-weight:bold; margin-top:8px; color:#20bf6b;">Subtotal: R$ ${sub.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
                 </div>`;
         } else {
@@ -693,14 +708,14 @@ function gerarPDF() {
     let totalBruto = 0;
 
     itensCarrinho.forEach(item => {
-        if(item.codigo === '283022') {
-            if(item.qtdPop > 0) {
-                itensMapeadosNuvem.push({ nome: 'BANCADA DE SUPORTE - POP', preco: item.preco, codigo: '283022-P', qtd: item.qtdPop });
-                totalBruto += (item.preco * item.qtdPop);
-            }
-            if(item.qtdItalia > 0) {
-                itensMapeadosNuvem.push({ nome: 'BANCADA DE SUPORTE - ITÁLIA', preco: item.preco, codigo: '283022-I', qtd: item.qtdItalia });
-                totalBruto += (item.preco * item.qtdItalia);
+        if(item.isSub) {
+            for(let subNome in item.qtdSubs) {
+                let qtdSub = item.qtdSubs[subNome];
+                if(qtdSub > 0) {
+                    // O nome e código vão pra nota fiscal separadinhos
+                    itensMapeadosNuvem.push({ nome: `${item.nome} - ${subNome.toUpperCase()}`, preco: item.preco, codigo: `${item.codigo}-${subNome.substring(0,3).toUpperCase()}`, qtd: qtdSub });
+                    totalBruto += (item.preco * qtdSub);
+                }
             }
         } else {
             itensMapeadosNuvem.push(item);
