@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Vendas Master - NK Cubas</title>
+    <title>Painel de Entregas - NK Cubas</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -22,452 +19,147 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-
-        // CONVERSOR DA SUA LOGOMARCA SVG PARA O NOVO PDF
-        const svgTexto = `<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 160 L450 160 Q445 300 370 340 L130 340 Q55 300 50 160" fill="none" stroke="#D9A520" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-            <g fill="#D9A520">
-                <rect x="245" y="40" width="70" height="10" rx="5"/>
-                <rect x="288" y="55" width="30" height="22" rx="10"/>
-                <path d="M215 95 Q215 70 235 70 L315 70 L315 145 L290 145 L290 90 L235 90 Q235 105 220 105 L215 105 Q210 105 210 100 L210 95 Q210 90 215 90"/>
-                <rect x="205" y="100" width="18" height="8" rx="4"/>
-            </g>
-            <text x="250" y="410" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="42" font-weight="bold" fill="#D9A520">NK CUBAS</text>
-            <text x="250" y="470" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="42" font-weight="bold" fill="#D9A520">POMBAL</text>
-        </svg>`;
-
-        let logoBase64Img = null;
-        const imgLoad = new Image();
-        imgLoad.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgTexto)));
-        imgLoad.onload = function() {
-            let canvas = document.createElement("canvas");
-            canvas.width = 500; canvas.height = 500;
-            canvas.getContext("2d").drawImage(imgLoad, 0, 0);
-            logoBase64Img = canvas.toDataURL("image/png");
-        };
     </script>
 
     <style>
-        body { font-family: Arial, sans-serif; background-color: #0d0d0d; color: white; padding: 20px; }
-        .topo-painel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #ffd700; padding-bottom: 15px; flex-wrap: wrap; gap: 15px; }
-        .barra-pesquisa { width: 100%; margin-bottom: 25px; display: flex; gap: 10px; }
-        .barra-pesquisa input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 16px; outline: none; }
-        .barra-pesquisa input:focus { border-color: #ffd700; }
-        .btn-acao { padding: 12px 22px; font-weight: bold; border-radius: 8px; cursor: pointer; border: none; transition: 0.2s; }
-        .secao-data { background: #161616; border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
-        .secao-data h3 { margin-top: 0; color: #ffd700; border-bottom: 1px dashed #ffd700; padding-bottom: 8px; margin-bottom: 15px; }
-        .card-venda { background: #222; border-left: 5px solid #ffd700; margin-bottom: 12px; padding: 15px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .info-venda span { color: #b3b3b3; font-size: 13px; line-height: 1.6; }
-        .menu-secao h3 { color: #ffd700; margin-bottom: 15px; }
+        body { background-color: #0d0d0d; color: white; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .topo { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffd700; padding-bottom: 15px; margin-bottom: 20px; }
+        .abas { display: flex; gap: 15px; margin-bottom: 20px; }
+        .btn-aba { padding: 12px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; border: none; background: #333; color: white; transition: 0.2s; }
+        .btn-aba.ativo { background: #ffd700; color: black; }
+        .grupo-estado { background: #141414; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .titulo-estado { color: #ffd700; border-bottom: 1px dashed #555; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; }
+        .grupo-cidade { margin-left: 15px; margin-bottom: 15px; }
+        .titulo-cidade { color: #20bf6b; margin-bottom: 10px; font-size: 18px; }
+        .card-pedido { background: #222; border-left: 5px solid #3867d6; padding: 15px; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
+        .btn-entregar { background: #20bf6b; color: white; padding: 10px 15px; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .btn-desfazer { background: #dc3545; color: white; padding: 10px 15px; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; }
     </style>
 </head>
+
 <body>
 
-    <div class="topo-painel">
+    <div class="topo-entregas">
         <div>
-            <h1 id="titulo-painel" style="margin: 0; font-size: 26px; color: #ffd700;">Painel de Vendas - Mês Atual</h1>
-            <p style="margin: 5px 0 0 0; color: #888; font-weight: bold;">NK Cubas Distribuidora S/A</p>
+            <h1 style="color: #ffd700; margin: 0;">🚚 Painel de Logística e Entregas</h1>
+            <p id="subtitulo-painel" style="color: #aaa; margin-top: 5px;"></p>
         </div>
-        <div style="display:flex; gap:12px; flex-wrap: wrap;">
-            <button id="btn-alternar-modo" class="btn-acao" style="background: #ffd700; color: black;" onclick="alternarModoPainel()">👁️ Ver Histórico Antigo</button>
-            <button class="btn-acao" style="background: #444; color: white;" onclick="window.location.href='catalogo.html'">⬅️ Voltar ao Catálogo</button>
-        </div>
+        <button class="btn-voltar" onclick="window.location.href='catalogo.html'">⬅️ Voltar ao Catálogo</button>
     </div>
 
-    <!-- ÁREA DE PESQUISA -->
-    <div class="barra-pesquisa">
-        <input type="text" id="input-busca-vendas" placeholder="🔍 Pesquisar por cliente, vendedor, cidade, estado, data ou número do pedido..." oninput="renderizarPainelVendas()">
+    <div class="sessao-entregas">
+        <h2 class="titulo-sessao">⏳ Pedidos Pendentes de Entrega</h2>
+        <div id="lista-pendentes"></div>
     </div>
 
-    <!-- SEÇÃO DE DESEMPENHO (Gráfico e Cards) -->
-    <div id="secao-desempenho" class="menu-secao" style="margin-bottom: 30px; padding: 20px; background: #141414; border-radius: 12px;">
-        <h3>📊 Desempenho da Empresa (Mensal)</h3>
-        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
-            <div style="flex: 1; min-width: 250px; background: #1e1e1e; padding: 15px; border-radius: 8px; text-align: center;">
-                <p>Faturamento Total</p>
-                <h2 id="dash-faturamento" style="color: #20bf6b;">R$ 0,00</h2>
-            </div>
-            <div style="flex: 1; min-width: 250px; background: #1e1e1e; padding: 15px; border-radius: 8px; text-align: center;">
-                <p>Total de Itens Vendidos</p>
-                <h2 id="dash-itens" style="color: #3867d6;">0 un</h2>
-            </div>
-        </div>
-        <div style="max-width: 600px; margin: 20px auto;">
-            <canvas id="graficoVendas"></canvas>
-        </div>
-    </div>
-
-    <!-- LISTAGEM REALTIME DAS VENDAS -->
-    <div id="container-vendas"></div>
-
-    <!-- SEÇÃO DE GESTÃO DE CLIENTES -->
-    <div id="secao-clientes-master" class="menu-secao" style="margin-bottom: 30px; padding: 20px; background: #141414; border-radius: 12px;">
-        <h3>👥 Gestão de Clientes e Vendedores Vinculados</h3>
-        <div id="lista-clientes-gestao" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-            <!-- Injetado via JS -->
-        </div>
+    <div class="sessao-entregas">
+        <h2 class="titulo-sessao">✅ Pedidos Entregues</h2>
+        <div id="lista-entregues"></div>
     </div>
 
 <script>
-let exibindoHistoricoGeral = false;
-let historicoVendasRealtime = [];
-let listaClientesRealtime = [];
-let meuGrafico = null;
-
-// Função inteligente para remover acentos e facilitar a busca
-const normalizarBusca = str => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
-
-window.onload = function() {
-    let perfil = localStorage.getItem('perfilLogado');
     let docLogado = localStorage.getItem('documentoLogado');
-    if (perfil !== 'master' && docLogado !== '61941386000120') {
-        alert("Acesso restrito ao Painel Master Administrativo!");
-        window.location.href = 'catalogo.html';
-        return;
-    }
-    
-    // 1. Escuta a coleção de vendas do Firebase em tempo real
-    db.collection('vendas').onSnapshot((snapshot) => {
-        historicoVendasRealtime = [];
-        snapshot.forEach((doc) => {
-            historicoVendasRealtime.push({
-                firestoreId: doc.id,
-                ...doc.data()
+    let perfilLogado = localStorage.getItem('perfilLogado');
+    let nomeLogado = localStorage.getItem('nomeVendedorLogado');
+
+    window.onload = () => {
+        document.getElementById('subtitulo-painel').innerText = perfilLogado === 'master' ? "Visão Geral: Todos os Vendedores" : `Suas Entregas: ${nomeLogado}`;
+        carregarEntregas();
+    };
+
+    function carregarEntregas() {
+        db.collection('vendas').onSnapshot(snapshot => {
+            let vendas = [];
+            snapshot.forEach(doc => {
+                let data = doc.data();
+                // Filtra: se não for master, vê apenas as próprias vendas
+                if (perfilLogado === 'master' || data.vendedorId === docLogado || data.vendedor === nomeLogado) {
+                    vendas.push({ idFirestore: doc.id, ...data });
+                }
             });
-        });
-        
-        // Ordenação cronológica: do mais recente para o mais antigo
-        historicoVendasRealtime.sort((a, b) => {
-            let parseData = (d) => {
-                if(!d) return 0;
-                let partes = d.split(' ')[0].split('/'); // Pega DD/MM/YYYY
-                if(partes.length === 3) return new Date(partes[2], partes[1]-1, partes[0]).getTime();
-                return 0;
-            };
-            
-            let timeA = parseData(a.data);
-            let timeB = parseData(b.data);
-            
-            // Se as datas forem iguais, desempata pela hora (se existir) ou id
-            if(timeA === timeB) {
-                let dtA = a.dataHora || "";
-                let dtB = b.dataHora || "";
-                return dtB.localeCompare(dtA);
-            }
-            return timeB - timeA;
-        });
-        
-        renderizarPainelVendas();
-    }, (error) => {
-        console.error("Erro de sincronização em tempo real: ", error);
-    });
 
-    // 2. Escuta a coleção de clientes para a listagem Master
-    db.collection('clientes').onSnapshot((snapshot) => {
-        listaClientesRealtime = [];
-        snapshot.forEach((doc) => {
-            listaClientesRealtime.push({
-                firestoreId: doc.id,
-                ...doc.data()
+            // Ordena da mais ANTIGA para a mais NOVA
+            vendas.sort((a, b) => {
+                let dataA = a.dataHora ? a.dataHora : a.data;
+                let dataB = b.dataHora ? b.dataHora : b.data;
+                return dataA.localeCompare(dataB);
             });
+
+            let pendentes = vendas.filter(v => v.statusEntrega !== 'Entregue');
+            let entregues = vendas.filter(v => v.statusEntrega === 'Entregue');
+
+            renderizarGrupo(pendentes, 'lista-pendentes', true);
+            renderizarGrupo(entregues, 'lista-entregues', false);
         });
-        renderizarGestaoClientes();
-    });
-};
-
-function alternarModoPainel() {
-    exibindoHistoricoGeral = !exibindoHistoricoGeral;
-    let btn = document.getElementById('btn-alternar-modo');
-    let titulo = document.getElementById('titulo-painel');
-    
-    if(exibindoHistoricoGeral) {
-        btn.innerText = "👁️ Ver Vendas do Mês";
-        btn.style.backgroundColor = "#2b5797";
-        btn.style.color = "white";
-        titulo.innerText = "Histórico Geral Arquivado (Vendas Antigas)";
-    } else {
-        btn.innerText = "👁️ Ver Histórico Antigo";
-        btn.style.backgroundColor = "#ffd700";
-        btn.style.color = "black";
-        titulo.innerText = "Painel de Vendas - Mês Atual";
-    }
-    renderizarPainelVendas();
-}
-
-function renderizarPainelVendas() {
-    let container = document.getElementById('container-vendas');
-    container.innerHTML = '';
-    
-    let hoje = new Date();
-    let mesAtual = hoje.getMonth() + 1;
-    let anoAtual = hoje.getFullYear();
-    let termoBusca = normalizarBusca(document.getElementById('input-busca-vendas').value);
-    
-    let filtradas = historicoVendasRealtime.filter(venda => {
-        if(!venda.data) return false;
-        
-        // Filtro de Mês / Histórico
-        let partes = venda.data.split('/');
-        let mesVenda = parseInt(partes[1]);
-        let anoVenda = parseInt(partes[2]);
-        let pertenceAoMesAtual = (mesVenda === mesAtual && anoVenda === anoAtual);
-        
-        if (exibindoHistoricoGeral ? pertenceAoMesAtual : !pertenceAoMesAtual) return false;
-        
-        // Filtro de Pesquisa Inteligente
-        if (termoBusca !== "") {
-            let stringUnificada = normalizarBusca(`${venda.cliente} ${venda.vendedor} ${venda.cidade} ${venda.estado} ${venda.data} ${venda.id}`);
-            let termos = termoBusca.split(" ");
-            let passaFiltro = termos.every(termo => stringUnificada.includes(termo));
-            if (!passaFiltro) return false;
-        }
-
-        return true;
-    });
-
-    // Cálculos do Dashboard e Gráfico
-    let totalFaturamento = 0;
-    let totalItens = 0;
-    let faturamentoPorDia = {};
-
-    filtradas.forEach(venda => {
-        totalFaturamento += venda.valorTotal;
-        if(venda.itens) {
-            venda.itens.forEach(i => totalItens += i.qtd);
-        }
-        // Agrupa para o gráfico
-        faturamentoPorDia[venda.data] = (faturamentoPorDia[venda.data] || 0) + venda.valorTotal;
-    });
-
-    // Atualiza os cards de texto do topo
-    document.getElementById('dash-faturamento').innerText = `R$ ${totalFaturamento.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-    document.getElementById('dash-itens').innerText = `${totalItens} un`;
-
-    // Renderiza/Atualiza o gráfico do Chart.js
-    atualizarGraficoVendas(faturamentoPorDia);
-
-    if(filtradas.length === 0) {
-        container.innerHTML = `<p style="text-align:center; padding:40px; color:#888; font-weight:bold;">Nenhum registro de venda encontrado para esta pesquisa.</p>`;
-        return;
     }
 
-    let agrupadoPorData = {};
-    filtradas.forEach(venda => {
-        if(!agrupadoPorData[venda.data]) { agrupadoPorData[venda.data] = []; }
-        agrupadoPorData[venda.data].push(venda);
-    });
+    function renderizarGrupo(lista, elementoId, isPendente) {
+        let container = document.getElementById(elementoId);
+        container.innerHTML = '';
 
-    for(let data in agrupadoPorData) {
-        let divData = document.createElement('div');
-        divData.className = 'secao-data';
-        divData.innerHTML = `<h3>📅 Vendas Realizadas em: ${data}</h3>`;
-        
-        agrupadoPorData[data].forEach(venda => {
-            let descItens = venda.itens ? venda.itens.map(i => `${i.nome} (${i.qtd}x)`).join(', ') : 'Nenhum item';
+        if (lista.length === 0) {
+            container.innerHTML = `<p style="color: #666; font-style: italic;">Nenhum pedido nesta categoria.</p>`;
+            return;
+        }
+
+        // Agrupamento: Estado -> Cidade -> Cliente
+        let agrupado = {};
+        lista.forEach(venda => {
+            let est = venda.estado || 'Sem Estado';
+            let cid = venda.cidade || 'Sem Cidade';
+            let cli = venda.cliente || 'Desconhecido';
             
-            let card = document.createElement('div');
-            card.className = 'card-venda';
-            card.innerHTML = `
-                <div class="info-venda">
-                    <strong style="font-size:17px; color:#fff;">Pedido #${venda.id} - ${venda.cliente}</strong> 
-                    <span style="background:#ffd700; color:black; font-weight:bold; font-size:11px; padding:2px 6px; border-radius:3px; margin-left:6px;">${venda.metodoPagamento}</span><br>
-                    <span style="display:block; margin-top:5px;"><b>Responsável:</b> ${venda.vendedor} | <b>Cidade:</b> ${venda.cidade} - ${venda.estado}</span>
-                    <span style="display:block; margin-top:3px; color:#ddd;"><b>Itens:</b> ${descItens}</span>
-                    <span style="font-size:12px; color:#aaa; display:block; margin-top:3px;">Expositor: <b>${venda.temExpositor || 'NÃO'}</b> | Logística: <b>${venda.entreguePor || 'Empresa'}</b></span>
-                    ${venda.dataModificacao ? `<span style="color:#ff6b6b; font-weight:bold; font-size:11px; display:block; margin-top:3px;">⚠️ Última Modificação: ${venda.dataModificacao}</span>` : ''}
-                </div>
-                <div style="text-align:right; display:flex; flex-direction:column; gap:8px; min-width:150px;">
-                    <span style="color:#20bf6b; font-weight:bold; font-size:20px;">R$ ${venda.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span>
-                    <div>
-                        <button onclick="regerarPDFVenda('${venda.firestoreId}')" style="background:#e74c3c; color:white; border:none; padding:6px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px; margin-right:5px;">📄 Ver PDF</button>
-                        <button onclick="excluirVendaMaster('${venda.firestoreId}')" style="background:#111; color:#ff4d4d; border:1px solid #ff4d4d; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;">❌ Excluir</button>
-                    </div>
-                </div>
-            `;
-            divData.appendChild(card);
+            if(!agrupado[est]) agrupado[est] = {};
+            if(!agrupado[est][cid]) agrupado[est][cid] = {};
+            if(!agrupado[est][cid][cli]) agrupado[est][cid][cli] = [];
+            
+            agrupado[est][cid][cli].push(venda);
         });
-        container.appendChild(divData);
-    }
-}
 
-function atualizarGraficoVendas(dadosFaturamento) {
-    let ctx = document.getElementById('graficoVendas').getContext('2d');
-    
-    // Ordena as datas cronologicamente para exibição linear no gráfico
-    let datasOrdenadas = Object.keys(dadosFaturamento).sort((a, b) => {
-        let pA = a.split('/'), pB = b.split('/');
-        return new Date(pA[2], pA[1]-1, pA[0]) - new Date(pB[2], pB[1]-1, pB[0]);
-    });
-    
-    let valores = datasOrdenadas.map(data => dadosFaturamento[data]);
+        for (let estado in agrupado) {
+            let htmlEstado = `<div class="grupo-estado"><h3 style="color: white;">📍 Estado: ${estado}</h3>`;
+            
+            for (let cidade in agrupado[estado]) {
+                htmlEstado += `<div class="grupo-cidade"><h4 style="color: #ccc;">🌆 Cidade: ${cidade}</h4>`;
+                
+                for (let cliente in agrupado[estado][cidade]) {
+                    htmlEstado += `<h5 style="color: #ffd700; margin-top: 15px; margin-bottom: 5px;">👤 Cliente: ${cliente}</h5>`;
+                    
+                    agrupado[estado][cidade][cliente].forEach(venda => {
+                        let btnAcao = isPendente 
+                            ? `<button class="btn-entregar" onclick="alterarStatus('${venda.idFirestore}', 'Entregue')">Marcar Entregue</button>`
+                            : `<button class="btn-desfazer" onclick="alterarStatus('${venda.idFirestore}', 'Pendente')">Desfazer</button>`;
+                            
+                        let statusTag = isPendente ? `<span class="tag-status pendente">Pendente</span>` : `<span class="tag-status entregue">Entregue</span>`;
 
-    if(meuGrafico) { meuGrafico.destroy(); }
-
-    meuGrafico = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: datasOrdenadas,
-            datasets: [{
-                label: 'Faturamento Diário (R$)',
-                data: valores,
-                backgroundColor: '#ffd700',
-                borderColor: '#b8860b',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true, grid: { color: '#222' }, ticks: { color: '#fff' } },
-                x: { ticks: { color: '#fff' } }
-            },
-            plugins: {
-                legend: { labels: { color: '#fff' } }
+                        htmlEstado += `
+                            <div class="card-pedido">
+                                <div>
+                                    <strong style="color: white; font-size: 15px;">Pedido #${venda.id}</strong> ${statusTag}<br>
+                                    <span style="font-size: 12px; color: #aaa;">Data: ${venda.data} | Valor: R$ ${venda.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}</span><br>
+                                    <span style="font-size: 12px; color: #888;">Itens: ${venda.itens ? venda.itens.map(i=>i.nome).join(', ') : 'N/A'}</span>
+                                </div>
+                                <div>${btnAcao}</div>
+                            </div>
+                        `;
+                    });
+                }
+                htmlEstado += `</div>`;
             }
+            htmlEstado += `</div>`;
+            container.innerHTML += htmlEstado;
         }
-    });
-}
-
-function renderizarGestaoClientes() {
-    let container = document.getElementById('lista-clientes-gestao');
-    if(!container) return;
-    container.innerHTML = '';
-
-    if(listaClientesRealtime.length === 0) {
-        container.innerHTML = '<p style="color:gray; padding:10px;">Nenhum cliente sincronizado na nuvem.</p>';
-        return;
     }
 
-    listaClientesRealtime.forEach(cliente => {
-        container.innerHTML += `
-            <div style="background:#222; padding:15px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; border: 1px solid #333; flex-wrap:wrap; gap:10px;">
-                <div>
-                    <strong style="color:#fff; font-size:16px;">${cliente.nome}</strong><br>
-                    <span style="font-size:13px; color:#aaa;">CNPJ: ${cliente.cnpj} | Cidade: ${cliente.cidade}-${cliente.estado}</span><br>
-                    <span style="font-size:12px; color:#888;">Vendedor Vinculado: <b>${cliente.vendedor || 'Nenhum'}</b></span>
-                </div>
-                <div>
-                    <button onclick="alternarRestricaoCredito('${cliente.cnpj}', ${cliente.restrito})" style="background:${cliente.restrito ? '#d9534f' : '#5cb85c'}; color:white; border:none; padding:8px 14px; border-radius:5px; font-weight:bold; cursor:pointer; font-size:13px;">
-                        ${cliente.restrito ? '❌ RESTRITO (Boleto Bloqueado)' : '✅ LIBERADO (Boleto OK)'}
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-}
-
-function alternarRestricaoCredito(cnpj, statusAtual) {
-    let proximoStatus = !statusAtual;
-    let msg = proximoStatus ? "Deseja BLOQUEAR as vendas via Boleto para este CNPJ?" : "Deseja LIBERAR as vendas via Boleto para este CNPJ?";
-    
-    if(confirm(msg)) {
-        db.collection('clientes').doc(cnpj).update({
-            restrito: proximoStatus
+    function alterarStatus(idFirestore, novoStatus) {
+        db.collection('vendas').doc(idFirestore).update({
+            statusEntrega: novoStatus
         }).then(() => {
-            alert("Status de restrição financeira do cliente modificado com sucesso!");
-        }).catch((err) => {
-            alert("Erro ao alterar privilégios do cliente: " + err);
+            console.log("Status atualizado com sucesso!");
+        }).catch(err => {
+            alert("Erro ao atualizar: " + err);
         });
     }
-}
-
-function excluirVendaMaster(firestoreId) {
-    if(confirm("Deseja apagar permanentemente este registro de venda do sistema? Esta ação é irreversível da Nuvem.")) {
-        db.collection('vendas').doc(firestoreId).delete().then(() => {
-            alert("Venda excluída da nuvem com sucesso!");
-        }).catch((err) => {
-            alert("Erro ao excluir documento: " + err);
-        });
-    }
-}
-
-// FUNÇÃO ATUALIZADA DO PDF (Múltiplas páginas, quebra de linha inteligente e Logo SVG)
-function regerarPDFVenda(firestoreId) {
-    let venda = historicoVendasRealtime.find(h => h.firestoreId === firestoreId);
-    if(!venda) return;
-    
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Adiciona a logo se já estiver carregada
-    if (logoBase64Img) {
-        doc.addImage(logoBase64Img, 'PNG', 14, 10, 30, 30);
-    }
-
-    doc.setFontSize(10);
-    doc.text("NK CUBAS POMBAL LTDA - (11) 99994-8702", 50, 18);
-    doc.text("RODOVIA BR 110 KM 09, N° S/N, LOTE 03 QUAD - Ribeira do Pombal, BA", 50, 24);
-    doc.text("CNPJ: 61.941.386/0001-20", 50, 30);
-
-    doc.rect(14, 43, 180, 36); 
-    doc.setFont("helvetica", "bold");
-    doc.text(`Número do pedido: ${venda.id}`, 16, 49);
-    doc.text(`Data: ${venda.data}`, 140, 49);
-    
-    doc.text("CLIENTE:", 16, 57);
-    doc.setFont("helvetica", "normal");
-    doc.text(venda.cliente, 35, 57);
-    doc.text(`CNPJ: ${venda.cnpj || 'Não cadastrado'}`, 140, 57);
-    doc.text(`Localidade: ${venda.cidade || 'Não informada'} / ${venda.estado || 'BA'}`, 16, 63);
-    
-    doc.setFont("helvetica", "bold");
-    doc.text(`VENDEDOR: ${venda.vendedor}`, 16, 70);
-    doc.text(`Forma: ${venda.metodoPagamento} | Expositor: ${venda.temExpositor || 'NÃO'}`, 95, 70);
-
-    if (venda.descricao && venda.descricao.trim() !== "") {
-        doc.setFontSize(9);
-        doc.text(`OBSERVAÇÕES: ${venda.descricao}`, 16, 76);
-    }
-
-    let tabelaCorpo = [];
-    let somaQtd = 0;
-    venda.itens.forEach(item => {
-        let totalLinha = item.preco * item.qtd;
-        somaQtd += item.qtd;
-        tabelaCorpo.push([
-            item.nome, 
-            item.codigo || "000000", 
-            "UN", 
-            item.qtd.toString(), 
-            "R$ " + item.preco.toLocaleString('pt-BR', {minimumFractionDigits:2}), 
-            "R$ " + totalLinha.toLocaleString('pt-BR', {minimumFractionDigits:2})
-        ]);
-    });
-
-    // AutoTable configurado para quebrar linha automaticamente (overflow: 'linebreak') e criar novas páginas
-    doc.autoTable({
-        startY: 82,
-        head: [['Descrição do produto/serviço', 'Código', 'Un.', 'Qtd.', 'Valor unitário', 'Valor total']],
-        body: tabelaCorpo,
-        theme: 'grid',
-        styles: { 
-            fontSize: 9, 
-            cellPadding: 3, 
-            overflow: 'linebreak' // Isso impede que o texto saia do limite!
-        },
-        columnStyles: { 
-            0: { cellWidth: 70 } // Dá bastante espaço para a descrição do produto
-        },
-        headStyles: { fillColor: [30, 30, 30], textColor: [255, 215, 0] },
-        margin: { top: 20 } // Margem caso crie uma nova página
-    });
-
-    let yF = doc.lastAutoTable.finalY + 10;
-    
-    // Se o Y final for muito perto do fim da página, adiciona uma página nova para o total
-    if (yF > 270) {
-        doc.addPage();
-        yF = 20;
-    }
-
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Soma das Qtdes: ${somaQtd}`, 14, yF);
-    doc.setFont("helvetica", "bold");
-    doc.text(`TOTAL FINAL: R$ ${venda.valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 130, yF + 6);
-
-    doc.save(`Pedido_${venda.id}_Reemissao.pdf`);
-}
 </script>
 </body>
 </html>
